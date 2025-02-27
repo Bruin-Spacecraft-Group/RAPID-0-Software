@@ -7,13 +7,17 @@ import board
 import microcontroller
 import busio
 import digitalio
-
+import pin_manager
 
 async def inter_subsystem_rs485_sender_task():
     """
     Task that sends 0xFFEEDDCC and lights up the LED for 1 second if write is successful.
     """
-    led = digitalio.DigitalInOut(board.LED1)
+    
+    #led = digitalio.DigitalInOut(board.LED1) # OLD
+    led = pin_manager.PinManager.get_instance()
+    led.create_digital_in_out(board.LED1) # should be all that's needed for context managing
+    
     led.direction = digitalio.Direction.OUTPUT
 
     uart = busio.UART(
@@ -25,12 +29,17 @@ async def inter_subsystem_rs485_sender_task():
     te.direction = digitalio.Direction.OUTPUT
 
     while True:
+        DATA1 = 0xFF000000
+        DATA2 = 0xEE0000
+        DATA3 = 0xDD00
+        DATA4 = 0xCC
+        
         te.value = True
         data = bytearray([0] * 4)
-        data[0] = (0xFF000000) >> 24
-        data[1] = (0xEE0000) >> 16
-        data[2] = (0xDD00) >> 8
-        data[3] = (0xCC) >> 0
+        data[0] = (DATA1) >> 24
+        data[1] = (DATA2) >> 16
+        data[2] = (DATA3) >> 8
+        data[3] = (DATA4) >> 0
 
         print("Data to be sent: ", list(data))
 
