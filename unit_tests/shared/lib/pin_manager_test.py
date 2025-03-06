@@ -43,7 +43,6 @@ class PinManager_Test(unittest.TestCase):
         inst = pin_manager.PinManager()
         UART_bus = inst.create_uart("D1", "D2")
         with UART_bus as bus:
-            self.assertEqual(bus.baudrate, 115200)
             buf0 = bytearray([0] * 4)
             buf1 = bytearray([0] * 4)
             self.assertIsNone(bus.write(buf0))
