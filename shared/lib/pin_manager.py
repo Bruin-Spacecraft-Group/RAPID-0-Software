@@ -216,7 +216,7 @@ class PinManager:
             (lambda: busio.I2C(scl, sda, frequency=frequency)),
         )
 
-    def create_uart(self, tx, rx, baudrate=115200, bits=8, parity=None, stop=1):
+    def create_uart(self, tx, rx, *, baudrate=115200, bits=8, parity=None, stop=1):
         """
         Creates and returns ManagedDevice wrapping a busio.UART on the two specified pins
         with the specified baudrate, bits per byte, parity, and number of stop bits, or returns

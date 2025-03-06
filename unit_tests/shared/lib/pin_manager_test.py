@@ -37,6 +37,18 @@ class PinManager_Test(unittest.TestCase):
             self.assertRaises(RuntimeError, bus.configure)
             self.assertIsNone(bus.deinit())
             self.assertRaises(RuntimeError, bus.try_lock)
+    
+    def test_uart(self):
+        create_pin_manager_specific_mocking()
+        inst = pin_manager.PinManager()
+        UART_bus = inst.create_uart("D1", "D2")
+        with UART_bus as bus:
+            self.assertEqual(bus.baudrate, 115200)
+            buf0 = bytearray([0] * 4)
+            buf1 = bytearray([0] * 4)
+            self.assertIsNone(bus.write(buf0))
+            self.assertIsNone(bus.readinto(buf1))
+            self.assertIsNone(bus.deinit())
 
     def test_context_retention(self):
         create_pin_manager_specific_mocking()
