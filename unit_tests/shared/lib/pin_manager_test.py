@@ -9,6 +9,7 @@ def create_pin_manager_specific_mocking():
     # that we're using to test object retention requirements
     pin_manager.digitalio.DigitalInOut = custom_module_mocking.DigitalInOut_Test
     pin_manager.busio.SPI = custom_module_mocking.SPI_Test
+    pin_manager.busio.UART = custom_module_mocking.UART_Test
 
 
 class PinManager_Test(unittest.TestCase):

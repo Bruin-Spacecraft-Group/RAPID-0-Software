@@ -86,3 +86,39 @@ class SPI_Test(HardwareIO_Test):
         if not (self._is_alive):
             raise RuntimeError("device not available")
         return 0
+    
+class UART_Test(HardwareIO_Test):
+    def __init__(self, tx, rx, *, baudrate=115200, bits=8, parity=None, stop=1):
+        super().__init__()
+
+    def write(self, buffer):
+        if not (self._is_alive):
+            raise RuntimeError("device not available")
+
+    def readinto(self, buffer):
+        if not (self._is_alive):
+            raise RuntimeError("device not available")
+        
+    @property
+    def baudrate(self):
+        if not (self._is_alive):
+            raise RuntimeError("device not available")
+        return 0
+    
+    @property
+    def bits(self):
+        if not (self._is_alive):
+            raise RuntimeError("device not available")
+        return 0
+    
+    @property
+    def parity(self):
+        if not (self._is_alive):
+            raise RuntimeError("device not available")
+        return 0
+    
+    @property
+    def stop(self):
+        if not (self._is_alive):
+            raise RuntimeError("device not available")
+        return 0
