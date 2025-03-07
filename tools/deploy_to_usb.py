@@ -102,7 +102,7 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
             )
         )
 
-    deploy_types = os.listdir(os.path.join(".", "applications"))
+    deploy_types = os.listdir(os.path.join(".", "artifacts"))
     if deploy_type not in deploy_types:
         print(
             RED(f"ERROR: No software found for target {deploy_type}"),
@@ -153,7 +153,7 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
 
     try:
         includejson = json.load(
-            open(os.path.join(".", "applications", deploy_type, "include.json"))
+            open(os.path.join(".", "artifacts", deploy_type, "include.json"))
         )
     except Exception:
         print(
@@ -199,10 +199,10 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
         )
 
     print("Programming target-specific software to device...")
-    for item in os.listdir(os.path.join(".", "applications", deploy_type)):
+    for item in os.listdir(os.path.join(".", "artifacts", deploy_type)):
         if item == "include.json":
             continue
-        src_item_path = os.path.join(".", "applications", deploy_type, item)
+        src_item_path = os.path.join(".", "artifacts", deploy_type, item)
         dst_item_path = os.path.join(deploy_path, item)
         if os.path.isdir(src_item_path):
             shutil.copytree(
@@ -229,7 +229,7 @@ if __name__ == "__main__":
         + "general lib folders with board-specific lib folders. The program must be run "
         + "from the root directory of a properly-structured spacecraft software project. "
         + "Can also be used to deploy to a temporary folder. Includes the option to also "
-        + "deploy unit tests to the target application so they can be run."
+        + "deploy unit tests to the target artifact so they can be run."
     )
     parser.add_argument("deploy_type")
     deploy_target = parser.add_mutually_exclusive_group(required=True)
