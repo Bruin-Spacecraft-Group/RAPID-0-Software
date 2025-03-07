@@ -1,4 +1,9 @@
 {
-    "src": [],
-    "unit_tests": []
+    "src": [
+        "lib/pin_manager.py"
+    ],
+    "unit_tests": [
+        "lib/pin_manager_test.py",
+        "lib/custom_module_mocking.py"
+    ]
 }
