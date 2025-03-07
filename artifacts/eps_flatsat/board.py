@@ -1,4 +1,5 @@
 """
+Pin definitions for the board which runs the eps_flatsat artifact.
 Defines wiring that goes to the EPS microcontroller on the EPS flatsat PCB from June 2024.
 
 Software should refer to the pins named here rather than any pin definitions in the `board`

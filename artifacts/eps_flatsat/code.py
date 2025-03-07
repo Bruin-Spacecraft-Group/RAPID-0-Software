@@ -1,5 +1,5 @@
 """
-Software entry point for the control application for the EPS flatsat PCB from June 2024.
+Entry point for the software artifact for the EPS flatsat PCB from June 2024.
 """
 
 import asyncio
