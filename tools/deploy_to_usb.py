@@ -1,9 +1,10 @@
 import argparse
-import subprocess
-import sys
+import json
 import os
 import platform
 import shutil
+import subprocess
+import sys
 
 
 def RED(text):
@@ -78,7 +79,7 @@ def find_mount_points_with_names():
             ),
             file=sys.stderr,
         )
-        exit()
+        return None
 
 
 # === END: Platform-specific code ===
@@ -88,7 +89,7 @@ def find_mount_points_with_names():
 # functions are implemented with the appropriate contracts.
 
 
-def deploy_with_settings(deploy_type, target_drive, tmp_folder):
+def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=False):
     if target_drive is None:
         target_drive = "CIRCUITPY"
 
@@ -101,7 +102,7 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder):
             )
         )
 
-    deploy_types = os.listdir(os.path.join(".", "applications"))
+    deploy_types = os.listdir(os.path.join(".", "artifacts"))
     if deploy_type not in deploy_types:
         print(
             RED(f"ERROR: No software found for target {deploy_type}"),
@@ -115,7 +116,7 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder):
             ", ".join(deploy_types_string[:-1]) + ", and " + deploy_types_string[-1]
         )
         print(f"Available deploy types are {deploy_types_string}", file=sys.stderr)
-        exit()
+        return None
 
     if tmp_folder:
         import tempfile
@@ -123,11 +124,11 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder):
         deploy_path = os.path.join(tempfile.gettempdir(), "CIRCUITPY")
         os.makedirs(deploy_path, exist_ok=True)
     else:
+        mpwn = find_mount_points_with_names()
+        if mpwn is None:
+            return None
         target_drives = [
-            mp[0]
-            for mp in filter(
-                (lambda mp: mp[1] == target_drive), find_mount_points_with_names()
-            )
+            mp[0] for mp in filter((lambda mp: mp[1] == target_drive), mpwn)
         ]
         if len(target_drives) != 1:
             print(
@@ -143,12 +144,23 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder):
                 ),
                 file=sys.stderr,
             )
-            exit()
+            return None
         deploy_path = target_drives[0]
 
     print(
         f"Configuration complete! Loading software for {deploy_type} to {deploy_path}"
     )
+
+    try:
+        includejson = json.load(
+            open(os.path.join(".", "artifacts", deploy_type, "include.json"))
+        )
+    except Exception:
+        print(
+            RED(f"ERROR: Could not parse a valid `include.json` for {deploy_type}"),
+            file=sys.stderr,
+        )
+        return None
 
     print("Wiping existing software on device...")
     for item in os.listdir(deploy_path):
@@ -158,26 +170,46 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder):
         else:
             os.remove(item_path)
 
-    print("Programming shared libraries to device...")
-    for item in os.listdir(os.path.join(".", "shared")):
-        src_item_path = os.path.join(".", "shared", item)
+    print("Programming included libraries to device...")
+    for item in includejson["src"]:
+        src_item_path = os.path.join(".", "src", item)
         dst_item_path = os.path.join(deploy_path, item)
         if os.path.isdir(src_item_path):
             shutil.copytree(
                 src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
             )
         else:
+            os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
             shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
 
+    if include_tests:
+        for item in includejson["unit_tests"]:
+            src_item_path = os.path.join(".", "unit_tests", item)
+            dst_item_path = os.path.join(deploy_path, item)
+            if os.path.isdir(src_item_path):
+                shutil.copytree(
+                    src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
+                )
+            else:
+                os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
+                shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
+        shutil.copyfile(
+            os.path.join(".", "config", "conftest.py"),
+            os.path.join(deploy_path, "conftest.py"),
+        )
+
     print("Programming target-specific software to device...")
-    for item in os.listdir(os.path.join(".", "applications", deploy_type)):
-        src_item_path = os.path.join(".", "applications", deploy_type, item)
+    for item in os.listdir(os.path.join(".", "artifacts", deploy_type)):
+        if item == "include.json":
+            continue
+        src_item_path = os.path.join(".", "artifacts", deploy_type, item)
         dst_item_path = os.path.join(deploy_path, item)
         if os.path.isdir(src_item_path):
             shutil.copytree(
                 src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
             )
         else:
+            os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
             shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
 
     print("Removing any generated __pycache__ directories copied to device...")
@@ -186,6 +218,7 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder):
             shutil.rmtree(os.path.join(tree[0], "__pycache__"))
 
     print(GREEN(f"Deployment complete for target {deploy_type} to {deploy_path}!"))
+    return deploy_path
 
 
 if __name__ == "__main__":
@@ -194,12 +227,17 @@ if __name__ == "__main__":
         + "current contents, and move the appropriate files to the drive so that it runs "
         + "the updated software. Automatically expands through symbolic links and merges "
         + "general lib folders with board-specific lib folders. The program must be run "
-        + "from the root directory of a properly-structured spacecraft software project."
+        + "from the root directory of a properly-structured spacecraft software project. "
+        + "Can also be used to deploy to a temporary folder. Includes the option to also "
+        + "deploy unit tests to the target artifact so they can be run."
     )
     parser.add_argument("deploy_type")
     deploy_target = parser.add_mutually_exclusive_group(required=True)
     deploy_target.add_argument("--target_drive", nargs="?", default="CIRCUITPY")
     deploy_target.add_argument("--tmp_folder", action="store_true")
+    parser.add_argument("--include_tests", action="store_true")
     args = parser.parse_args()
 
-    deploy_with_settings(args.deploy_type, args.target_drive, args.tmp_folder)
+    deploy_with_settings(
+        args.deploy_type, args.target_drive, args.tmp_folder, args.include_tests
+    )

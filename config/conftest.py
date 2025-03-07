@@ -22,8 +22,9 @@ def get_unavailable_firmware_modules():
     import json
 
     res = []
+    config_loc = os.getenv("RAPID-0-Software_test-config")
     firmware_modules = json.load(
-        open(os.path.join("..", "..", "config", "firmware_modules.json"))
+        open(os.path.join(config_loc, "firmware_modules.json"))
     )
     for module in firmware_modules["STABLE"] + firmware_modules["PRERELEASE"]:
         if module not in sys.modules and importlib.util.find_spec(module) is None:
@@ -54,7 +55,7 @@ def pytest_runtest_setup(item):
     Recreates afresh the mocked away modules so state between tests remains
     isolated.
     """
-    if sys.platform != "MicroChip SAMD51":
+    if sys.implementation.name != "circuitpython":
         MOCK_MODULES = get_unavailable_firmware_modules()
         mock_modules(MOCK_MODULES)
         # CircuitPython does something equivalent to this internally

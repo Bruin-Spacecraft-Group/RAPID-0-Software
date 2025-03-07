@@ -149,7 +149,7 @@ class _DefaultPinClaimer:
 
 class PinManager:
     """
-    Object that manages pins for an embedded CircuitPython application. See module
+    Object that manages pins for an embedded CircuitPython artifact. See module
     documentation for details.
     """
 
@@ -228,7 +228,11 @@ class PinManager:
         return self._create_general_device(
             [tx, rx],
             (busio.UART, bits, parity, stop),
-            (lambda: busio.UART(tx, rx, baudrate=baudrate, bits=bits, parity=parity, stop=stop)),
+            (
+                lambda: busio.UART(
+                    tx, rx, baudrate=baudrate, bits=bits, parity=parity, stop=stop
+                )
+            ),
         )
 
     def create_analog_in(self, pin):

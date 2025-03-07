@@ -1,5 +1,5 @@
 """
-Entry point for a testing application that simulates the CDH microcontroller on
+Entry point for a testing artifact that simulates the CDH microcontroller on
 a custom breakout board.
 """
 
