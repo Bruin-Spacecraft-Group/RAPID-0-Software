@@ -40,6 +40,8 @@ async def output_bus_control_task(datastore: Datastore):
     Uses the most recent data in the `datastore` as inputs. Controls enable pins for the 3V3,
     5V, 12VLP, and 12VHP power supplies. Manages startup sequence, overcurrent conditions,
     and any relevant commands from CDH that should activate or deactivate a particular bus.
+
+    See ICD at https://docs.google.com/document/d/1HDuXOEv7kC0Kjawf4W1BYVr5GzJt19YBkcu_MvHa1mw
     """
     pm = PinManager.get_instance()
     m_en_3v3 = pm.create_digital_in_out(pinout.EN_3V3_BUS)
@@ -51,14 +53,41 @@ async def output_bus_control_task(datastore: Datastore):
         en_5v.direction = digitalio.Direction.OUTPUT
         en_12vlp.direction = digitalio.Direction.OUTPUT
         en_12vhp.direction = digitalio.Direction.OUTPUT
-        start_time_ns = time.monotonic_ns()
         while True:
-            en_3v3.value = (time.monotonic_ns() - start_time_ns) > 5 * 1e9
-            en_5v.value = (time.monotonic_ns() - start_time_ns) > 10 * 1e9
-            en_12vlp.value = (time.monotonic_ns() - start_time_ns) > 15 * 1e9
-            en_12vhp.value = (time.monotonic_ns() - start_time_ns) > 25 * 1e9
-            datastore.bus_3v3.enabled = en_3v3.value
-            datastore.bus_5v.enabled = en_5v.value
-            datastore.bus_12vlp.enabled = en_12vlp.value
-            datastore.bus_12vhp.enabled = en_12vhp.value
-            await asyncio.sleep(0)
+            datastore.bus_3v3.enabled = _control_tick_3v3_bus(datastore)
+            datastore.bus_5v.enabled = _control_tick_5v_bus(datastore)
+            datastore.bus_12vlp.enabled = _control_tick_12vlp_bus(datastore)
+            datastore.bus_12vhp.enabled = _control_tick_12vhp_bus(datastore)
+            en_3v3.value = datastore.bus_3v3.enabled
+            en_5v.value = datastore.bus_5v.enabled
+            en_12vlp.value = datastore.bus_12vlp.enabled
+            en_12vhp.value = datastore.bus_12vhp.enabled
+            await asyncio.sleep(0.1)
+
+
+_control_tick_3v3_bus_data = {
+    "tick_count": 0,
+    "output_currents": [0] * 200,
+}
+
+
+def _control_tick_3v3_bus(datastore: Datastore):
+    avg = lambda x: sum(x) / len(x)
+    circ_recent = lambda arr, count, stop: (
+        (arr[stop - count :] + arr[:stop])
+        if stop < count
+        else (arr[stop - count : stop])
+    )
+    avg_output_current_20s = avg(_control_tick_3v3_bus_data["output_currents"])
+    if avg_output_current_20s > 0.5 * 4 / 3:
+        return False
+    battery_soc = (
+        datastore.batteries.filled_capacity_mah / datastore.batteries.pack_capacity_mah
+    )
+    if battery_soc < 0.01:
+        return False
+    if battery_soc < 0.1 and avg_output_current_20s < 0.1 * 4 / 3:
+        return False
+    if _control_tick_3v3_bus_data % 50 == 0:
+        pass
+    _control_tick_3v3_bus_data["tick_count"] += 1
