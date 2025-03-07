@@ -216,6 +216,21 @@ class PinManager:
             (lambda: busio.I2C(scl, sda, frequency=frequency)),
         )
 
+    def create_uart(self, tx, rx, *, baudrate=115200, bits=8, parity=None, stop=1):
+        """
+        Creates and returns ManagedDevice wrapping a busio.UART on the two specified pins
+        with the specified baudrate, bits per byte, parity, and number of stop bits, or returns
+        one from the cache if one has already been created.
+
+        Note that baudrate is not used in the device key tuple as it can be reconfigured after
+        initialization.
+        """
+        return self._create_general_device(
+            [tx, rx],
+            (busio.UART, bits, parity, stop),
+            (lambda: busio.UART(tx, rx, baudrate=baudrate, bits=bits, parity=parity, stop=stop)),
+        )
+
     def create_analog_in(self, pin):
         """
         Creates and returns ManagedDevice wrapping a analogio.AnalogIn on the specified
