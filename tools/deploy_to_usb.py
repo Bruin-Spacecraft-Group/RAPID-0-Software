@@ -1,9 +1,10 @@
 import argparse
-import subprocess
-import sys
+import json
 import os
 import platform
 import shutil
+import subprocess
+import sys
 
 
 def RED(text):
@@ -158,19 +159,24 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder):
         else:
             os.remove(item_path)
 
-    print("Programming shared libraries to device...")
-    for item in os.listdir(os.path.join(".", "shared")):
-        src_item_path = os.path.join(".", "shared", item)
+    print("Programming included libraries to device...")
+    for item in json.load(
+        open(os.path.join(".", "applications", deploy_type, "include.json"))
+    ):
+        src_item_path = os.path.join(".", "src", item)
         dst_item_path = os.path.join(deploy_path, item)
         if os.path.isdir(src_item_path):
             shutil.copytree(
                 src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
             )
         else:
+            os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
             shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
 
     print("Programming target-specific software to device...")
     for item in os.listdir(os.path.join(".", "applications", deploy_type)):
+        if item == "include.json":
+            continue
         src_item_path = os.path.join(".", "applications", deploy_type, item)
         dst_item_path = os.path.join(deploy_path, item)
         if os.path.isdir(src_item_path):
@@ -178,6 +184,7 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder):
                 src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
             )
         else:
+            os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
             shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
 
     print("Removing any generated __pycache__ directories copied to device...")
