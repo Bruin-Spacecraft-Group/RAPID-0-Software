@@ -4,10 +4,10 @@ Software entry point for the control application for the EPS flatsat PCB from Ju
 
 import asyncio
 
-import datastore as ds
-from bms import battery_management_task
-from icd import intersubsystem_communication_task, output_bus_control_task
-from monitoring import data_recording_task
+import datastore.epsds as ds
+from tasks.eps.bms import battery_management_task
+from tasks.eps.icd import intersubsystem_communication_task, output_bus_control_task
+from tasks.eps.monitoring import data_recording_task
 
 datastore = ds.Datastore()
 

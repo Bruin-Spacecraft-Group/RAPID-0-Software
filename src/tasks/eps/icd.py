@@ -15,8 +15,8 @@ import time
 import digitalio
 
 from pin_manager import PinManager
-import pinout
-from datastore import Datastore
+import artifacts.eps_em_v1.board as board
+from datastore.epsds import Datastore
 
 
 async def intersubsystem_communication_task(datastore: Datastore):
@@ -44,10 +44,10 @@ async def output_bus_control_task(datastore: Datastore):
     See ICD at https://docs.google.com/document/d/1HDuXOEv7kC0Kjawf4W1BYVr5GzJt19YBkcu_MvHa1mw
     """
     pm = PinManager.get_instance()
-    m_en_3v3 = pm.create_digital_in_out(pinout.EN_3V3_BUS)
-    m_en_5v = pm.create_digital_in_out(pinout.EN_5V_BUS)
-    m_en_12vlp = pm.create_digital_in_out(pinout.EN_12VLP_BUS)
-    m_en_12vhp = pm.create_digital_in_out(pinout.EN_12VHP_BUS)
+    m_en_3v3 = pm.create_digital_in_out(board.EN_3V3_BUS)
+    m_en_5v = pm.create_digital_in_out(board.EN_5V_BUS)
+    m_en_12vlp = pm.create_digital_in_out(board.EN_12VLP_BUS)
+    m_en_12vhp = pm.create_digital_in_out(board.EN_12VHP_BUS)
     with m_en_3v3 as en_3v3, m_en_5v as en_5v, m_en_12vlp as en_12vlp, m_en_12vhp as en_12vhp:
         en_3v3.direction = digitalio.Direction.OUTPUT
         en_5v.direction = digitalio.Direction.OUTPUT

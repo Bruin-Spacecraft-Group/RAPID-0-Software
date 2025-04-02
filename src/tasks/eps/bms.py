@@ -4,7 +4,7 @@ Module to operate the battery management system.
 
 import asyncio
 
-from datastore import Datastore
+from datastore.epsds import Datastore
 
 
 async def battery_management_task(datastore: Datastore):

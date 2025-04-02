@@ -1,0 +1,15 @@
+{
+    "src": [
+        "drivers/ads1118.py",
+        "lib/circular_buffer.py",
+        "lib/pin_manager.py",
+        "tasks/eps/bms.py",
+        "tasks/eps/icd.py",
+        "tasks/eps/monitoring.py"
+    ],
+    "unit_tests": [
+        "drivers/ads1118_test.py",
+        "lib/custom_module_mocking.py",
+        "lib/pin_manager_test.py"
+    ]
+}
