@@ -38,7 +38,7 @@ guarantee this condition does not arise.
 
 import digitalio
 import busio
-import analogio
+# import analogio
 
 
 class _ManagedPin:

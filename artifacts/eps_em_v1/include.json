@@ -1,8 +1,11 @@
 {
     "src": [
         "drivers/ads1118.py",
+        "lib/asyncio",
+        "lib/adafruit_ticks.py",
         "lib/circular_buffer.py",
         "lib/pin_manager.py",
+        "datastore/epsds.py",
         "tasks/eps/bms.py",
         "tasks/eps/icd.py",
         "tasks/eps/monitoring.py"

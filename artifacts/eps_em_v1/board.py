@@ -9,6 +9,8 @@ also promotes code readability.
 
 import microcontroller
 
+board_id = "rapid_0"
+
 # power supply control pins
 EN_3V3_BUS = microcontroller.pin.PA14
 EN_5V_BUS = microcontroller.pin.PA15

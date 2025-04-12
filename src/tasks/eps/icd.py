@@ -15,7 +15,7 @@ import time
 import digitalio
 
 from pin_manager import PinManager
-import artifacts.eps_em_v1.board as board
+import board as board
 from datastore.epsds import Datastore
 
 

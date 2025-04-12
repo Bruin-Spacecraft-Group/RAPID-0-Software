@@ -45,10 +45,12 @@ if __name__ == "__main__":
     for EN_PSU in [
         board.EN_3V3_BUS,
         board.EN_5V_BUS,
-        board.EN_12VLP_BUS,
+        # board.EN_12VLP_BUS,
         board.EN_12VHP_BUS,
         board.MPPT_EN
     ]:
-        pin = digitalio.DigitalInOut(BMS_SHD)
+        pin = digitalio.DigitalInOut(EN_PSU)
         pin.direction = digitalio.Direction.OUTPUT
         pin.value = True
+    while True:
+        pass
