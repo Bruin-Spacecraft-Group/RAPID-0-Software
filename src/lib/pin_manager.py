@@ -38,7 +38,7 @@ guarantee this condition does not arise.
 
 import digitalio
 import busio
-# import analogio
+import analogio
 
 
 class _ManagedPin:
@@ -240,9 +240,8 @@ class PinManager:
         Creates and returns ManagedDevice wrapping a analogio.AnalogIn on the specified
         pin, or returns one from the cache if one has already been created.
         """
-        # TODO: put code back once analogio is implemented
         return self._create_general_device(
             [pin],
-            None, # analogio.AnalogIn,
-            (lambda: None) # (lambda: analogio.AnalogIn(pin)),
+            analogio.AnalogIn,
+            (lambda: analogio.AnalogIn(pin)),
         )

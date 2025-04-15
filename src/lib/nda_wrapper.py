@@ -8,7 +8,7 @@ the results of those checks.
 
 try:
     import nda_libraries.src as NDA_LIB
-except ModuleNotFoundError as ex:
+except ModuleNotFoundError:
     NDA_LIB = None
 
 
