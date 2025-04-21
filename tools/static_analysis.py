@@ -7,7 +7,7 @@ analysis_passed = True
 
 for app in os.listdir("artifacts"):
     if (len(app) < 8) or (app[-8:] != "_testapp"):
-        deploy_path = deploy_to_usb.deploy_with_settings(app, None, True, False)
+        deploy_path = deploy_to_usb.deploy_with_settings(app, None, "CIRCUITPY_staticanalysis", False)
         pylama = subprocess.run(
             ["pylama", "-o", config_path, deploy_path],
             cwd=deploy_path,

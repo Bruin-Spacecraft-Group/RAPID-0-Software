@@ -41,7 +41,7 @@ for app in os.listdir(artifacts_dir):
         continue
 
     print(CYAN(f"Generating tests for artifact {app}..."))
-    test_app_dir = deploy_to_usb.deploy_with_settings(app, None, True, True)
+    test_app_dir = deploy_to_usb.deploy_with_settings(app, None, "CIRCUITPY_unittest", True)
 
     print(CYAN(f"Running pytest for deployment of {app}..."))
     test_env = os.environ.copy()

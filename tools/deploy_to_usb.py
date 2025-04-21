@@ -121,7 +121,7 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
     if tmp_folder:
         import tempfile
 
-        deploy_path = os.path.join(tempfile.gettempdir(), "CIRCUITPY")
+        deploy_path = os.path.join(tempfile.gettempdir(), tmp_folder)
         os.makedirs(deploy_path, exist_ok=True)
     else:
         mpwn = find_mount_points_with_names()
@@ -233,10 +233,15 @@ if __name__ == "__main__":
     )
     parser.add_argument("deploy_type")
     deploy_target = parser.add_mutually_exclusive_group(required=True)
-    deploy_target.add_argument("--target_drive", nargs="?", default="CIRCUITPY")
-    deploy_target.add_argument("--tmp_folder", action="store_true")
+    deploy_target.add_argument("--target_drive", nargs="?", default=False)
+    deploy_target.add_argument("--tmp_folder", nargs="?", default=False)
     parser.add_argument("--include_tests", action="store_true")
     args = parser.parse_args()
+    if (args.target_drive is None):
+        args.target_drive = "CIRCUITPY"
+    if (args.tmp_folder is None):
+        args.tmp_folder = "CIRCUITPY"
+    print(args)
 
     deploy_with_settings(
         args.deploy_type, args.target_drive, args.tmp_folder, args.include_tests
