@@ -1,0 +1,8 @@
+{
+    "src": [
+        "drivers/camera.py",
+        "lib/asyncio",
+        "tasks/camera_tasks.py"
+    ],
+    "unit_tests": []
+}
