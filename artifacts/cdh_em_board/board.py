@@ -36,3 +36,13 @@ RS485_3_DE = microcontroller.pin.PD15
 
 # Watchdog pin
 WDI = microcontroller.pin.PC13
+
+
+# Battery Pack Heater Pins
+BAT_HEAT1N = microcontroller.pin.PA1
+BAT_HEAT2N = microcontroller.pin.PA0
+
+# USB Communication Pins
+USB_ID = microcontroller.pin.PA10
+USB_N = microcontroller.pin.PA11
+USB_P = microcontroller.pin.PA12
