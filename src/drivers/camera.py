@@ -1503,14 +1503,14 @@ OV5642_JPEG_Capture_QSXGA = [
 class Camera(object):
     def __init__(self):
         self.CameraMode=JPEG
-        self.SPI_CS=digitalio.DigitalInOut(microcontroller.pin.PA06)
+        self.SPI_CS=digitalio.DigitalInOut(CAM_CS)
         self.SPI_CS.direction = digitalio.Direction.OUTPUT
         self.I2cAddress=0x30
-        self.spi = busio.SPI(clock=microcontroller.pin.PA05, MOSI=microcontroller.pin.PA07, MISO=microcontroller.pin.PA04)
+        self.spi = busio.SPI(clock=CAM_SCK, MOSI=CAM_MOSI, MISO=CAM_MISO)
         while not self.spi.try_lock():
             pass
         self.spi.configure(baudrate=4000000,polarity=0,phase=0,bits=8)
-        self.i2c = bitbangio.I2C(scl=microcontroller.pin.PB03, sda=microcontroller.pin.PB02,frequency=1000000)
+        self.i2c = bitbangio.I2C(scl=CAM_SCL, sda=CAM_SDA,frequency=1000000)
         while not self.i2c.try_lock():
             pass
         print(self.i2c.scan())
