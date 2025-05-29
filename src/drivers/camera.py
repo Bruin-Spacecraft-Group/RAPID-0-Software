@@ -6,6 +6,7 @@ import busio
 import bitbangio
 import time as utime
 import digitalio
+import board
 
 
 MAX_FIFO_SIZE=0x7FFFFF
@@ -1502,14 +1503,14 @@ OV5642_JPEG_Capture_QSXGA = [
 class Camera(object):
     def __init__(self):
         self.CameraMode=JPEG
-        self.SPI_CS=digitalio.DigitalInOut(CAM_CS)
+        self.SPI_CS=digitalio.DigitalInOut(board.CAM_CS)
         self.SPI_CS.direction = digitalio.Direction.OUTPUT
         self.I2cAddress=0x30
-        self.spi = busio.SPI(clock=CAM_SCK, MOSI=CAM_MOSI, MISO=CAM_MISO)
+        self.spi = busio.SPI(clock=board.CAM_SCK, MOSI=board.CAM_MOSI, MISO=board.CAM_MISO)
         while not self.spi.try_lock():
             pass
         self.spi.configure(baudrate=4000000,polarity=0,phase=0,bits=8)
-        self.i2c = bitbangio.I2C(scl=CAM_SCL, sda=CAM_SDA,frequency=1000000)
+        self.i2c = bitbangio.I2C(scl=board.CAM_SCL, sda=board.CAM_SDA,frequency=1000000)
         while not self.i2c.try_lock():
             pass
         print(self.i2c.scan())
