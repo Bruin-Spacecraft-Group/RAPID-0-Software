@@ -6,7 +6,6 @@ import busio
 import bitbangio
 import time as utime
 import digitalio
-import microcontroller
 
 
 MAX_FIFO_SIZE=0x7FFFFF
