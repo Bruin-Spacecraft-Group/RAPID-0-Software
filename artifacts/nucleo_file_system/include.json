@@ -2,6 +2,7 @@
     "src": [
         "lib/asyncio",
         "lib/adafruit_ticks.py",
+        "lib/pin_manager.py",
         "tasks/inter_subsystem_rs485.py"
     ],
     "unit_tests": [
