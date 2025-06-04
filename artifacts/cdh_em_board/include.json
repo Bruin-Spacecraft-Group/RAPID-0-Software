@@ -3,7 +3,8 @@
         "drivers/camera.py",
         "lib/asyncio",
         "lib/adafruit_ticks.py",
-        "tasks/camera_tasks.py"
+        "tasks/camera_tasks.py",
+        "tasks/inter_subsystem_rs485.py"
     ],
     "unit_tests": []
 }
