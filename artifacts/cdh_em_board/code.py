@@ -1,13 +1,12 @@
 import asyncio
-from tasks.camera_tasks import capture_single_image
+from tasks import inter_subsystem_rs485
 
 async def gathered_task():
-    """Runs all tasks in parallel."""
     await asyncio.gather(
-        capture_single_image(return_bursts = False)
+        inter_subsystem_rs485.cdh_em_board_rs485_reciever_task()
     )
 
 
 if __name__ == "__main__":
-    # asyncio.run(gathered_task())
+    asyncio.run(gathered_task())
     print('CDH code.py has been run successfully.')
