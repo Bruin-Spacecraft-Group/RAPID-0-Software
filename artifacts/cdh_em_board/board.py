@@ -29,7 +29,7 @@ RS485_2_RX = microcontroller.pin.PB12
 RS485_2_TX = microcontroller.pin.PB13
 RS485_2_DE = microcontroller.pin.PB14
 
-RS485_3_RX = microcontroller.pin.PE0
+RS485_3_RX = microcontroller.pin.PE00
 RS485_3_TX = microcontroller.pin.PE01
 RS485_3_DE = microcontroller.pin.PD15
 
@@ -40,7 +40,7 @@ WDI = microcontroller.pin.PC13
 
 # Battery Pack Heater Pins
 BAT_HEAT1N = microcontroller.pin.PA01
-BAT_HEAT2N = microcontroller.pin.PA0
+BAT_HEAT2N = microcontroller.pin.PA00
 
 # USB Communication Pins
 USB_ID = microcontroller.pin.PA10
