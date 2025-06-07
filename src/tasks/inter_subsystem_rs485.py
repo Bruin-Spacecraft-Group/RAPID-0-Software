@@ -122,8 +122,6 @@ async def cdh_em_board_rs485_send_task():
            te.value = False
 
         if write:
-            with led_gpio as led:
-                led.value = True
             print("Data sent, number of bytes sent: ", write)
             await asyncio.sleep(1)
             await asyncio.sleep(1)
@@ -152,8 +150,7 @@ async def cdh_em_board_rs485_reciever_task():
 
         if data is not None:
             print("Data received: ", list(data))
-            await asyncio.sleep(1)
-            await asyncio.sleep(1)
+            # await asyncio.sleep(1)
 
         else:
             print("Error receiving data")
