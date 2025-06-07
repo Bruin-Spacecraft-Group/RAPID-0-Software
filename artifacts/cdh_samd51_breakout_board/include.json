@@ -1,0 +1,12 @@
+{
+    "src": [
+        "lib/asyncio",
+        "lib/adafruit_ticks.py",
+        "lib/pin_manager.py",
+        "tasks/inter_subsystem_rs485.py"
+    ],
+    "unit_tests": [
+        "lib/pin_manager_test.py",
+        "lib/custom_module_mocking.py"
+    ]
+}
