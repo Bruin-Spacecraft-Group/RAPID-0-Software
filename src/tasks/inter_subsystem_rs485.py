@@ -157,3 +157,30 @@ async def cdh_em_board_rs485_reciever_task():
 
         else:
             print("Error receiving data")
+
+
+async def samd51_breakout_reciever_task():
+    """
+    Task that receives any RS485 message and lights up the LED for 1 second if successfully received data.
+    """
+    # pins defined for the CDH SAMD51 Breakout
+    pm = pin_manager.PinManager.get_instance() 
+
+    uart_bus = pm.create_uart(microcontroller.pin.PA00, microcontroller.pin.PA01, baudrate=50000)
+
+    te_rs485 = pm.create_digital_in_out(microcontroller.pin.PA02)
+    with te_rs485 as te:
+        te.direction = digitalio.Direction.OUTPUT
+        te.value = False
+
+
+    while True:
+        with uart_bus as uart:
+            data = uart.read(32)  # read up to 32 bytes
+
+        if data is not None:
+            print("Data received: ", list(data))
+            await asyncio.sleep(1)
+
+        else:
+            print("Error receiving data")
