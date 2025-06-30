@@ -3,7 +3,6 @@ import shutil
 import argparse
 import subprocess
 import sys
-import enum
 
 import deploy_to_usb
 
