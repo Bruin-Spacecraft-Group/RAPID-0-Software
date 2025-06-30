@@ -3,6 +3,7 @@ import shutil
 import argparse
 import subprocess
 import sys
+import enum
 
 import deploy_to_usb
 
@@ -21,6 +22,16 @@ def YELLOW(text):
 
 def CYAN(text):
     return "\033[96m" + text + "\033[0m"
+
+
+exit_code_names = {
+    0: "OK",
+    1: "TESTS_FAILED",
+    2: "INTERRUPTED",
+    3: "INTERNAL_ERROR",
+    4: "USAGE_ERROR",
+    5: "NO_TESTS_COLLECTED",
+}
 
 
 parser = argparse.ArgumentParser(
@@ -53,5 +64,8 @@ for app in os.listdir(artifacts_dir):
     ).returncode
     if result != 0:
         tests_passed = False
+        print(
+            f"Pytest Exit Code {result}: {exit_code_names.get(result, "UNKNOWN_EXIT_CODE")}"
+        )
 
 exit(0 if tests_passed else 1)
