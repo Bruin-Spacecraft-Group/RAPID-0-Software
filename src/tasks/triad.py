@@ -43,7 +43,7 @@ def triad_algorithm(r1: np.ndarray, r2: np.ndarray, b1: np.ndarray, b2: np.ndarr
     if one_plus_dot < 1e-9:
         return Quaternion()
 
-    # Eq. (31) from the Markley paper
+    # Eq. (31) from the Markley 2002 paper
     mu = one_plus_dot*np.dot(b3, r3) - np.dot(b1_unit, r3)*np.dot(r1_unit, b3)
 
     b1_plus_r1 = b1_unit + r1_unit
