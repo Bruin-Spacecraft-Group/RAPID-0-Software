@@ -2,12 +2,13 @@
 Determines the attitude of the RAPID-0 satellite with two vectors from sensors.
 """
 
-
 import ulab.numpy as np
 from quaternion import Quaternion
 
 
-def triad_algorithm(r1: np.ndarray, r2: np.ndarray, b1: np.ndarray, b2: np.ndarray) -> Quaternion:
+def triad_algorithm(
+    r1: np.ndarray, r2: np.ndarray, b1: np.ndarray, b2: np.ndarray
+) -> Quaternion:
     """
     Calculates the attitude using an optimized TRIAD algorithm based off of:
     'Fast Quaternion Attitude Estimation From Two Vector Measurements' (Markley, 2002).
@@ -40,47 +41,66 @@ def triad_algorithm(r1: np.ndarray, r2: np.ndarray, b1: np.ndarray, b2: np.ndarr
     # Check if b1 and r1 are anti-parallel (to prevent division by zero)
     dot_b1_r1 = np.dot(b1_unit, r1_unit)
     one_plus_dot = 1.0 + dot_b1_r1
+
+    # If b1 and r1 are anti-parallel, return a 180 degree rotation quaternion from a vector perpendicular to r1
     if one_plus_dot < 1e-9:
-        return Quaternion()
+        c = np.cross(r2_unit, b2_unit)  # Construct a vector that maps r2 to b2
+        # Project c onto the plane orthogonal to r1_unit
+        c_proj = c - np.dot(c, r1_unit) * r1_unit
+        c_proj_norm = np.linalg.norm(c_proj)
+
+        # Check if c is parallel to r1, and pick a perpendicular
+        if c_proj_norm < 1e-9:
+            # Find the index of the smallest absolute component of r1 to maximize orthogonality
+            min_axis = np.argmin(np.abs(r1_unit))
+            # Construct the corresponding basis vector
+            basis = np.zeros(3)
+            basis[min_axis] = 1.0
+            axis = np.cross(r1_unit, basis)  # Construct a vector perpendicular to r1
+            axis /= np.linalg.norm(axis)
+        else:
+            axis = c_proj / c_proj_norm
+
+        return Quaternion(0.0, *axis)
 
     # Eq. (31) from the Markley 2002 paper
-    mu = one_plus_dot*np.dot(b3, r3) - np.dot(b1_unit, r3)*np.dot(r1_unit, b3)
+    mu = one_plus_dot * np.dot(b3, r3) - np.dot(b1_unit, r3) * np.dot(r1_unit, b3)
 
     b1_plus_r1 = b1_unit + r1_unit
-    nu = np.dot(b1_plus_r1, np.cross(b3, r3)) # Eq. (32) from the Markley paper
+    nu = np.dot(b1_plus_r1, np.cross(b3, r3))  # Eq. (32) from the Markley paper
 
-    rho = np.sqrt(mu**2 + nu**2) # Eq. (33) from the Markley paper
+    rho = np.sqrt(mu**2 + nu**2)  # Eq. (33) from the Markley paper
 
     # If rho is near zero, then mu and nu are also near zero
     if rho < 1e-9:
         return Quaternion()
 
-    if mu >= 0: # Eq. (35a) from the Markley paper
+    if mu >= 0:  # Eq. (35a) from the Markley paper
         rho_plus_mu = rho + mu
-        
+
         # Calculate the square root term in the denominator of the scalar multiple
         sqrt_term = rho * rho_plus_mu * one_plus_dot
-        if sqrt_term < 1e-9: # Prevent division by zero
+        if sqrt_term < 1e-9:  # Prevent division by zero
             return Quaternion()
-        
+
         # The scalar multiple
-        mult = 0.5 / np.sqrt(sqrt_term) 
-        
+        mult = 0.5 / np.sqrt(sqrt_term)
+
         # The scalar part of the quaternion
         w = rho_plus_mu * one_plus_dot
 
         # The vector part of the quaternion
-        v = rho_plus_mu*np.cross(b1_unit, r1_unit) + nu*b1_plus_r1
+        v = rho_plus_mu * np.cross(b1_unit, r1_unit) + nu * b1_plus_r1
 
         # Instantiate the estimated attitude Quaternion
-        q = Quaternion(w*mult, v[0]*mult, v[1]*mult, v[2]*mult)
+        q = Quaternion(w * mult, v[0] * mult, v[1] * mult, v[2] * mult)
 
-    else: # Eq. (35b) from the Markley paper
+    else:  # Eq. (35b) from the Markley paper
         rho_minus_mu = rho - mu
-        
+
         # Calculate the square root term in the denominator of the scalar multiple
         sqrt_term = rho * rho_minus_mu * one_plus_dot
-        if sqrt_term < 1e-9: # Prevent division by zero
+        if sqrt_term < 1e-9:  # Prevent division by zero
             return Quaternion()
 
         # The scalar multiple
@@ -90,9 +110,9 @@ def triad_algorithm(r1: np.ndarray, r2: np.ndarray, b1: np.ndarray, b2: np.ndarr
         w = nu * one_plus_dot
 
         # The vector part of the quaternion
-        v = nu*np.cross(b1_unit, r1_unit) + rho_minus_mu*b1_plus_r1
+        v = nu * np.cross(b1_unit, r1_unit) + rho_minus_mu * b1_plus_r1
 
         # Instantiate the estimated attitude Quaternion
-        q = Quaternion(w*mult, v[0]*mult, v[1]*mult, v[2]*mult)
+        q = Quaternion(w * mult, v[0] * mult, v[1] * mult, v[2] * mult)
 
     return q
