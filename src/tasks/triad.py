@@ -2,6 +2,8 @@
 Determines the attitude of the RAPID-0 satellite with two vectors from sensors.
 """
 
+# TODO: Differentiate returning of unit quaternion with indication that calculation was impossible
+
 import ulab.numpy as np
 from quaternion import Quaternion
 
