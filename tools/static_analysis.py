@@ -15,4 +15,4 @@ for app in os.listdir("artifacts"):
         if pylama.returncode != 0:
             analysis_passed = False
 
-exit(0 if analysis_passed else pylama.returncode)
+exit(0 if analysis_passed else 1)
