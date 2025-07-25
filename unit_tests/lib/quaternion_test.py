@@ -1,6 +1,6 @@
 import unittest
 import math
-import quaternion
+from quaternion import Quaternion
 
 try:
     import ulab.numpy as np  # For CircuitPython
