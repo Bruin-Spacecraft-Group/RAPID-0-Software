@@ -7,13 +7,14 @@ from quaternion import Quaternion
 
 
 # Status codes for each case
-SUCCESS = 0          # Success: attitude estimated and returned successfully
-ANTI_PARALLEL = 1    # Anti-parallel vectors: estimated attitude with 180 degree rotation
-COLLINEAR = 2        # Collinear vectors: failure, impossible to estimate attitude
-SINGULAR = 3         # Singular: failure from insufficient information to estimate attitude
-NORM_ERR = 4         # Normalization error: failure from prevented division by zero
+SUCCESS = 0  # Success: attitude estimated and returned successfully
+ANTI_PARALLEL = 1  # Anti-parallel vectors: estimated attitude with 180 degree rotation
+COLLINEAR = 2  # Collinear vectors: failure, impossible to estimate attitude
+SINGULAR = 3  # Singular: failure from insufficient information to estimate attitude
+NORM_ERR = 4  # Normalization error: failure from prevented division by zero
 
 
+# pylint: disable=too-many-locals
 def triad_algorithm(
     r1: np.ndarray, r2: np.ndarray, b1: np.ndarray, b2: np.ndarray
 ) -> tuple[Quaternion, int]:
@@ -26,7 +27,7 @@ def triad_algorithm(
         r2 (np.ndarray): The second (less accurate) reference vector in the inertial frame (e.g. Magnetic field from environment model).
         b1 (np.ndarray): The measurement of the first vector in the body frame (e.g. Sun sensor reading).
         b2 (np.ndarray): The measurement of the second vector in the body frame (e.g. Magnetometer reading).
-    
+
     Returns:
         tuple[Quaternion, int]:
             - Quaternion: The estimated attitude Quaternion from the body frame to the inertial frame (or an
