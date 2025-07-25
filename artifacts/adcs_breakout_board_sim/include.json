@@ -4,6 +4,7 @@
     ],
     "unit_tests": [
         "lib/pin_manager_test.py",
-        "lib/custom_module_mocking.py"
+        "lib/custom_module_mocking.py",
+        "lib/quaternion_test.py"
     ]
 }
