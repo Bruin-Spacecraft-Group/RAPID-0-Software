@@ -1,7 +1,11 @@
 import unittest
 import math
-import numpy as np
 import quaternion
+
+try:
+    import ulab.numpy as np  # For CircuitPython
+except ImportError:
+    import numpy as np  # For GitHub Actions / PC testing
 
 
 class TestQuaternion(unittest.TestCase):
