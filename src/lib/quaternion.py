@@ -2,9 +2,12 @@
 Functions and variables used by ADCS for rotations with quaternions.
 """
 
-
 import math
-import ulab.numpy as np
+
+try:
+    import ulab.numpy as np  # For CircuitPython
+except ImportError:
+    import numpy as np  # For GitHub Actions / PC testing
 
 
 class Quaternion:
@@ -16,23 +19,19 @@ class Quaternion:
         self.z = float(z)
         self.normalize()
 
-
     def __mul__(self, other):
         """Enables multiplication of two Quaternion objects (self * other)."""
-        w = self.w*other.w - self.x*other.x - self.y*other.y - self.z*other.z
-        x = self.w*other.x + self.x*other.w + self.y*other.z - self.z*other.y
-        y = self.w*other.y - self.x*other.z + self.y*other.w + self.z*other.x
-        z = self.w*other.z + self.x*other.y - self.y*other.x + self.z*other.w
+        w = self.w * other.w - self.x * other.x - self.y * other.y - self.z * other.z
+        x = self.w * other.x + self.x * other.w + self.y * other.z - self.z * other.y
+        y = self.w * other.y - self.x * other.z + self.y * other.w + self.z * other.x
+        z = self.w * other.z + self.x * other.y - self.y * other.x + self.z * other.w
         return Quaternion(w, x, y, z)
-
 
     def conjugate(self):
         return Quaternion(self.w, -self.x, -self.y, -self.z)
 
-
     def magnitude(self):
         return math.sqrt(self.w**2 + self.x**2 + self.y**2 + self.z**2)
-
 
     def normalize(self):
         norm = self.magnitude()
@@ -45,10 +44,9 @@ class Quaternion:
         self.y /= norm
         self.z /= norm
 
-
     def rotate_vector(self, vector: np.ndarray):
         """Rotates the given vector by this Quaternion."""
         vector_as_q = Quaternion(0.0, vector[0], vector[1], vector[2])
         rotated = self * vector_as_q * self.conjugate()
-        
+
         return np.array([rotated.x, rotated.y, rotated.z], dtype=np.float)
