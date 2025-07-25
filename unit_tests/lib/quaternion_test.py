@@ -8,7 +8,7 @@ except ImportError:
     import numpy as np  # For GitHub Actions / PC testing
 
 
-class TestQuaternion(unittest.TestCase):
+class QuaternionTest(unittest.TestCase):
 
     def assertQuaternionAlmostEqual(self, q1, q2, places=6):
         self.assertAlmostEqual(q1.w, q2.w, places=places)
