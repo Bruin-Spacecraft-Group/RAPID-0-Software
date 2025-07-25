@@ -49,4 +49,4 @@ class Quaternion:
         vector_as_q = Quaternion(0.0, vector[0], vector[1], vector[2])
         rotated = self * vector_as_q * self.conjugate()
 
-        return np.array([rotated.x, rotated.y, rotated.z], dtype=np.float)
+        return np.array([rotated.x, rotated.y, rotated.z], dtype=float)
