@@ -11,6 +11,10 @@ except ImportError:
 
 
 class Quaternion:
+    """
+    Represents a quaternion for 3D rotations with methods for multiplication,
+    conjugation, normalization, and vector rotation.
+    """
 
     def __init__(self, w=1.0, x=0.0, y=0.0, z=0.0):
         self.w = float(w)
@@ -28,12 +32,15 @@ class Quaternion:
         return Quaternion(w, x, y, z)
 
     def conjugate(self):
+        """Returns conjugate of the quaternion"""
         return Quaternion(self.w, -self.x, -self.y, -self.z)
 
     def magnitude(self):
+        """Returns magnitude of the quaternion"""
         return math.sqrt(self.w**2 + self.x**2 + self.y**2 + self.z**2)
 
     def normalize(self):
+        """Normalizes quaternion"""
         norm = self.magnitude()
         if norm == 0:
             # Prevent divison by zero
