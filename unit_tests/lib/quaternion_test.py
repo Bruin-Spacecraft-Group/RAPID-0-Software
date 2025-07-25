@@ -1,6 +1,6 @@
 import unittest
 import math
-import ulab.numpy as np
+import numpy as np
 import quaternion
 
 
