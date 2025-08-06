@@ -46,21 +46,26 @@ def mekf_update(
     omega_q = Quaternion(0.0, *w_ref)
     q_ref += 0.5 * dt * (omega_q * q_ref)
 
-    # Step 2: Calculate covariance matrix
-    # Equation (14) from Markley paper
-    F_a = skew(w_ref)
-    G = np.eye(3)
-    P = (
-        P + (np.dot(F_a, P) + np.dot(P, -F_a) + np.dot(G, np.dot(Q_noise, G))) * dt
-    )  # If G is just identity matrix, can reduce dot operations
-
-    # Step 3: Predict measured vector
+    # Step 2: Predict measured vector
     # Equation (18) from Markley paper
     v_pred = q_ref.rotate_vector(v_inertial)
 
-    # Step 4: Measurement matrix (Jacobian)
+    # Step 3: Measurement matrix (Jacobian)
     # Equation (19) from Markley paper
     H = skew(v_pred)
+
+    # Step 4: Calculate covariance matrix
+    # Equation (14) from Markley paper
+    F_a = -skew(w_ref)
+    G = np.eye(3)
+    # Equation (21) from Markley paper
+    P += (
+        np.dot(F_a, P)
+        + np.dot(P, -F_a)
+        + np.dot(G, np.dot(Q_noise, G))
+        - np.dot(P, np.dot(H, np.dot(np.dot(np.linalg.inv(R_meas), np.dot(H, P)))))
+    ) * dt
+    # If G is just identity matrix, can reduce dot operations
 
     # TODO: Double check this part and following parts are right
     # Step 5: Kalman Gain
