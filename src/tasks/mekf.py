@@ -2,7 +2,7 @@
 Determines an estimate of the attitude of the RAPID-0 satellite using a Multiplicative Extended Kalman Filter (MEKF).
 """
 
-# TODO: Check signage of quaternion operations and - vs + skew
+# TODO: Create constants for constant matricies
 
 import ulab.numpy as np  # type: ignore
 from quaternion import Quaternion
@@ -73,11 +73,11 @@ def mekf_update(
     S = np.dot(H, np.dot(P, -H)) + R_meas
     K = np.dot(
         P, np.dot(-H, np.linalg.inv(S))
-    )  # Calculating the inverse matrix can result in singularities, should check
+    )  # TODO: Calculating the inverse matrix can result in singularities, should check
 
     # Step 6: Delta_a calculation
-    innovation = v_body - v_pred
-    delta_a = np.dot(K, innovation)  # 3x1 correction vector a
+    v_perp = v_body - v_pred
+    delta_a = np.dot(K, v_perp)  # 3x1 correction vector a
 
     # Step 7: Covariance update
     I = np.eye(3)
