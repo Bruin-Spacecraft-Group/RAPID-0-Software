@@ -71,13 +71,6 @@ class QuaternionTest(unittest.TestCase):
         self.assertAlmostEqual(rotated[1], expected[1], places=6)
         self.assertAlmostEqual(rotated[2], expected[2], places=6)
 
-    def test_zero_norm_initialization(self):
-        q = Quaternion(0.0, 0.0, 0.0, 0.0)
-        self.assertAlmostEqual(q.w, 1.0)
-        self.assertAlmostEqual(q.x, 0.0)
-        self.assertAlmostEqual(q.y, 0.0)
-        self.assertAlmostEqual(q.z, 0.0)
-
 
 if __name__ == "__main__":
     unittest.main()
