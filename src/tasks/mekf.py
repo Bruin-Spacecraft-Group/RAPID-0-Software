@@ -20,7 +20,7 @@ def mekf_update(
     v_body: np.ndarray,
     v_inertial: np.ndarray,
     R_meas: np.ndarray,
-    dt: float
+    dt: float,
 ) -> Quaternion:
     """
     Calculates the attitude using a Multiplicative Extended Kalman Filter (MEKF) based on:
@@ -29,7 +29,7 @@ def mekf_update(
     Args:
         q_ref (Quaternion): Body reference quaternion which the calculations are based on. The closer ref is to the actual attitude,
                             the less error resulting from the MEKF. Assumed starting basis for which w_ref acts on
-        w_ref (np.ndarray): Angular acceleration vector in the body reference
+        w_ref (np.ndarray): Angular acceleration vector in the body reference from gyroscopes
         P (np.ndarray): 3x3 Covariance matrix (ensure this isn't the 0 matrix when starting or the filter won't update effectively)
         Q_noise: 3x3 Diagonal matrix representing noise/bias from the gyro sensor (given as sigma^2 * I_3)
         v_body: Measured vector from body frame (from magnetometer or sun sensor)
@@ -43,8 +43,8 @@ def mekf_update(
 
     # Step 1: Calculate expected quaternion from kinematics
     # Equation (9) from Markley paper
-    omega_q = Quaternion(0.0, *w_ref, normalize=False)
-    q_ref = (q_ref + (0.5 * dt * (omega_q * q_ref)))
+    omega_q = Quaternion(0.0, *w_ref)
+    q_ref += 0.5 * dt * (omega_q * q_ref)
 
     # Step 2: Calculate covariance matrix
     # Equation (14) from Markley paper
@@ -66,7 +66,9 @@ def mekf_update(
     # Step 5: Kalman Gain
     # Equation (22) from Markley paper(?)
     S = np.dot(H, np.dot(P, -H)) + R_meas
-    K = np.dot(P, np.dot(-H, np.linalg.inv(S))) # Calculating the inverse matrix can result in singularities, should check
+    K = np.dot(
+        P, np.dot(-H, np.linalg.inv(S))
+    )  # Calculating the inverse matrix can result in singularities, should check
 
     # Step 6: Delta_a calculation
     innovation = v_body - v_pred
