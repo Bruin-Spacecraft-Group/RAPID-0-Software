@@ -16,13 +16,11 @@ class Quaternion:
     conjugation, normalization, and vector rotation.
     """
 
-    def __init__(self, w=1.0, x=0.0, y=0.0, z=0.0, normalize=True):
+    def __init__(self, w=1.0, x=0.0, y=0.0, z=0.0):
         self.w = float(w)
         self.x = float(x)
         self.y = float(y)
         self.z = float(z)
-        if normalize:
-            self.normalize()
 
     def __add__(self, other):
         """
@@ -33,15 +31,15 @@ class Quaternion:
         x = self.x + other.x
         y = self.y + other.y
         z = self.z + other.z
-        return Quaternion(w, x, y, z, normalize=False)
+        return Quaternion(w, x, y, z)
 
     def __rmul__(self, scalar):
+        """Enables multiplying a quaternion by a scalar"""
         return Quaternion(
             scalar * self.w,
             scalar * self.x,
             scalar * self.y,
             scalar * self.z,
-            normalize=False,  # Do not normalize after scaling
         )
 
     def __mul__(self, other):
@@ -50,7 +48,7 @@ class Quaternion:
         x = self.w * other.x + self.x * other.w + self.y * other.z - self.z * other.y
         y = self.w * other.y - self.x * other.z + self.y * other.w + self.z * other.x
         z = self.w * other.z + self.x * other.y - self.y * other.x + self.z * other.w
-        return Quaternion(w, x, y, z, normalize=False)
+        return Quaternion(w, x, y, z)
 
     def conjugate(self):
         """Returns conjugate of the quaternion"""
