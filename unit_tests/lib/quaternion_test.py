@@ -16,8 +16,9 @@ class QuaternionTest(unittest.TestCase):
         self.assertAlmostEqual(q1.y, q2.y, places=places)
         self.assertAlmostEqual(q1.z, q2.z, places=places)
 
-    def test_initialization_and_normalization(self):
+    def test_normalization(self):
         q = Quaternion(1.0, 2.0, 3.0, 4.0)
+        q.normalize()
 
         # Compute the expected magnitude before normalization
         mag = math.sqrt(1**2 + 2**2 + 3**2 + 4**2)  # = sqrt(30)
@@ -32,11 +33,8 @@ class QuaternionTest(unittest.TestCase):
         q = Quaternion(1, 1, 2, 3)
         qc = q.conjugate()
 
-        # Compute the expected magnitude before normalization
-        mag = math.sqrt(1 + 1 + 2**2 + 3**2)  # = sqrt(15)
-
         # Expected normalized values
-        expected = Quaternion(1.0 / mag, -1.0 / mag, -2.0 / mag, -3.0 / mag)
+        expected = Quaternion(1.0, -1.0, -2.0, -3.0)
 
         self.assertQuaternionAlmostEqual(qc, expected)
 
@@ -48,6 +46,11 @@ class QuaternionTest(unittest.TestCase):
         # Expected result from manual multiplication
         expected = Quaternion(0.5, 1.25, 1.5, 0.25)  # w  # x  # y  # z
         self.assertQuaternionAlmostEqual(q3, expected)
+
+    def test_right_multiplication(self):
+        q1 = Quaternion(1, 2, 4, 6)
+        q2 = Quaternion(3, 6, 12, 18)
+        self.assertQuaternionAlmostEqual(3 * q1, q2)
 
     def test_rotate_vector_identity(self):
         q = Quaternion(1.0, 0.0, 0.0, 0.0)  # Identity rotation
@@ -67,13 +70,6 @@ class QuaternionTest(unittest.TestCase):
         self.assertAlmostEqual(rotated[0], expected[0], places=6)
         self.assertAlmostEqual(rotated[1], expected[1], places=6)
         self.assertAlmostEqual(rotated[2], expected[2], places=6)
-
-    def test_zero_norm_initialization(self):
-        q = Quaternion(0.0, 0.0, 0.0, 0.0)
-        self.assertAlmostEqual(q.w, 1.0)
-        self.assertAlmostEqual(q.x, 0.0)
-        self.assertAlmostEqual(q.y, 0.0)
-        self.assertAlmostEqual(q.z, 0.0)
 
 
 if __name__ == "__main__":

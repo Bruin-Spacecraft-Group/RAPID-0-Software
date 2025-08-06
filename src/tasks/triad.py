@@ -5,7 +5,6 @@ Determines the attitude of the RAPID-0 satellite with two vectors from sensors.
 import ulab.numpy as np
 from quaternion import Quaternion
 
-
 # Status codes for each case
 SUCCESS = 0  # Success: attitude estimated and returned successfully
 ANTI_PARALLEL = 1  # Anti-parallel vectors: estimated attitude with 180 degree rotation

@@ -21,7 +21,26 @@ class Quaternion:
         self.x = float(x)
         self.y = float(y)
         self.z = float(z)
-        self.normalize()
+
+    def __add__(self, other):
+        """
+        Enables addition of two Quaternion objects (self + other)
+        Important to note this is NOT the same as combining the rotations from both quaternions into a single quaternion
+        """
+        w = self.w + other.w
+        x = self.x + other.x
+        y = self.y + other.y
+        z = self.z + other.z
+        return Quaternion(w, x, y, z)
+
+    def __rmul__(self, scalar):
+        """Enables multiplying a quaternion by a scalar"""
+        return Quaternion(
+            scalar * self.w,
+            scalar * self.x,
+            scalar * self.y,
+            scalar * self.z,
+        )
 
     def __mul__(self, other):
         """Enables multiplication of two Quaternion objects (self * other)."""
