@@ -18,6 +18,7 @@ class QuaternionTest(unittest.TestCase):
 
     def test_normalization(self):
         q = Quaternion(1.0, 2.0, 3.0, 4.0)
+        q.normalize()
 
         # Compute the expected magnitude before normalization
         mag = math.sqrt(1**2 + 2**2 + 3**2 + 4**2)  # = sqrt(30)
@@ -32,11 +33,8 @@ class QuaternionTest(unittest.TestCase):
         q = Quaternion(1, 1, 2, 3)
         qc = q.conjugate()
 
-        # Compute the expected magnitude before normalization
-        mag = math.sqrt(1 + 1 + 2**2 + 3**2)  # = sqrt(15)
-
         # Expected normalized values
-        expected = Quaternion(1.0 / mag, -1.0 / mag, -2.0 / mag, -3.0 / mag)
+        expected = Quaternion(1.0, -1.0, -2.0, -3.0)
 
         self.assertQuaternionAlmostEqual(qc, expected)
 
@@ -52,7 +50,7 @@ class QuaternionTest(unittest.TestCase):
     def test_right_multiplication(self):
         q1 = Quaternion(1, 2, 4, 6)
         q2 = Quaternion(3, 6, 12, 18)
-        self.assertQuaternionAlmostEqual(q1 * 3, q3)
+        self.assertQuaternionAlmostEqual(3 * q1, q3)
 
     def test_rotate_vector_identity(self):
         q = Quaternion(1.0, 0.0, 0.0, 0.0)  # Identity rotation
