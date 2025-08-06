@@ -50,7 +50,7 @@ class QuaternionTest(unittest.TestCase):
     def test_right_multiplication(self):
         q1 = Quaternion(1, 2, 4, 6)
         q2 = Quaternion(3, 6, 12, 18)
-        self.assertQuaternionAlmostEqual(3 * q1, q3)
+        self.assertQuaternionAlmostEqual(3 * q1, q2)
 
     def test_rotate_vector_identity(self):
         q = Quaternion(1.0, 0.0, 0.0, 0.0)  # Identity rotation
