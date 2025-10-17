@@ -71,15 +71,14 @@ _control_tick_3v3_bus_data = {
 }
 
 def avg(x):
-    # Calculates the average value for an array x
+    """Calculates the average value for an array x"""
     return sum(x) / len(x)
 
 def circ_recent(arr, count, stop):
-    # Returns a vector from arr as a circular buffer from count to stop
+    """Returns a vector from arr as a circular buffer from count to stop"""
     if stop < count:
         return arr[stop - count :] + arr[:stop]
-    else:
-        return arr[stop - count : stop]
+    return arr[stop - count : stop]
 
 def _control_tick_3v3_bus(datastore: Datastore):
     avg_output_current_20s = avg(_control_tick_3v3_bus_data["output_currents"])
