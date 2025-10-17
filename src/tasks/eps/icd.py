@@ -79,7 +79,6 @@ def circ_recent(arr, count, stop):
     else:
         arr[stop - count : stop]
 
-
 def _control_tick_3v3_bus(datastore: Datastore):
     avg_output_current_20s = avg(_control_tick_3v3_bus_data["output_currents"])
     if avg_output_current_20s > 0.5 * 4 / 3:
