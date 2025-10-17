@@ -4,7 +4,7 @@ Software entry point for the control application for the EPS flatsat PCB from Ju
 
 import asyncio
 
-import datastore.epsds as ds
+import datastore.eps as ds
 from tasks.eps.bms import battery_management_task
 from tasks.eps.icd import intersubsystem_communication_task, output_bus_control_task
 from tasks.eps.monitoring import data_recording_task

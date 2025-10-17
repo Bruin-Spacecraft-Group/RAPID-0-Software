@@ -7,7 +7,7 @@ Module to monitor the health and state of the EPS system. This includes
 
 import asyncio
 
-from datastore.epsds import Datastore
+from datastore.eps import Datastore
 
 
 async def data_recording_task(datastore: Datastore):

@@ -16,7 +16,7 @@ import digitalio
 
 from pin_manager import PinManager
 import board as board
-from datastore.epsds import Datastore
+from datastore.eps import Datastore
 
 
 async def intersubsystem_communication_task(datastore: Datastore):
