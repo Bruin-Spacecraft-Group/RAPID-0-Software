@@ -88,6 +88,21 @@ def _control_tick_3v3_bus(datastore: Datastore):
         return False
     if battery_soc < 0.1 and avg_output_current_20s < 0.1 * 4 / 3:
         return False
-    if _control_tick_3v3_bus_data % 50 == 0:
+    if _control_tick_3v3_bus_data["tick_count"] % 50 == 0:
+        #TODO: See if we need to put something here?
         pass
     _control_tick_3v3_bus_data["tick_count"] += 1
+    return True
+
+def _control_tick_5v_bus(datastore: Datastore):
+    #TODO: implement this logic
+    return True
+
+def _control_tick_12vlp_bus(datastore: Datastore):
+    #TODO: implement this logic
+    return True
+
+def _control_tick_12vhp_bus(datastore: Datastore):
+    #TODO: implement this logic
+    return True
+

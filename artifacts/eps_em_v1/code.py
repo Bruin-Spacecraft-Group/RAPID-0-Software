@@ -55,6 +55,6 @@ if __name__ == "__main__":
         pin = digitalio.DigitalInOut(EN_PSU)
         pin.direction = digitalio.Direction.OUTPUT
         pin.value = True
-    nda_libraries.run_if_nda_libraries_available(run_secret_functions)
+        # nda_libraries.run_if_nda_libraries_available(run_secret_functions)
     while True:
         pass
