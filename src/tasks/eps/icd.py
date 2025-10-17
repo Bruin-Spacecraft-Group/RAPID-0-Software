@@ -73,11 +73,11 @@ _control_tick_3v3_bus_data = {
 def avg(x):
     return sum(x) / len(x)
 
-def circ_recent (arr, count, stop):
-        if stop < count:
-            arr[stop - count :] + arr[:stop]
-        else:
-            arr[stop - count : stop]
+def circ_recent(arr, count, stop):
+    if stop < count:
+        arr[stop - count :] + arr[:stop]
+    else:
+        arr[stop - count : stop]
 
 
 def _control_tick_3v3_bus(datastore: Datastore):
