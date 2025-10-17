@@ -15,7 +15,7 @@ import time
 import digitalio
 
 from pin_manager import PinManager
-import board as board
+import board
 from datastore.eps import Datastore
 
 
@@ -70,10 +70,12 @@ _control_tick_3v3_bus_data = {
     "output_currents": [0] * 200,
 }
 
+def avg(x):
+    return sum(x) / len(x)
+
 
 def _control_tick_3v3_bus(datastore: Datastore):
-    avg = lambda x: sum(x) / len(x)
-    circ_recent = lambda arr, count, stop: (
+    circ_recent = avg(arr), count, stop: (
         (arr[stop - count :] + arr[:stop])
         if stop < count
         else (arr[stop - count : stop])
@@ -105,4 +107,3 @@ def _control_tick_12vlp_bus(datastore: Datastore):
 def _control_tick_12vhp_bus(datastore: Datastore):
     #TODO: implement this logic
     return True
-
