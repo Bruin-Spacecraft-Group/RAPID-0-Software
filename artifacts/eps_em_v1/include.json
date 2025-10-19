@@ -4,7 +4,7 @@
         "lib/asyncio",
         "lib/adafruit_ticks.py",
         "lib/pin_manager.py",
-        "datastore/eps.py",
+        "lib/datastore/eps.py",
         "tasks/eps/bms.py",
         "tasks/eps/icd.py",
         "tasks/eps/monitoring.py"

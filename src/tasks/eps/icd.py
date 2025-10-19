@@ -16,7 +16,7 @@ import digitalio
 
 from pin_manager import PinManager
 import board
-from datastore.eps import Datastore
+from datastores.eps import Datastore
 
 
 async def intersubsystem_communication_task(datastore: Datastore):
@@ -70,15 +70,18 @@ _control_tick_3v3_bus_data = {
     "output_currents": [0] * 200,
 }
 
+
 def avg(x):
     """Calculates the average value for an array x"""
     return sum(x) / len(x)
+
 
 def circ_recent(arr, count, stop):
     """Returns a vector from arr as a circular buffer from count to stop"""
     if stop < count:
         return arr[stop - count :] + arr[:stop]
     return arr[stop - count : stop]
+
 
 def _control_tick_3v3_bus(datastore: Datastore):
     avg_output_current_20s = avg(_control_tick_3v3_bus_data["output_currents"])
@@ -92,19 +95,22 @@ def _control_tick_3v3_bus(datastore: Datastore):
     if battery_soc < 0.1 and avg_output_current_20s < 0.1 * 4 / 3:
         return False
     if _control_tick_3v3_bus_data["tick_count"] % 50 == 0:
-        #TODO: See if we need to put something here?
+        # TODO: See if we need to put something here?
         pass
     _control_tick_3v3_bus_data["tick_count"] += 1
     return True
 
+
 def _control_tick_5v_bus(datastore: Datastore):
-    #TODO: implement this logic
+    # TODO: implement this logic
     return True
+
 
 def _control_tick_12vlp_bus(datastore: Datastore):
-    #TODO: implement this logic
+    # TODO: implement this logic
     return True
 
+
 def _control_tick_12vhp_bus(datastore: Datastore):
-    #TODO: implement this logic
+    # TODO: implement this logic
     return True
