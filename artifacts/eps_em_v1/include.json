@@ -3,7 +3,6 @@
         "drivers/ads1118.py",
         "lib/asyncio",
         "lib/adafruit_ticks.py",
-        "lib/circular_buffer.py",
         "lib/pin_manager.py",
         "datastore/eps.py",
         "tasks/eps/bms.py",
