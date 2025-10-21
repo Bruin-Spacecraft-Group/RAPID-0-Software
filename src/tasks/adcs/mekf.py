@@ -11,7 +11,7 @@ from quaternion import Quaternion
 def skew(w: np.ndarray):
     return np.ndarray([[0, -w[2], w[1]], [w[2], 0, -w[0]], [-w[1], w[0], 0]])
 
-
+# pylint: disable=invalid-name
 def mekf_update(
     q_ref: Quaternion,
     w_ref: np.ndarray,
