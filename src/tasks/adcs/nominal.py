@@ -51,6 +51,14 @@ def update_attitude(datastore: Datastore):
             datastore.quaternion = triad_q
 
             # I'm going to spend a little more time figuring out what's happening in this function - Aaron
-            mekf_update(datastore.quaternion, gyro_data) # gyro_data.alpha
+            datastore.quaternion = mekf_update(datastore.quaternion, gyro_data) # gyro_data.alpha
+        case 1: # anti-parallel
+            pass
+        case 2: # FAIL : Colinear
+            pass
+        case 3: # FAIL : Singular (insufficient data)
+            pass
+        case 4: # FAIL : Normalisation error (div by 0)
+            pass
         case _: # catch None or weird case
             pass

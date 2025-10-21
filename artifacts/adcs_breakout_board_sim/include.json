@@ -2,7 +2,10 @@
     "src": [
         "lib/pin_manager.py",
         "lib/quaternion.py",
-        "tasks/adcs/triad.py"
+        "tasks/adcs/triad.py",
+        "tasks/adcs/mekf.py",
+        "tasks/adcs/nominal.py",
+        "lib/datastores/adcs.py"
     ],
     "unit_tests": [
         "lib/pin_manager_test.py",

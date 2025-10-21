@@ -9,4 +9,4 @@ class Datastore:
     """
 
     def __init__(self):
-        self.current_time = None;
+        self.current_time = None
