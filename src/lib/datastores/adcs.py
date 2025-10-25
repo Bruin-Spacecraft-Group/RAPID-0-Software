@@ -8,6 +8,11 @@ are set to `None` throughout this module.
 class Datastore:
     """ """
 
+    DETUMBLE = 0
+    POINT_TO_SUN = 1
+    POINT_TO_EARTH = 2
+    NOMINAL_PROCESSES = 3
+
     def __init__(self):
         self.current_time = None
         self.last_cdh_update = None
