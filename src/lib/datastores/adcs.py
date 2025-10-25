@@ -15,3 +15,4 @@ class Datastore:
         self.quaternion = (
             None  # Quaternion representing attitude from body frame to inertial frame
         )
+        self.mode = 0
