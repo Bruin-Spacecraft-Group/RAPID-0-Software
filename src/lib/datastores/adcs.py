@@ -14,10 +14,23 @@ class Datastore:
     NOMINAL_PROCESSES = 3
 
     def __init__(self):
-        self.current_time = None
-        self.last_cdh_update = None
-        self.update_interval = 1.0  # secondsgit
+        self.time: adcsTime = adcsTime()
+        self.sensor: sensorData = sensorData() 
         self.quaternion = (
             None  # Quaternion representing attitude from body frame to inertial frame
         )
         self.mode = 0
+
+
+class adcsTime: 
+    def __init__(self): 
+        self.current_time = None
+        self.last_cdh_update = None
+        self.update_interval = 1.0 # secondsgit
+
+class sensorData: 
+    def __init__(self): 
+        self.sun = None
+        self.magnetometer = None 
+        self.gyroscope = None 
+
