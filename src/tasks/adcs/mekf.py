@@ -80,9 +80,10 @@ def mekf_update(
         np.dot(F_a, P)
         + np.dot(P, -F_a)
         + np.dot(G, np.dot(Q_noise, G))
-        - np.dot(P, np.dot(H, np.dot(np.dot(np.linalg.inv(R_meas), np.dot(H, P)))))
+        - np.dot(P, np.dot(-H, np.dot(np.linalg.inv(R_meas), np.dot(H, P)))))
     ) * dt
     # If G is just identity matrix, can reduce dot operations
+    # Remember that the negative of skew is the transpose of the matrix
 
     # TODO: Double check this part and following parts are right
     # Step 5: Kalman Gain
