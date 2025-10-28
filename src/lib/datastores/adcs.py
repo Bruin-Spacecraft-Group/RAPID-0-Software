@@ -10,40 +10,49 @@ class Datastore:
     Datastore class for adcs processes. Holds time, sensor, and attitude data to be used system-wide
     """
 
+    # Action types
     DETUMBLE = 0
     POINT_TO_SUN = 1
     POINT_TO_EARTH = 2
     NOMINAL_PROCESSES = 3
 
     def __init__(self):
-        self.time: adcsTime = adcsTime()
-        self.sensor: sensorData = sensorData() 
+        self.time: AdcsTime = AdcsTime()
+        self.sensor: SensorData = SensorData()
         self.quaternion = (
             None  # Quaternion representing attitude from body frame to inertial frame
         )
         self.mode = 0
 
 
-class adcsTime: 
-    def __init__(self): 
+class AdcsTime:
+    """
+    Time helper class
+    """
+    def __init__(self):
         self.current_time = None
         self.last_cdh_update = None
         self.update_interval = 1.0 # secondsgit
         self.time_since_last_mekf = 0.0 # dt from tasks/mekf
 
-class sensorData: 
-    def __init__(self): 
+class SensorData:
+    """
+    Sensor helper class
+    """
+    def __init__(self):
         self.sun = None
-        self.magnetometer = None 
-        self.gyroscope = None 
-        
-class attitudeCalc:
+        self.magnetometer = None
+        self.gyroscope = None
+
+class AttitudeCalc:
+    """
+    Attitude helper class
+    """
     def __init__(self):
         # reference vectors in inertial frame
         self.ref_vec1 = 0.0 # more accurate vector
         self.ref_vec2 = 0.0 # less accurate vector
-        
+
         # measures of vectors in body frame
         self.frame_vec1 = 0.0
         self.frame_vec2 = 0.0
-        
