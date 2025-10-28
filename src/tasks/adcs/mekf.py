@@ -38,9 +38,9 @@ class SensorMeasurement:
     
     """
 
-    def __init__(self, gyro_noise, measurement_noise, v_body, v_inertial):
+    def __init__(self, gyro_noise, r_meas, v_body, v_inertial):
         self.gyro_noise = gyro_noise
-        self.measurement_noise = measurement_noise
+        self.r_meas = r_meas
         self.v_body = v_body
         self.v_inertial = v_inertial
 
@@ -82,7 +82,6 @@ def mekf_update(
 
     # Renaming long variables
     P = state.covariance
-    r_meas = measurement.measurement_noise
 
     # Step 1: Calculate expected quaternion from kinematics
     # Equation (9) from Markley paper
@@ -106,7 +105,7 @@ def mekf_update(
         np.dot(F_a, P)
         + np.dot(P, -F_a)
         + np.dot(G, np.dot(measurement.gyro_noise, G))
-        - np.dot(P, np.dot(-H, np.dot(np.linalg.inv(r_meas), np.dot(H, P))))
+        - np.dot(P, np.dot(-H, np.dot(np.linalg.inv(measurement.r_meas), np.dot(H, P))))
     ) * dt
     # If G is just identity matrix, can reduce dot operations
     # Remember that the negative of skew is the transpose of the matrix
@@ -114,7 +113,7 @@ def mekf_update(
     # TODO: Double check this part and following parts are right
     # Step 5: Kalman Gain
     # Equation (22) from Markley paper(?)
-    S = np.dot(H, np.dot(P, -H)) + r_meas
+    S = np.dot(H, np.dot(P, -H)) + measurement.r_meas
     K = np.dot(
         P, np.dot(-H, np.linalg.inv(S))
     )  # TODO: Calculating the inverse matrix can result in singularities, should check
