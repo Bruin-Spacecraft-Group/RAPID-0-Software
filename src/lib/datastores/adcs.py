@@ -15,6 +15,17 @@ class Datastore:
     POINT_TO_EARTH = 2
     NOMINAL_PROCESSES = 3
 
+    # Constant matrices for MEKF
+    CV_MATRIX = (
+        None
+    )
+    GYRO_NOISE = (
+        None
+    )
+    MEAS_NOISE = (
+        None
+    )
+
     def __init__(self):
         self.time: AdcsTime = AdcsTime()
         self.sensor: SensorData = SensorData()

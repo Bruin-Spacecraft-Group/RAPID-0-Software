@@ -16,14 +16,14 @@ class StateEstimate:
                         The closer ref is to the actual attitude, the less error resulting 
                         from the MEKF. Assumed starting basis for which w_ref acts on
     w_ref (np.ndarray): Angular acceleration vector in the body reference from gyroscopes
-    covariance (np.ndarray): [Previously P] 3x3 Covariance matrix (ensure this isn't the 0 
+    cv_matrix (np.ndarray): [Previously P] 3x3 Covariance matrix (ensure this isn't the 0 
                              matrix when starting or the filter won't update effectively)
     """
 
-    def __init__(self, q_ref, w_ref, covariance):
+    def __init__(self, q_ref, w_ref, cv_matrix):
         self.q_ref: Quaternion = q_ref
         self.w_ref: np.ndarray = w_ref
-        self.covariance: np.ndarray = covariance
+        self.cv_matrix: np.ndarray = cv_matrix
 
 class SensorMeasurement:
     """
@@ -81,7 +81,7 @@ def mekf_update(
     """
 
     # Renaming long variables
-    P = state.covariance
+    P = state.cv_matrix
 
     # Step 1: Calculate expected quaternion from kinematics
     # Equation (9) from Markley paper
