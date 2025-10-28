@@ -22,16 +22,20 @@ def triad_algorithm(
     'Fast Quaternion Attitude Estimation From Two Vector Measurements' (Markley, 2002).
 
     Args:
-        r1 (np.ndarray): The first (more accurate) reference vector in the inertial frame (e.g. Sun vector from environment model).
-        r2 (np.ndarray): The second (less accurate) reference vector in the inertial frame (e.g. Magnetic field from environment model).
-        b1 (np.ndarray): The measurement of the first vector in the body frame (e.g. Sun sensor reading).
-        b2 (np.ndarray): The measurement of the second vector in the body frame (e.g. Magnetometer reading).
+        r1 (np.ndarray): The first (more accurate) reference vector in inertial frame 
+                         (e.g. Sun vector from environment model).
+        r2 (np.ndarray): The second (less accurate) reference vector in inertial frame 
+                         (e.g. Magnetic field from environment model).
+        b1 (np.ndarray): The measurement of the first vector in the body frame 
+                         (e.g. Sun sensor reading).
+        b2 (np.ndarray): The measurement of the second vector in the body frame 
+                         (e.g. Magnetometer reading).
 
     Returns:
         tuple[Quaternion, int]:
-            - Quaternion: The estimated attitude Quaternion from the body frame to the inertial frame (or an
-                          identity Quaternion if calculation is impossible with the given input vectors).
-            - int: A status code indicating the result.
+            Quaternion: The estimated attitude Quaternion from the body frame to the inertial frame
+                        (identity Quaternion if calculation is impossible with given input vectors)
+            int: A status code indicating the result.
     """
 
     # Normalize input vectors
@@ -40,11 +44,11 @@ def triad_algorithm(
     b1_unit = b1 / np.linalg.norm(b1)
     b2_unit = b2 / np.linalg.norm(b2)
 
-    # Calculate intermediate cross products (note that these are not normalized to improve computation time)
+    # Calculate intermediate cross products (not normalised)
     r3 = np.cross(r1_unit, r2_unit)
     b3 = np.cross(b1_unit, b2_unit)
 
-    # Check for collinearity (which gives a zero cross product and makes finding a solution impossible for the given input)
+    # Check for collinearity (which gives a zero cross product, failure case)
     if np.linalg.norm(b3) < 1e-9 or np.linalg.norm(r3) < 1e-9:
         return Quaternion(), COLLINEAR
 
@@ -52,7 +56,7 @@ def triad_algorithm(
     dot_b1_r1 = np.dot(b1_unit, r1_unit)
     one_plus_dot = 1.0 + dot_b1_r1
 
-    # If b1 and r1 are anti-parallel, return a 180 degree rotation quaternion from a vector perpendicular to r1
+    # If b1 and r1 are anti-parallel, return 180 degree rotation quaternion from a vector perp to r1
     if one_plus_dot < 1e-9:
         c = np.cross(r2_unit, b2_unit)  # Construct a vector that maps r2 to b2
         # Project c onto the plane orthogonal to r1_unit

@@ -29,7 +29,7 @@ def nominal_tasks(datastore: Datastore):
     Highest level nominal loop logic
     """
 
-    datastore.current_time = get_current_time()
+    datastore.time.current_time = get_current_time()
 
     diff = datastore.time.current_time - datastore.time.last_cdh_update
     if diff > datastore.time.update_interval:
