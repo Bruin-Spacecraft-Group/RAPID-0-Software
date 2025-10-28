@@ -43,7 +43,3 @@ class attitudeCalc:
         self.ref_vec1 = 0.0 # more accurate vector
         self.ref_vec2 = 0.0 # less accurate vector
         
-        # measures of vectors in body frame
-        self.frame_vec1 = 0.0
-        self.frame_vec2 = 0.0
-        
