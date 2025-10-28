@@ -9,122 +9,80 @@ from datastores.eps import Datastore
 
 async def battery_management_task(datastore: Datastore):
     """
-    Task which controls string protection and balancing circuits.
+    Asynchronous control loop for battery balancing.
 
-    Uses the most recent data in the `datastore` as inputs. Controls circuits to cutoff
-    charging and discharging for each battery string. Also controls when power is dissipated
-    from each individual cell to maintain a balanced battery pack.
+    Uses the latest readings in `datastore` as inputs and updates
+    balancing control flags for each battery string accordingly.
     """
     while True:
-        print(datastore)
-        await asyncio.sleep(0)
+        balance_all_strings(datastore)
+        await asyncio.sleep(1)  # run once per second
 
-def is_charging_and_almost_full():
-    # Some kind of if else to check if almost full and charging
-    if():
-        return True
-    return False
 
-def cell_A_balancing_switch_on():
-    # Some kind of if else to check if balancing switch is on
-    if():
-        return True
-    return False
+def balance_all_strings(datastore: Datastore):
+    """
+    Apply balancing logic to all battery strings in the pack.
+    """
+    for string in [
+        datastore.batteries.string_1,
+        datastore.batteries.string_2,
+        datastore.batteries.string_3
+    ]:
+        balance_single_string(string)
 
-def cell_B_balancing_switch_on():
-    # Some kind of if else to check if balancing switch is on
-    if():
-        return True
-    return False
 
-def get_voltage_cell_A():
-    #Returns voltage of cell A
-    return 0
+def balance_single_string(string):
+    """
+    Apply balancing logic to one 2-cell battery string.
 
-def get_voltage_cell_B():
-    #Returns voltage of cell B
-    return 0
+    Based on:
+    - Whether string is charging and nearly full
+    - Difference in cell voltages
+    - Current balancing switch states
+    """
 
-def voltage_measurably_larger(cell_A, cell_B):
-    #Returns True if voltage A is measurably larger than voltage B
-    if(cell_A > cell_B):
-        return True
-    return False
+    v_a = string.top_cell_voltage
+    v_b = string.bottom_cell_voltage
 
-def voltage_significantly_larger(cell_A, cell_B):
-    #Returns True if voltage A is significantly larger than voltage B
-    if(cell_A > cell_B):
-        return True
-    return False
+    # Skip if voltages not yet initialized
+    if v_a is None or v_b is None:
+        return
 
-def disable_cell_A_balancing_switch():
-    #Disables balancing switch for cell A
-    print("Disabling balancing switch for cell A")
+    # Determine if charging and near full (placeholder logic)
+    charging = True
+    almost_full = max(v_a, v_b) > 4.15  # near-full threshold example
 
-def disable_cell_B_balancing_switch():
-    #Disables balancing switch for cell B
-    print("Disabling balancing switch for cell B")
-def enable_cell_A_balancing_switch():
-    #Enables balancing switch for cell A
-    print("Enabling balancing switch for cell A")
-def enable_cell_B_balancing_switch():
-    #Enables balancing switch for cell B
-    print("Enabling balancing switch for cell B")
+    if charging and almost_full:
+        a_on = string.top_balancing_shunt_enabled
+        b_on = string.bottom_balancing_shunt_enabled
 
-def string_balancing_check():
+        # --- Case 1: Top cell shunt is ON ---
+        if a_on:
+            if v_b > v_a + MEASURABLE_DIFF_V:
+                string.top_balancing_shunt_enabled = False
+            elif v_a > v_b + MEASURABLE_DIFF_V:
+                string.bottom_balancing_shunt_enabled = True
 
-    voltage_A = get_voltage_cell_A()
-    voltage_B = get_voltage_cell_B()
+        # --- Case 2: Bottom cell shunt is ON ---
+        elif b_on:
+            if v_a > v_b + MEASURABLE_DIFF_V:
+                string.bottom_balancing_shunt_enabled = False
+            elif v_b > v_a + MEASURABLE_DIFF_V:
+                string.top_balancing_shunt_enabled = True
 
-    if not is_charging_and_almost_full():
-        disable_cell_A_balancing_switch()
-        disable_cell_B_balancing_switch()
-    else:
-        if(cell_A_balancing_switch_on()):
-            if(voltage_measurably_larger(voltage_A, voltage_B)):
-                disable_cell_B_balancing_switch()
-                enable_cell_A_balancing_switch()
-                return
-            elif(voltage_significantly_larger(voltage_A, voltage_B)):
-                disable_cell_B_balancing_switch()
-                enable_cell_A_balancing_switch()
-                return
-            elif(voltage_significantly_larger(voltage_B, voltage_A)):
-                disable_cell_A_balancing_switch()
-                enable_cell_B_balancing_switch()
-                return
-            else:
-                disable_cell_A_balancing_switch()
-                disable_cell_B_balancing_switch()
-                return
-        elif(cell_B_balancing_switch_on()):
-            if(voltage_measurably_larger(voltage_B, voltage_A)):
-                disable_cell_A_balancing_switch()
-                enable_cell_B_balancing_switch()
-                return
-            elif(voltage_significantly_larger(voltage_A, voltage_B)):
-                disable_cell_B_balancing_switch()
-                enable_cell_A_balancing_switch()
-                return
-            elif(voltage_significantly_larger(voltage_B, voltage_A)):
-                disable_cell_A_balancing_switch()
-                enable_cell_B_balancing_switch()
-                return
-            else:
-                disable_cell_A_balancing_switch()
-                disable_cell_B_balancing_switch()
-                return
+        # --- Case 3: Neither shunt ON ---
         else:
-            if(voltage_significantly_larger(voltage_A, voltage_B)):
-                disable_cell_B_balancing_switch()
-                enable_cell_A_balancing_switch()
-                return
-            elif(voltage_significantly_larger(voltage_B, voltage_A)):
-                disable_cell_A_balancing_switch()
-                enable_cell_B_balancing_switch()
-                return
+            if v_a > v_b + SIGNIFICANT_DIFF_V:
+                string.top_balancing_shunt_enabled = True
+                string.bottom_balancing_shunt_enabled = False
+            elif v_b > v_a + SIGNIFICANT_DIFF_V:
+                string.bottom_balancing_shunt_enabled = True
+                string.top_balancing_shunt_enabled = False
             else:
-                disable_cell_A_balancing_switch()
-                disable_cell_B_balancing_switch()
-                return
+                string.top_balancing_shunt_enabled = False
+                string.bottom_balancing_shunt_enabled = False
 
+    else:
+        # Not charging or not full → disable all balancing
+        string.top_balancing_shunt_enabled = False
+        string.bottom_balancing_shunt_enabled = False
