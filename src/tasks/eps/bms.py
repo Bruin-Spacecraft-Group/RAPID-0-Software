@@ -6,6 +6,8 @@ import asyncio
 
 from datastores.eps import Datastore
 
+MEASURABLE_DIFF_V = 1
+SIGNIFICANT_DIFF_V = 10
 
 async def battery_management_task(datastore: Datastore):
     """
