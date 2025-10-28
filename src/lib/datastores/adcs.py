@@ -6,7 +6,9 @@ are set to `None` throughout this module.
 
 
 class Datastore:
-    """ """
+    """
+    Datastore class for adcs processes. Holds time, sensor, and attitude data to be used system-wide
+    """
 
     DETUMBLE = 0
     POINT_TO_SUN = 1

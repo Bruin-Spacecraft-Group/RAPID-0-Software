@@ -1,5 +1,6 @@
 """
-Determines an estimate of the attitude of the RAPID-0 satellite using a Multiplicative Extended Kalman Filter (MEKF).
+Determine an estimate of the attitude of the RAPID-0 satellite using a 
+Multiplicative Extended Kalman Filter (MEKF).
 """
 
 # TODO: Create constants for constant matricies
@@ -9,6 +10,18 @@ from quaternion import Quaternion
 
 
 def skew(w: np.ndarray):
+    """
+    Returns a 3x3 skew (/cross product) matrix built from an input 3-element vector
+
+    Args:
+        w (np.ndarray): (3,) 3-element vector
+
+    Returns:
+        np.ndarray: 3x3 skew/cross-product matrix
+        [[  0,   w[2], w[1]],
+         [ w[2],  0,  -w[0]],
+         [-w[1], w[0],  0 ]]
+    """
     return np.ndarray([[0, -w[2], w[1]], [w[2], 0, -w[0]], [-w[1], w[0], 0]])
 
 # pylint: disable=invalid-name
@@ -27,15 +40,19 @@ def mekf_update(
     'Multiplicative vs. Additive Filtering for Spacecraft Attitude Determination' (Markley, 2003)
 
     Args:
-        q_ref (Quaternion): Body reference quaternion which the calculations are based on. The closer ref is to the actual attitude,
-                            the less error resulting from the MEKF. Assumed starting basis for which w_ref acts on
+        q_ref (Quaternion): Body reference quaternion which the calculations are based on. 
+                            The closer ref is to the actual attitude, the less error resulting 
+                            from the MEKF. Assumed starting basis for which w_ref acts on
         w_ref (np.ndarray): Angular acceleration vector in the body reference from gyroscopes
-        P (np.ndarray): 3x3 Covariance matrix (ensure this isn't the 0 matrix when starting or the filter won't update effectively)
-        Q_noise: 3x3 Diagonal matrix representing noise/bias from the gyro sensor (given as sigma^2 * I_3)
+        P (np.ndarray): 3x3 Covariance matrix (ensure this isn't the 0 matrix when 
+                        starting or the filter won't update effectively)
+        Q_noise: 3x3 Diagonal matrix representing noise/bias from the gyro sensor 
+                 (given as sigma^2 * I_3)
         v_body: Measured vector from body frame (from magnetometer or sun sensor)
         v_inertial: Expected vector measurement at Quaternion(1,0,0,0) orientation
-        R_meas: 3x3 Diagonal matrix representing noise/bias from the measured body vector (given as sigma^2 * I_3)
-        dt (float): Amount of time that has passed since a new estimate for q_ref has been made (in ms?)
+        R_meas: 3x3 Diagonal matrix representing noise/bias from the measured body vector 
+                (given as sigma^2 * I_3)
+        dt (float): Amount of time that has passed since a new estimate for q_ref has been made (ms)
 
     Returns:
         Quaternion: The estimated attitude Quaternion from the body frame to the inertial frame
