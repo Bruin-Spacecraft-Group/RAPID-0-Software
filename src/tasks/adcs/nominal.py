@@ -4,7 +4,7 @@ Module for ADCS to run nominal operations.
 
 from datastores.adcs import Datastore
 
-from triad import triad_algorithm
+import triad as t
 from mekf import mekf_update
 
 def get_current_time():
@@ -31,10 +31,11 @@ def nominal_tasks(datastore: Datastore):
 
     datastore.current_time = get_current_time()
 
-    if datastore.current_time - datastore.last_cdh_update > datastore.update_interval:
+    diff = datastore.time.current_time - datastore.time.last_cdh_update
+    if diff > datastore.time.update_interval:
         update_attitude(datastore)
 
-        datastore.last_cdh_update = datastore.current_time
+        datastore.time.last_cdh_update = datastore.time.current_time
 
 def update_attitude(datastore: Datastore):
     """
@@ -58,18 +59,18 @@ def update_attitude(datastore: Datastore):
     else:
         # IFF sun sensor can be used, use TRIAD algorithm to determine
         # attitude from sensor + model data
-        [triad_q, msg] = triad_algorithm(s_model, mag_model, s_data, mag_data)
+        [triad_q, msg] = t.triad_algorithm(s_model, mag_model, s_data, mag_data)
 
         match msg:
-            case 0: # success
+            case t.SUCCESS: # success
                 datastore.quaternion = triad_q
-            case 1: # anti-parallel
+            case t.ANTI_PARALLEL: # anti-parallel
                 pass
-            case 2: # FAIL : Colinear
+            case t.COLLINEAR: # FAIL : Colinear
                 pass
-            case 3: # FAIL : Singular (insufficient data)
+            case t.SINGULAR: # FAIL : Singular (insufficient data)
                 pass
-            case 4: # FAIL : Normalisation error (div by 0)
+            case t.NORM_ERR: # FAIL : Normalisation error (div by 0)
                 pass
             case _: # catch None or weird case
                 pass
