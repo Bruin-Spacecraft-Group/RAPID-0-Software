@@ -17,29 +17,35 @@ class Datastore:
 
     def __init__(self):
         self.time: adcsTime = adcsTime()
-        self.sensor: sensorData = sensorData() 
+        self.sensor: sensorData = sensorData()
         self.quaternion = (
             None  # Quaternion representing attitude from body frame to inertial frame
         )
         self.mode = 0
 
 
-class adcsTime: 
-    def __init__(self): 
+class adcsTime:
+    def __init__(self):
         self.current_time = None
         self.last_cdh_update = None
-        self.update_interval = 1.0 # secondsgit
-        self.time_since_last_mekf = 0.0 # dt from tasks/mekf
+        self.update_interval = 1.0  # secondsgit
+        self.time_since_last_mekf = 0.0  # dt from tasks/mekf
 
-class sensorData: 
-    def __init__(self): 
+
+class sensorData:
+    def __init__(self):
         self.sun = None
-        self.magnetometer = None 
-        self.gyroscope = None 
-        
+        self.magnetometer = None
+        self.gyroscope = None
+
+
 class attitudeCalc:
     def __init__(self):
         # reference vectors in inertial frame
         self.ref_vec1 = 0.0 # more accurate vector
         self.ref_vec2 = 0.0 # less accurate vector
+        
+        # measures of vectors in body frame
+        self.frame_vec1 = 0.0
+        self.frame_vec2 = 0.0
         
