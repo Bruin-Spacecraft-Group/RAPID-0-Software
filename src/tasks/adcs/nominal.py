@@ -75,7 +75,6 @@ def update_attitude(datastore: Datastore):
                 pass
 
     # Clean, update data with MEKF
-    # pylint: disable
     datastore.quaternion = mekf_update(
         datastore.quaternion,
         alpha,

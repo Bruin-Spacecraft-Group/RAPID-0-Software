@@ -1,19 +1,29 @@
-from datastores.adcs import datastore as ds
-import nominal.py as nominal
-import detumble.py as detumble
-import point_to_sun.py as point_to_sun
-import point_to_earth.py as point_to_earth
+"""
+Module holding the main loop of the ADCS task structure
+"""
+
+from datastores.adcs import Datastore
+
+import nominal as nm
+import detumble as dtmb
+import point_to_sun as pts
+import point_to_earth as pte
 
 
-def main_loop():
-    ADCS_mode = ds.mode
-    if ADCS_mode == ds.DETUMBLE:
-        detumble.detumble()
-    elif ADCS_mode == ds.POINT_TO_SUN:
-        point_to_sun.point_to_sun()
-    elif ADCS_mode == ds.POINT_TO_EARTH:
-        point_to_earth.point_to_earth()
-    elif ADCS_mode == ds.NOMINAL_PROCESSES:
-        nominal.nominal_tasks(ds)
-    else:
-        return 1
+async def main_adcs_loop(ds: Datastore):
+    """
+    ADCS Loop to be run as an asynchronous task on breakout board
+    """
+
+    while True:
+        adcs_mode = ds.mode
+        if adcs_mode == ds.DETUMBLE:
+            dtmb.detumble(ds)
+        elif adcs_mode == ds.POINT_TO_SUN:
+            pts.point_to_sun(ds)
+        elif adcs_mode == ds.POINT_TO_EARTH:
+            pte.point_to_earth(ds)
+        elif adcs_mode == ds.NOMINAL_PROCESSES:
+            nm.nominal_tasks(ds)
+        else:
+            return 1
