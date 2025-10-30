@@ -4,7 +4,6 @@ ADCS system for all tasks to update and use. Readings that have not yet been ini
 are set to `None` throughout this module.
 """
 
-
 class Datastore:
     """
     Datastore class for adcs processes. Holds time, sensor, and attitude data to be used system-wide
@@ -16,6 +15,17 @@ class Datastore:
     POINT_TO_EARTH = 2
     NOMINAL_PROCESSES = 3
 
+    # Constant matrices for MEKF
+    CV_MATRIX = (
+        None
+    )
+    GYRO_NOISE = (
+        None
+    )
+    MEAS_NOISE = (
+        None
+    )
+
     def __init__(self):
         self.time: AdcsTime = AdcsTime()
         self.sensor: SensorData = SensorData()
@@ -23,7 +33,6 @@ class Datastore:
             None  # Quaternion representing attitude from body frame to inertial frame
         )
         self.mode = 0
-
 
 class AdcsTime:
     """
