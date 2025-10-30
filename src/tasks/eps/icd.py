@@ -12,11 +12,11 @@ information about bus operation and mission state to enable and disable output b
 
 import asyncio
 import digitalio
+
 from datastores.eps import Datastore
+from pin_manager import PinManager
 
 import board
-
-from pin_manager import PinManager
 
 
 

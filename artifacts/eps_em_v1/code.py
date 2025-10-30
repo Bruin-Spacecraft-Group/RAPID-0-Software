@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # TODO: uncomment to run flight code (only once the electrical parts of the PCB are validated)
     # asyncio.run(gathered_task())
 
-    import board
+    # import board
     import digitalio
 
     # TODO: uncomment pins to run electrical tests and validate the PCB
