@@ -1,16 +1,5 @@
-# RAPID-0 Policy: Each artifact is owned by the subteam lead of
-# the team in charge of that artifact and up to one other person
-# designated by the former. All software not included in a specific
-# artifact is owned by the PM, CE, and any subteam leads who are
-# considered qualified to manage software project-wide by the former.
+# RAPID-0 Policy: All software is owned by the PM, CE, software 
+# lead, and any other subteam leads who are considered qualified 
+# to manage software project-wide by the former.
 
-* @Touwfoo @Randall-Scharpf @anniexiang01
-
-/artifacts/*adcs*/ @sethferrell
-/artifacts/*cdh*/ @anniexiang01
-/artifacts/*eps*/ @Randall-Scharpf
-
-# Any subteam-specific artifact which does NOT contain the name
-# of the subsystem owning the artifact should be specially cleared
-# by someone who is also an owner of software not specific to any
-# artifact, and then be listed below.
+* @theancientpoop @AlexanderSHartman @astropancake72 @connorperrone 

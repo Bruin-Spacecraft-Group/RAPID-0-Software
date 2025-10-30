@@ -2,6 +2,8 @@
     "src": [
         "lib/asyncio",
         "lib/adafruit_ticks.py",
+        "lib/nda_wrapper.py",
+        "lib/nda_libraries",
         "lib/pin_manager.py",
         "drivers/ads1118.py",
         "drivers/camera.py",
@@ -10,6 +12,7 @@
     "unit_tests": [
         "drivers/ads1118_test.py",
         "drivers/camera_test.py",
+        "lib/nda_wrapper_test.py",
         "lib/pin_manager_test.py",
         "lib/custom_module_mocking.py"
     ]
