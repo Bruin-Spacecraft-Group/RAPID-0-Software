@@ -104,14 +104,17 @@ def _control_tick_3v3_bus(datastore: Datastore):
 
 def _control_tick_5v_bus(datastore: Datastore):
     # TODO: implement this logic
+    print(datastore.control_commands.explicit_5v_disable)
     return True
 
 
 def _control_tick_12vlp_bus(datastore: Datastore):
     # TODO: implement this logic
+    print(datastore.control_commands.explicit_12vlp_disable)
     return True
 
 
 def _control_tick_12vhp_bus(datastore: Datastore):
     # TODO: implement this logic
+    print(datastore.control_commands.explicit_12vhp_disable)
     return True
