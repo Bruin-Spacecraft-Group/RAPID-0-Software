@@ -32,7 +32,7 @@ class Datastore:
         self.quaternion = (
             None  # Quaternion representing attitude from body frame to inertial frame
         )
-        self.mode = DETUMBLE
+        self.mode = self.DETUMBLE
         self.tle: TLE = TLE()
 
 class AdcsTime:
