@@ -11,12 +11,13 @@ information about bus operation and mission state to enable and disable output b
 """
 
 import asyncio
-import time
 import digitalio
+from datastores.eps import Datastore
+
+import board
 
 from pin_manager import PinManager
-import board
-from datastores.eps import Datastore
+
 
 
 async def intersubsystem_communication_task(datastore: Datastore):
