@@ -5,7 +5,7 @@ Module for ADCS to run nominal operations.
 from datastores.adcs import Datastore
 
 import triad as t
-from mekf import mekf_update
+import mekf as kf
 
 def get_current_time():
     """
@@ -75,13 +75,19 @@ def update_attitude(datastore: Datastore):
             case _: # catch None or weird case
                 pass
 
-    # Clean, update data with MEKF
-    datastore.quaternion = mekf_update(
+    # Pulling state and measurement variable grouping objects from datastore
+    state: kf.StateEstimate = kf.StateEstimate(
         datastore.quaternion,
         alpha,
-        datastore.cv_matrix,
-        datastore.Q_noise,
+        datastore.CV_MATRIX
+    )
+
+    measurement: kf.SensorMeasurement = kf.SensorMeasurement(
+        datastore.GYRO_NOISE,
+        datastore.MEAS_NOISE,
         p_data,
-        datastore.v_inertial,
-        datastore.r_meas,
-        datastore.dt)
+        datastore.v_inertial, # not sure how this will be implemented
+    )
+
+    # Clean, update data with MEKF
+    datastore.quaternion = kf.mekf_update(state, measurement, datastore.dt)
