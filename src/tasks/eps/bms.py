@@ -34,57 +34,55 @@ def balance_all_strings(datastore: Datastore):
 
 
 def balance_single_string(string):
-    """
-    Apply balancing logic to one 2-cell battery string.
+    """Apply balancing logic to one 2-cell battery string."""
 
-    Based on:
-    - Whether string is charging and nearly full
-    - Difference in cell voltages
-    - Current balancing switch states
-    """
-
-    v_a = string.top_cell_voltage
-    v_b = string.bottom_cell_voltage
-
-    # Skip if voltages not yet initialized
+    v_a, v_b = string.top_cell_voltage, string.bottom_cell_voltage
     if v_a is None or v_b is None:
         return
 
     # Determine if charging and near full (placeholder logic)
     charging = True
     almost_full = max(v_a, v_b) > 4.15  # near-full threshold example
+    if not (charging and almost_full):
+        disable_all_balancing(string)
+        return
 
-    if charging and almost_full:
-        a_on = string.top_balancing_shunt_enabled
-        b_on = string.bottom_balancing_shunt_enabled
+    a_on, b_on = string.top_balancing_shunt_enabled, string.bottom_balancing_shunt_enabled
 
-        # --- Case 1: Top cell shunt is ON ---
-        if a_on:
-            if v_b > v_a + MEASURABLE_DIFF_V:
-                string.top_balancing_shunt_enabled = False
-            elif v_a > v_b + MEASURABLE_DIFF_V:
-                string.bottom_balancing_shunt_enabled = True
-
-        # --- Case 2: Bottom cell shunt is ON ---
-        elif b_on:
-            if v_a > v_b + MEASURABLE_DIFF_V:
-                string.bottom_balancing_shunt_enabled = False
-            elif v_b > v_a + MEASURABLE_DIFF_V:
-                string.top_balancing_shunt_enabled = True
-
-        # --- Case 3: Neither shunt ON ---
-        else:
-            if v_a > v_b + SIGNIFICANT_DIFF_V:
-                string.top_balancing_shunt_enabled = True
-                string.bottom_balancing_shunt_enabled = False
-            elif v_b > v_a + SIGNIFICANT_DIFF_V:
-                string.bottom_balancing_shunt_enabled = True
-                string.top_balancing_shunt_enabled = False
-            else:
-                string.top_balancing_shunt_enabled = False
-                string.bottom_balancing_shunt_enabled = False
-
+    if a_on:
+        handle_top_on(string, v_a, v_b)
+    elif b_on:
+        handle_bottom_on(string, v_a, v_b)
     else:
-        # Not charging or not full → disable all balancing
+        handle_both_off(string, v_a, v_b)
+
+
+def disable_all_balancing(string):
+    string.top_balancing_shunt_enabled = False
+    string.bottom_balancing_shunt_enabled = False
+
+
+def handle_top_on(string, v_a, v_b):
+    if v_b > v_a + MEASURABLE_DIFF_V:
+        string.top_balancing_shunt_enabled = False
+    elif v_a > v_b + MEASURABLE_DIFF_V:
+        string.bottom_balancing_shunt_enabled = True
+
+
+def handle_bottom_on(string, v_a, v_b):
+    if v_a > v_b + MEASURABLE_DIFF_V:
+        string.bottom_balancing_shunt_enabled = False
+    elif v_b > v_a + MEASURABLE_DIFF_V:
+        string.top_balancing_shunt_enabled = True
+
+
+def handle_both_off(string, v_a, v_b):
+    if v_a > v_b + SIGNIFICANT_DIFF_V:
+        string.top_balancing_shunt_enabled = True
+        string.bottom_balancing_shunt_enabled = False
+    elif v_b > v_a + SIGNIFICANT_DIFF_V:
+        string.bottom_balancing_shunt_enabled = True
+        string.top_balancing_shunt_enabled = False
+    else:
         string.top_balancing_shunt_enabled = False
         string.bottom_balancing_shunt_enabled = False
