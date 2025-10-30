@@ -32,7 +32,8 @@ class Datastore:
         self.quaternion = (
             None  # Quaternion representing attitude from body frame to inertial frame
         )
-        self.mode = 0
+        self.mode = DETUMBLE
+        self.tle: TLE = TLE()
 
 class AdcsTime:
     """
@@ -53,7 +54,7 @@ class SensorData:
         self.magnetometer = None
         self.gyroscope = None
 
-class AttitudeCalc:
+class TLE:
     """
     Attitude helper class
     """
