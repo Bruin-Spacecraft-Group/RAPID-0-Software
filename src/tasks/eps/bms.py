@@ -58,11 +58,17 @@ def balance_single_string(string):
 
 
 def disable_all_balancing(string):
+    """
+    Helper function to disable both balancing shunts
+    """
     string.top_balancing_shunt_enabled = False
     string.bottom_balancing_shunt_enabled = False
 
 
 def handle_top_on(string, v_a, v_b):
+    """
+    Helper function to handle when the top shunt is enabled and p.d. states change
+    """
     if v_b > v_a + MEASURABLE_DIFF_V:
         string.top_balancing_shunt_enabled = False
     elif v_a > v_b + MEASURABLE_DIFF_V:
@@ -70,6 +76,9 @@ def handle_top_on(string, v_a, v_b):
 
 
 def handle_bottom_on(string, v_a, v_b):
+    """
+    Helper function to handle when the bottom shunt is enabled and p.d. states change
+    """
     if v_a > v_b + MEASURABLE_DIFF_V:
         string.bottom_balancing_shunt_enabled = False
     elif v_b > v_a + MEASURABLE_DIFF_V:
@@ -77,6 +86,9 @@ def handle_bottom_on(string, v_a, v_b):
 
 
 def handle_both_off(string, v_a, v_b):
+    """
+    Helper function to handle when both shunts are off and p.d. states change
+    """
     if v_a > v_b + SIGNIFICANT_DIFF_V:
         string.top_balancing_shunt_enabled = True
         string.bottom_balancing_shunt_enabled = False
