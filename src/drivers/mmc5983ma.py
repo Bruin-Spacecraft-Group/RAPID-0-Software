@@ -5,14 +5,26 @@ Driver module for the MMC5983MA SPI 3-axis magnetometer from Memsic Inc.
 
 import pin_manager
 import digitalio
+import busio
+from adafruit_bus_device.spi_device import SPIDevice
 
 
 class MMC5983MA:
-    def __init__(self, sck, mosi, miso, ss):
+    def __init__(self, sck_pin, mosi_pin, miso_pin, ss_pin, baudrate=1000000):
+        try:
+            self.spi = busio.SPI(sck_pin, MOSI=mosi_pin, MISO=miso_pin)
+        except ValueError as e:
+            raise RuntimeError(
+                "Failed to Initialize SPI. Check pin assignments."
+            ) from e
         pm = pin_manager.PinManager.get_instance()
-        self.spi_bus = pm.create_spi(sck, mosi, miso)
-        self.drdy_gpio = pm.create_digital_in_out(miso)
-        self.ss_gpio = pm.create_digital_in_out(ss)
-        with self.ss_gpio as ss_gpio:
-            ss_gpio.direction = digitalio.Diretion.OUTPUT
-            ss_gpio.value = True
+        self.ss_pin = pm.create_digital_in_out(ss_pin)
+        self.ss_pin.direction = digitalio.Direction.OUTPUT
+        self.ss_pin.value = True
+        self.spi_device = SPIDevice(
+            self.spi, self.ss_pin, baudrate=baudrate, polarity=0, phase=0
+        )
+
+    def read_register(self, register_address, length=1):
+        with self.spi_device as spi:
+            spi.write()
