@@ -4,10 +4,17 @@ Module to operate the battery management system.
 
 import asyncio
 
+
 from datastores.eps import Datastore
 
 MEASURABLE_DIFF_V = 1
 SIGNIFICANT_DIFF_V = 10
+CHARGING_CURRENT_THRESHOLD_A = 5
+DISCHARGING_CURRENT_THRESHOLD_A = 5
+CHARGING_TEMPERATURE_THRESHOLD_C = 45
+DISCHARGING_TEMPERATURE_THRESHOLD_C = 45
+CHARGING_VOLTAGE_THRESHOLD_V = 4.2
+DISCHARGING_VOLTAGE_THRESHOLD_V = 3.7
 
 async def battery_management_task(datastore: Datastore):
     """
@@ -32,10 +39,31 @@ def balance_all_strings(datastore: Datastore):
     ]:
         balance_single_string(string)
 
+def string_charge_check(string):
+    if string.output_current < -1*CHARGING_CURRENT_THRESHOLD_A:
+        return False
+    if string.top_cell_voltage > CHARGING_VOLTAGE_THRESHOLD_V or string.bottom_cell_voltage > CHARGING_VOLTAGE_THRESHOLD_V:
+        return False
+    for i in string.temperatures:
+        if i > CHARGING_TEMPERATURE_THRESHOLD_C:
+            return False
+    return True
+
+def string_discharge_check(string):
+    if string.output_current > DISCHARGING_CURRENT_THRESHOLD_A:
+        return False
+    if string.top_cell_voltage > DISCHARGING_VOLTAGE_THRESHOLD_V or string.bottom_cell_voltage > DISCHARGING_VOLTAGE_THRESHOLD_V:
+        return False
+    for i in string.temperatures:
+        if i > DISCHARGING_TEMPERATURE_THRESHOLD_C:
+            return False
+    return True
 
 def balance_single_string(string):
     """Apply balancing logic to one 2-cell battery string."""
-
+    if not string_charge_check(string) or not string_discharge_check(string):
+        disable_all_balancing(string)
+        return
     v_a, v_b = string.top_cell_voltage, string.bottom_cell_voltage
     if v_a is None or v_b is None:
         return
