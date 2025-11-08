@@ -40,6 +40,9 @@ def balance_all_strings(datastore: Datastore):
         balance_single_string(string)
 
 def string_charge_check(string):
+    """
+    Check if a battery string is in a safe state for balancing during charging.
+    """
     if string.output_current < -1*CHARGING_CURRENT_THRESHOLD_A:
         return False
     if string.top_cell_voltage > CHARGING_VOLTAGE_THRESHOLD_V or string.bottom_cell_voltage > CHARGING_VOLTAGE_THRESHOLD_V:
@@ -50,6 +53,9 @@ def string_charge_check(string):
     return True
 
 def string_discharge_check(string):
+    """
+    Check if a battery string is in a safe state for balancing during discharging.
+    """
     if string.output_current > DISCHARGING_CURRENT_THRESHOLD_A:
         return False
     if string.top_cell_voltage > DISCHARGING_VOLTAGE_THRESHOLD_V or string.bottom_cell_voltage > DISCHARGING_VOLTAGE_THRESHOLD_V:
