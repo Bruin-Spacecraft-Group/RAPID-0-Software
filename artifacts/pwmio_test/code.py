@@ -1,4 +1,10 @@
 import pwmio
-import board
+import microcontroller
+import time
 
-pwm = pwmio.PWMOut(board.PWM)
+pwm = pwmio.PWMOut(microcontroller.pin.PA00)
+
+print("Running the code")
+
+while True:
+    pwm.duty_cycle = 0
