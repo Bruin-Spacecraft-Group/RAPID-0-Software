@@ -1,6 +1,6 @@
 # code.py
 import asyncio, board, busio
-from bmi088_gyro import Bmi088Gyro, GyroRange, GyroODR
+from Bmi088Gyro import Bmi088Gyro, GyroRange, GyroODR
 
 async def main():
     spi = busio.SPI(board.SCLK, MOSI=board.MOSI, MISO=board.MISO)
