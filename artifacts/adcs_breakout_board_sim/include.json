@@ -10,7 +10,7 @@
         "tasks/adcs/point_to_earth.py",
         "tasks/adcs/point_to_sun.py",
         "lib/datastores/adcs.py",
-        "src/drivers/bmi088.py"
+        "drivers/bmi088.py"
     ],
     "unit_tests": [
         "lib/pin_manager_test.py",
