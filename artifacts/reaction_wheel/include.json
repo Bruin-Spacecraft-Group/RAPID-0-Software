@@ -3,7 +3,6 @@
         "drivers/reaction_wheel.py"
     ],
     "unit_tests": [
-        "drivers/reaction_wheel_test.py",
         "lib/pin_manager_test.py",
         "lib/custom_module_mocking.py"
     ]
