@@ -1,13 +1,13 @@
 # code.py
-from bmi088 import Bmi088Gyro, GyroRange, GyroODR
+import bmi088 
 import asyncio, board, busio
 
 async def main():
-    spi = busio.SPI(board.SCLK, MOSI=board.MOSI, MISO=board.MISO)
-    gyro = Bmi088Gyro(spi, cs_gyro_pin=board.GYRO_CS1)
+    spi = busio.SPI(board.GYRO_SCLK, MOSI=board.GYRO_MOSI, MISO=board.GYRO_MISO)
+    gyro = bmi088.Bmi088Gyro(spi, cs_gyro_pin=board.GYRO_CS1)
     await gyro.begin()
-    await gyro.set_gyro_range(GyroRange.RANGE_1000DPS)
-    await gyro.set_gyro_odr(GyroODR.ODR_400HZ)
+    await gyro.set_gyro_range(bmi088.GyroRange.RANGE_1000DPS)
+    await gyro.set_gyro_odr(bmi088.GyroODR.ODR_400HZ)
 
     while True:
         gx, gy, gz = await gyro.read_gyro()
