@@ -1,15 +1,14 @@
 """
-Gyroscope-only driver for the Bosch BMI088 (gyro die only).
+Gyroscope-only driver for the Bosch BMI088 (gyro die only), without adafruit_bus_device.SPIDevice.
 
-- Uses busio.SPI + adafruit_bus_device.SPIDevice
+- Uses busio.SPI directly with manual CS toggling and try_lock()/configure()/unlock
 - Async-friendly (awaitable methods)
-- No accelerometer / temperature paths or registers required
+- Only the gyro die is touched (no accelerometer/temperature paths)
 """
 
 import asyncio
 import digitalio
 import busio
-from adafruit_bus_device.spi_device import SPIDevice
 
 # ----------------------------
 # BMI088 GYROSCOPE REGISTERS
@@ -24,7 +23,7 @@ GYR_BW_REG    = 0x10
 GYR_LPM1      = 0x11
 GYR_SOFTRESET = 0x14
 
-GYR_DATA_START = 0x02  # X_LSB, X_MSB, Y_LSB, ...
+GYR_DATA_START = 0x02  # X_LSB, X_MSB, Y_LSB, Y_MSB, Z_LSB, Z_MSB
 
 # ----------------------------
 # CONFIG ENUMS
@@ -64,26 +63,24 @@ class Bmi088Gyro:
     Gyro-only BMI088 driver.
 
     Usage:
-        import board, busio
-        spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-        gyro = Bmi088Gyro(spi, cs_gyro_pin=board.D5)
+        import busio
+        from bmi088 import Bmi088Gyro, GyroRange, GyroODR
+        spi = busio.SPI(SCK, MOSI=MOSI, MISO=MISO)
+        gyro = Bmi088Gyro(spi, cs_gyro_pin=CS_PIN)
         await gyro.begin()
         gx, gy, gz = await gyro.read_gyro()
     """
 
-    def __init__(self, spi: busio.SPI, cs_gyro_pin):
-        # Chip-select for the gyro die (CSB2)
-        self._cs_gyro = digitalio.DigitalInOut(cs_gyro_pin)
-        self._cs_gyro.direction = digitalio.Direction.OUTPUT
-        self._cs_gyro.value = True
+    def __init__(self, spi: busio.SPI, cs_gyro_pin, *, baudrate=1_000_000, polarity=0, phase=0):
+        self._spi = spi
+        self._baudrate = baudrate
+        self._polarity = polarity
+        self._phase = phase
 
-        self._gyro_dev = SPIDevice(
-            spi,
-            self._cs_gyro,
-            baudrate=1_000_000,
-            polarity=0,
-            phase=0,
-        )
+        # Chip-select for the gyro die (CSB2)
+        self._cs = digitalio.DigitalInOut(cs_gyro_pin)
+        self._cs.direction = digitalio.Direction.OUTPUT
+        self._cs.value = True  # inactive high
 
         self.gyro_range = GyroRange.RANGE_1000DPS  # default scale
 
@@ -152,33 +149,58 @@ class Bmi088Gyro:
         return self._read_block_gyro(reg, 1)[0]
 
     def _write_reg_gyro(self, reg: int, value: int):
-        self._write_block(self._gyro_dev, reg, bytes([value & 0xFF]))
+        self._write_block(reg, bytes([value & 0xFF]))
 
     def _read_block_gyro(self, start_reg: int, length: int) -> bytes:
-        return self._read_block(self._gyro_dev, start_reg, length)
+        return self._read_block(start_reg, length)
 
     @staticmethod
     def _build_read_command(reg: int) -> int:
+        # BMI088 SPI: MSB=1 for read
         return (reg & 0x7F) | 0x80
 
     @staticmethod
     def _build_write_command(reg: int) -> int:
+        # MSB=0 for write
         return reg & 0x7F
 
-    def _read_block(self, device: SPIDevice, start_reg: int, length: int) -> bytes:
+    # ---- Raw SPI transactions (no SPIDevice) ----
+    def _spi_tx(self, tx: bytearray):
+        # Write-only transaction
+        while not self._spi.try_lock():
+            pass
+        try:
+            self._spi.configure(baudrate=self._baudrate, polarity=self._polarity, phase=self._phase)
+            self._cs.value = False
+            self._spi.write(tx)
+            self._cs.value = True
+        finally:
+            self._spi.unlock()
+
+    def _spi_txrx(self, tx: bytearray, rx: bytearray):
+        # Full-duplex transaction
+        while not self._spi.try_lock():
+            pass
+        try:
+            self._spi.configure(baudrate=self._baudrate, polarity=self._polarity, phase=self._phase)
+            self._cs.value = False
+            self._spi.write_readinto(tx, rx)
+            self._cs.value = True
+        finally:
+            self._spi.unlock()
+
+    def _read_block(self, start_reg: int, length: int) -> bytes:
         out_buf = bytearray(length + 1)
         in_buf  = bytearray(length + 1)
         out_buf[0] = self._build_read_command(start_reg)
-        with device as spi:
-            spi.write_readinto(out_buf, in_buf)
-        return in_buf[1:]
+        self._spi_txrx(out_buf, in_buf)
+        return in_buf[1:]  # strip command echo
 
-    def _write_block(self, device: SPIDevice, reg: int, data: bytes):
+    def _write_block(self, reg: int, data: bytes):
         out_buf = bytearray(1 + len(data))
         out_buf[0] = self._build_write_command(reg)
         out_buf[1:] = data
-        with device as spi:
-            spi.write(out_buf)
+        self._spi_tx(out_buf)
 
 # ----------------------------
 # Utilities
@@ -188,3 +210,4 @@ def _to_int16(msb: int, lsb: int) -> int:
     if val & 0x8000:
         val -= 0x10000
     return val
+
