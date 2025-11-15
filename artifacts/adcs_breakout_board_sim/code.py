@@ -1,5 +1,5 @@
 # code.py
-import bmi088 
+from drivers import bmi088 
 import asyncio, board, busio
 
 async def read_gyro():
