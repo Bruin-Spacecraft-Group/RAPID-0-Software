@@ -19,18 +19,18 @@ class ReactionWheel:
         # Digital Out - Frequency out
         self.fg = digitalio.DigitalInOut(fg)
         self.fg.direction = digitalio.Direction.INPUT
-        
+
     def get_speed(self):
         """
         Returns the duty cycle value of the motor (-2^16 to 2^16)
         
         Returns Positive if Clockwise, Negative if Counterclockwise
         """
-        
+
         dire = 1 if self.get_direction() else -1
 
         return dire * self.unsoll.duty_cycle
-    
+
     def get_direction(self):
         """
         Returns motor direction
@@ -38,7 +38,7 @@ class ReactionWheel:
         Returns True if Clockwise, False if Anticlockwise
         """
         return self.diro.value
-    
+
     def set_speed(self, dc):
         """
         Sets duty cycle and direction (much like velocity)
@@ -48,7 +48,7 @@ class ReactionWheel:
         """
         if dc >= 0:
             self.diro.value = True # Clockwise
-            self.unsoll.duty_cycle = dc 
+            self.unsoll.duty_cycle = dc
         elif dc < 0:
             self.diro.value = False # counterclockwise
             self.unsoll.duty_cycle = -dc
