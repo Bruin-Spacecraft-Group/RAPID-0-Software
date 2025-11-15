@@ -16,5 +16,9 @@
         "lib/pin_manager_test.py",
         "lib/custom_module_mocking.py",
         "lib/quaternion_test.py"
+    ],
+    "submodules": [
+        "Adafruit_CircuitPython_Ticks",
+        "Adafruit_CircuitPython_asyncio"
     ]
 }
