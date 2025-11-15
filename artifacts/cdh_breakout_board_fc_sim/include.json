@@ -15,5 +15,9 @@
         "lib/nda_wrapper_test.py",
         "lib/pin_manager_test.py",
         "lib/custom_module_mocking.py"
+    ],
+    "submodules": [
+        "Adafruit_CircuitPython_Ticks",
+        "Adafruit_CircuitPython_asyncio"
     ]
 }
