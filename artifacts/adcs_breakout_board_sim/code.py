@@ -1,6 +1,7 @@
 # code.py
 from drivers import bmi088 
-import asyncio, board, busio
+import asyncio
+import board, busio
 
 async def read_gyro():
     spi = busio.SPI(board.GYRO_SCLK, MOSI=board.GYRO_MOSI, MISO=board.GYRO_MISO)
@@ -14,6 +15,6 @@ async def read_gyro():
         print(f"gyro [rad/s]: {gx:.3f}, {gy:.3f}, {gz:.3f}")
         await asyncio.sleep(0.05)  # 20 Hz print rate
 
-if __name__ == "__main__":
-    asyncio.run(read_gyro)
-
+def main() :
+    print("hello world")
+    asyncio.run(read_gyro())

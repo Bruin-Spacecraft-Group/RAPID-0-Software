@@ -11,6 +11,7 @@
         "tasks/adcs/point_to_sun.py",
         "lib/datastores/adcs.py",
         "drivers/bmi088.py"
+        
     ],
     "unit_tests": [
         "lib/pin_manager_test.py",
@@ -18,7 +19,7 @@
         "lib/quaternion_test.py"
     ],
     "submodules": [
-        "Adafruit_CircuitPython_Ticks/adafruit_ticks.py",
-        "Adafruit_CircuitPython_asyncio/asyncio"
+        "Adafruit_CircuitPython_asyncio/asyncio",
+        "Adafruit_CircuitPython_Ticks/adafruit_ticks.py"
     ]
 }

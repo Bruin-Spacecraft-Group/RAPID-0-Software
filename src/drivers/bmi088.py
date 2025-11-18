@@ -6,7 +6,7 @@ Gyroscope-only driver for the Bosch BMI088 (gyro die only), without adafruit_bus
 - Only the gyro die is touched (no accelerometer/temperature paths)
 """
 
-import asyncio
+from Adafruit_CircuitPython_asyncio import asyncio
 import digitalio
 import busio
 
