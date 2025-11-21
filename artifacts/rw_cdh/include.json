@@ -1,0 +1,8 @@
+{
+    "src": [
+        "drivers/reaction_wheel.py"
+    ],
+    "unit_tests": [
+        "lib/custom_module_mocking.py"
+    ]
+}
