@@ -19,7 +19,7 @@
         "lib/quaternion_test.py"
     ],
     "submodules": [
-        "Adafruit_CircuitPython_asyncio/asyncio",
+        "Adafruit_CircuitPython_asyncio",
         "Adafruit_CircuitPython_Ticks/adafruit_ticks.py"
     ]
 }
