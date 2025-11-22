@@ -28,16 +28,16 @@ async def battery_management_task(datastore: Datastore, string):
     for string in [
         datastore.batteries.string_1,
         datastore.batteries.string_2,
-        datastore.batteries.string_3
+        datastore.batteries.string_3      
     ]:
         string.discharging_enabled = string_discharge_check(string)
         string.charging_enabled = string_charge_check(string)
         balance_single_string(string)
-    
-    
-    while True:
-        balance_all_strings(datastore)
         await asyncio.sleep(1)  # run once per second
+    
+    
+        
+        
 
 def balance_all_strings(datastore: Datastore):
     """
@@ -114,11 +114,18 @@ def handle_top_on(string, v_a, v_b):
     """
     Helper function to handle when the top shunt is enabled and p.d. states change
     """
-    if v_b > v_a + MEASURABLE_DIFF_V:
+    if v_a > v_b + MEASURABLE_DIFF_V:
         string.bottom_balancing_shunt_enabled = True
         string.top_balancing_shunt_enabled = False
-    elif v_a > v_b + MEASURABLE_DIFF_V:
-        string.top_balancing_shunt_enabled = True
+    elif v_a > v_b + SIGNIFICANT_DIFF_V:
+        string.bottom_balancing_shunt_enabled = True
+        string.top_balancing_shunt_enabled = False
+        
+    elif v_b > v_a + SIGNIFICANT_DIFF_V:
+        string.top_balancing_shunt_enabled = False
+        string.bottom_balancing_shunt_enabled = True
+    else:
+        string.top_balancing_shunt_enabled = False
         string.bottom_balancing_shunt_enabled = False
 
 
@@ -126,13 +133,18 @@ def handle_bottom_on(string, v_a, v_b):
     """
     Helper function to handle when the bottom shunt is enabled and p.d. states change
     """
-    if v_a > v_b + MEASURABLE_DIFF_V:
-        string.top_balancing_shunt_enabled = True
-        string.bottom_balancing_shunt_enabled = False
-    elif v_b > v_a + MEASURABLE_DIFF_V:
-        string.bottom_balancing_shunt_enabled = True
+    if v_b > v_a + MEASURABLE_DIFF_V:
         string.top_balancing_shunt_enabled = False
-
+        string.bottom_balancing_shunt_enabled = True
+    elif v_a > v_b + SIGNIFICANT_DIFF_V:
+        string.bottom_balancing_shunt_enabled = False
+        string.top_balancing_shunt_enabled = True
+    elif v_b > v_a + SIGNIFICANT_DIFF_V:
+        string.top_balancing_shunt_enabled = False
+        string.bottom_balancing_shunt_enabled = True
+    else:
+        string.top_balancing_shunt_enabled = False
+        string.bottom_balancing_shunt_enabled = False
 
 def handle_both_off(string, v_a, v_b):
     """
