@@ -92,7 +92,7 @@ class DsBatteryString:
         self.charging_enabled: bool = None
         self.top_balancing_shunt_enabled: bool = None
         self.bottom_balancing_shunt_enabled: bool = None
-c
+
 
 class DsSolarPanel:
     """
