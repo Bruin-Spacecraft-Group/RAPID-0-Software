@@ -9,8 +9,7 @@
         "tasks/adcs/detumble.py" : "adcs/detumble.py",
         "tasks/adcs/point_to_earth.py" : "adcs/point_to_earth.py",
         "tasks/adcs/point_to_sun.py" : "adcs/point_to_sun.py",
-        "lib/datastores/adcs.py" : "datastores/adcs.py",
-        "drivers/bmi088.py" : "bmi088.py"
+        "lib/datastores/adcs.py" : "datastores/adcs.py"
         
     },
     "unit_tests": {
