@@ -1,5 +1,7 @@
 {
     "src": [
+        "lib/asyncio",
+        "lib/adafruit_ticks.py",
         "lib/pin_manager.py",
         "lib/quaternion.py",
         "tasks/adcs/triad.py",
@@ -11,15 +13,10 @@
         "tasks/adcs/point_to_sun.py",
         "lib/datastores/adcs.py",
         "drivers/bmi088.py"
-        
     ],
     "unit_tests": [
         "lib/pin_manager_test.py",
         "lib/custom_module_mocking.py",
         "lib/quaternion_test.py"
-    ],
-    "submodules": [
-        "Adafruit_CircuitPython_asyncio/asyncio",
-        "Adafruit_CircuitPython_Ticks/adafruit_ticks.py"
     ]
 }
