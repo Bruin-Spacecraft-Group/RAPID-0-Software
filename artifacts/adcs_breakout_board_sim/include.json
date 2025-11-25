@@ -1,19 +1,25 @@
 {
-    "src": [
-        "lib/pin_manager.py",
-        "lib/quaternion.py",
-        "tasks/adcs/triad.py",
-        "tasks/adcs/mekf.py",
-        "tasks/adcs/nominal.py",
-        "tasks/adcs/loop.py",
-        "tasks/adcs/detumble.py",
-        "tasks/adcs/point_to_earth.py",
-        "tasks/adcs/point_to_sun.py",
-        "lib/datastores/adcs.py"
-    ],
-    "unit_tests": [
-        "lib/pin_manager_test.py",
-        "lib/custom_module_mocking.py",
-        "lib/quaternion_test.py"
-    ]
+    "src": {
+        "lib/pin_manager.py" : "pin_manager.py",
+        "lib/quaternion.py" : "quaternion.py",
+        "tasks/adcs/triad.py" : "adcs/triad.py",
+        "tasks/adcs/mekf.py" : "adcs/mekf.py",
+        "tasks/adcs/nominal.py" : "adcs/nominal.py",
+        "tasks/adcs/loop.py" : "adcs/loop.py",
+        "tasks/adcs/detumble.py" : "adcs/detumble.py",
+        "tasks/adcs/point_to_earth.py" : "adcs/point_to_earth.py",
+        "tasks/adcs/point_to_sun.py" : "adcs/point_to_sun.py",
+        "lib/datastores/adcs.py" : "datastores/adcs.py",
+        "drivers/bmi088.py" : "bmi088.py"
+        
+    },
+    "unit_tests": {
+        "lib/pin_manager_test.py" : "pin_manager_test.py",
+        "lib/custom_module_mocking.py" : "custom_module_mocking.py",
+        "lib/quaternion_test.py" : "quaternion_test.py"
+    },
+    "submodules": {
+        "Adafruit_CircuitPython_asyncio" : "Adafruit_CircuitPython_asyncio",
+        "Adafruit_CircuitPython_Ticks/adafruit_ticks.py" : "adafruit_ticks.py"
+    }
 }
