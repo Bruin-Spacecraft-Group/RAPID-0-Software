@@ -6,7 +6,8 @@ Gyroscope-only driver for the Bosch BMI088 (gyro die only), without adafruit_bus
 - Only the gyro die is touched (no accelerometer/temperature paths)
 """
 
-from Adafruit_CircuitPython_asyncio import asyncio
+#from Adafruit_CircuitPython_asyncio 
+import asyncio
 import digitalio
 import busio
 
@@ -71,19 +72,28 @@ class Bmi088Gyro:
         gx, gy, gz = await gyro.read_gyro()
     """
 
-    def __init__(self, spi: busio.SPI, cs_gyro_pin, *, baudrate=1_000_000, polarity=0, phase=0):
+    def __init__(self, spi: busio.SPI, cs_gyro_pin_or_dio, *, baudrate=1_000_000, polarity=0, phase=0):
         self._spi = spi
         self._baudrate = baudrate
         self._polarity = polarity
         self._phase = phase
 
-        # Chip-select for the gyro die (CSB2)
-        self._cs = digitalio.DigitalInOut(cs_gyro_pin)
-        self._cs.direction = digitalio.Direction.OUTPUT
-        self._cs.value = True  # inactive high
+        # Accept either a pin object or a pre-made DigitalInOut
+        if isinstance(cs_gyro_pin_or_dio, digitalio.DigitalInOut):
+            self._cs = cs_gyro_pin_or_dio
+            self._owns_cs = False
+        else:
+            self._cs = digitalio.DigitalInOut(cs_gyro_pin_or_dio)
+            self._cs.direction = digitalio.Direction.OUTPUT
+            self._cs.value = True
+            self._owns_cs = True
 
-        self.gyro_range = GyroRange.RANGE_1000DPS  # default scale
+        self.gyro_range = GyroRange.RANGE_1000DPS
 
+    def deinit(self):
+        # Free the CS pin if we created it
+        if getattr(self, "_owns_cs", False) and hasattr(self._cs, "deinit"):
+            self._cs.deinit()
     # -------- Public API --------
     async def begin(self) -> bool:
         """
