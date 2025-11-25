@@ -15,7 +15,7 @@ GYRO_CS3 = microcontroller.pin.PA12
 
 async def read_gyro():
     spi = busio.SPI(GYRO_SCLK, MOSI=GYRO_MOSI, MISO=GYRO_MISO)
-    gyro = bmi088.Bmi088Gyro(spi, cs_gyro_pin=GYRO_CS3)
+    gyro = bmi088.Bmi088Gyro(spi, cs_gyro_pin=GYRO_CS1)
     await gyro.begin()
     await gyro.set_gyro_range(bmi088.GyroRange.RANGE_1000DPS)
     await gyro.set_gyro_odr(bmi088.GyroODR.ODR_400HZ)
@@ -26,5 +26,5 @@ async def read_gyro():
         await asyncio.sleep(0.05)  # 20 Hz print rate
 
 if __name__ == "__main__":
-    print("is running2...")
+    print("is running...")
     asyncio.run(read_gyro())
