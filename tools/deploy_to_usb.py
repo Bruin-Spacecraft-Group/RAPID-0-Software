@@ -214,11 +214,11 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
         )
 
     print("Programming target-specific software to device...")
-    for src_item,dst_item in os.listdir(os.path.join(".", "artifacts", deploy_type)):
-        if dst_item == "include.json":
+    for item in os.listdir(os.path.join(".", "artifacts", deploy_type)):
+        if item == "include.json":
             continue
-        src_item_path = os.path.join(".", "artifacts", deploy_type, src_item)
-        dst_item_path = os.path.join(deploy_path, dst_item)
+        src_item_path = os.path.join(".", "artifacts", deploy_type, item)
+        dst_item_path = os.path.join(deploy_path, item)
         if os.path.isdir(src_item_path):
             shutil.copytree(
                 src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
