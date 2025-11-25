@@ -171,7 +171,7 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
             os.remove(item_path)
 
     print("Programming included libraries to device...")
-    for src_item,dst_item in includejson["src"].items():
+    for src_item,dst_item in includejson["src"]:
         src_item_path = os.path.join(".", "src", src_item)
         dst_item_path = os.path.join(deploy_path, dst_item)
         if os.path.isdir(src_item_path):
@@ -198,7 +198,7 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
         pass
     
     if include_tests:
-        for src_item,dst_item in includejson["unit_tests"].items():
+        for src_item,dst_item in includejson["unit_tests"]:
             src_item_path = os.path.join(".", "unit_tests", src_item)
             dst_item_path = os.path.join(deploy_path, dst_item)
             if os.path.isdir(src_item_path):
@@ -214,11 +214,11 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
         )
 
     print("Programming target-specific software to device...")
-    for item in os.listdir(os.path.join(".", "artifacts", deploy_type)):
-        if item == "include.json":
+    for src_item,dst_item in os.listdir(os.path.join(".", "artifacts", deploy_type)):
+        if dst_item == "include.json":
             continue
-        src_item_path = os.path.join(".", "artifacts", deploy_type, item)
-        dst_item_path = os.path.join(deploy_path, item)
+        src_item_path = os.path.join(".", "artifacts", deploy_type, src_item)
+        dst_item_path = os.path.join(deploy_path, dst_item)
         if os.path.isdir(src_item_path):
             shutil.copytree(
                 src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
