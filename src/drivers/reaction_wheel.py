@@ -3,7 +3,6 @@ Driver module for the 1509T012B reaction wheel motor using the SC 1801 P speed c
 """
 
 import pwmio
-
 import digitalio
 
 class ReactionWheel:

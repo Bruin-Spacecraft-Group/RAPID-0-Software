@@ -14,5 +14,5 @@ print("successful init")
 
 if __name__ == "__main__":
     while True:
-        sc.set_speed(2**15)
+        sc.set_speed(2**12)
         print(sc.get_speed(), sc.get_direction())
