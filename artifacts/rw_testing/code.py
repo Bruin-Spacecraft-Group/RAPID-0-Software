@@ -67,11 +67,9 @@ def const_meas(length: int, sample_rate: int):
     :param sample_rate: delay between measurements (ms)
     :type sample_rate: int
 
-    returns matrix of 3 columns, parallel arrays times [0] accel [1] pos [2]
+    returns matrix of 3 columns, times [0] accel [1] pos [2] with rows as step
     """
-    times = []
-    accel = []
-    pos = []
+    res = []
     t = 0
 
     while t <= length:
@@ -80,11 +78,9 @@ def const_meas(length: int, sample_rate: int):
         t = time.perf_counter()
 
         if (t*1000) % sample_rate:
-            times.append(t)
-            accel.append(a.value)
-            pos.append(optical.value)
+            res.append([t, a.value, optical.value])
 
-    return [times, accel, pos]
+    return res
 
 def var_speed_meas(length: int, sample_rate: int):
     """
@@ -95,20 +91,16 @@ def var_speed_meas(length: int, sample_rate: int):
     :param sample_rate: delay between measurements (ms)
     :type sample_rate: int
 
-    :return: matrix of 4 columns, parallel arrays speeds [0] times [1] accel [2] pos [3]
+    :return: matrix of 4 columns, speeds [0] times [1] accel [2] pos [3] with rows as step
     :rtype: list[4]
     """
-    speeds = []
-    times = []
-    accel = []
-    pos = []
+    res = []
     t = 0
 
     steps = np.arange(5, 100, 5)
 
     for s in steps:
         s = s * 0.01
-        speeds.append(s)
 
         # measurement lasts for TIME (10) seconds
         while t <= length:
@@ -118,11 +110,9 @@ def var_speed_meas(length: int, sample_rate: int):
             t = time.perf_counter()
 
             if (t*1000) % sample_rate == 0:
-                times.append(t)
-                accel.append(a.value)
-                pos.append(optical.value)
+                res.append([s, t, a.value, optical.value])
 
-    return [speeds, times, accel, pos]
+    return res
 
 def sin_meas(length: int, sample_rate: int) -> list:
     """
@@ -160,9 +150,6 @@ def write_to_csv(name: str, headers: list[str], values: list) -> None:
     :param values: value matrix indexed respective to headers
     :type values: list
     """
-
-    # flip values list 90 degrees
-    values = list(map(list, zip(*values)))
 
     with open(f"/sd/${name}.csv", "w", encoding='utf-8') as wr:
         csvwriter = csv.writer(wr)
