@@ -1,22 +1,11 @@
 {
-    "src": [      
-        "drivers/ads1118.py",
-        "lib/pin_manager.py"
-    ],
-    "src_export":
-    [
-        "drivers/ads1118.py",
-        "lib/pin_manager.py"
-    ],
-    "unit_tests": [
-        "drivers/ads1118_test.py",
-        "lib/pin_manager_test.py",
-        "lib/custom_module_mocking.py"
-    ],
-    "unit_test_export":
-    [
-        "drivers/ads1118_test.py",
-        "lib/pin_manager_test.py",
-        "lib/custom_module_mocking.py"
-    ]
+    "src": {       
+        "drivers/ads1118.py" : "ads1118.py",
+        "lib/pin_manager.py" : "pin_manager.py"
+    },
+    "unit_tests": {
+        "drivers/ads1118_test.py" : "ads1118_test.py",
+        "lib/pin_manager_test.py" : "pin_manager_test.py",
+        "lib/custom_module_mocking.py" : "custom_module_mocking.py"
+    }
 }

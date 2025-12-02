@@ -171,11 +171,9 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
             os.remove(item_path)
 
     print("Programming included libraries to device...")
-    index = 0
-    for src_item in includejson["src"]:
-        index += 1
+    for src_item,dst_item in includejson["src"].items():
         src_item_path = os.path.join(".", "src", src_item)
-        dst_item_path = os.path.join(deploy_path, includejson["src_export"][index - 1])
+        dst_item_path = os.path.join(deploy_path, dst_item)
         if os.path.isdir(src_item_path):
             shutil.copytree(
                 src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
@@ -183,11 +181,11 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
         else:
             os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
             shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
-    index = 0
+    
     if include_tests:
-        for src_item in includejson["unit_tests"]:
+        for src_item,dst_item in includejson["unit_tests"].items():
             src_item_path = os.path.join(".", "unit_tests", src_item)
-            dst_item_path = os.path.join(deploy_path, includejson["unit_test_export"][index - 1])
+            dst_item_path = os.path.join(deploy_path, dst_item)
             if os.path.isdir(src_item_path):
                 shutil.copytree(
                     src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
