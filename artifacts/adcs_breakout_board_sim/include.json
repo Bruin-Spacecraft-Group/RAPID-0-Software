@@ -10,8 +10,8 @@
         "tasks/adcs/point_to_earth.py" : "adcs/point_to_earth.py",
         "tasks/adcs/point_to_sun.py" : "adcs/point_to_sun.py",
         "lib/datastores/adcs.py" : "datastores/adcs.py", 
-        "lib/adafruit_ticks.py" : "adafruit_ticks.py", 
-        "lib/asyncio" : "asyncio"
+        "lib/adafruit_ticks.py" : "lib/adafruit_ticks.py", 
+        "lib/asyncio" : "lib/asyncio"
         
     },
     "unit_tests": {
