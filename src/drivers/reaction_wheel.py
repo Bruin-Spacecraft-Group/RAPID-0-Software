@@ -4,6 +4,7 @@ Driver module for the 1509T012B reaction wheel motor using the SC 1801 P speed c
 
 import pwmio
 import digitalio
+import frequencyio
 
 class ReactionWheel:
     """
@@ -16,8 +17,7 @@ class ReactionWheel:
         self.diro = digitalio.DigitalInOut(diro)
         self.diro.direction = digitalio.Direction.OUTPUT
         # Digital Out - Frequency out
-        self.fg = digitalio.DigitalInOut(fg)
-        self.fg.direction = digitalio.Direction.INPUT
+        self.fg = frequencyio.FrequencyIn(fg)
 
     def get_speed(self):
         """
@@ -51,3 +51,13 @@ class ReactionWheel:
         elif dc < 0:
             self.diro.value = False # counterclockwise
             self.unsoll.duty_cycle = -dc
+
+    def get_real_speed(self):
+        """
+        Reads hall sensors to gauge the real speed the motor is spinning at in rpm
+
+        Returns result in rpm
+        """
+        print(self.fg.value)
+
+        return
