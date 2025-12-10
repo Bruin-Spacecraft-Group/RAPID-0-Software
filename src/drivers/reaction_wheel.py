@@ -58,6 +58,7 @@ class ReactionWheel:
 
         Returns result in rpm
         """
-        print(self.fg.value)
+        
+        # frequencyIn testing for now
 
-        return
+        return self.fg.value

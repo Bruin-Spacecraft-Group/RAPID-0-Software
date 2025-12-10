@@ -77,7 +77,7 @@ def const_meas(length: int, sample_rate: int):
         
         t = time.perf_counter()
 
-        if (t*1000) % sample_rate:
+        if (t*1000) % sample_rate == 0:
             res.append([t, a.value, optical.value])
 
     return res

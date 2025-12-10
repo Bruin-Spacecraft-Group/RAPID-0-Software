@@ -4,6 +4,7 @@ Testing module for the reaction wheel and speed controller driver
 
 import microcontroller as mc
 import drivers.reaction_wheel as rw
+import time
 
 print("code running")
 
@@ -18,5 +19,7 @@ if __name__ == "__main__":
     while True:
         SPEED = 0.2
         sc.set_speed(-int(2**15 * SPEED))
-        sc.get_real_speed()
-        # print(sc.get_speed(), sc.get_direction())
+
+        # also good time to test if this logic is correct
+        if ((time.perf_counter()*1000) % 500 == 0):
+            print(f"S: ${sc.get_speed()}, M: ${sc.get_real_speed()}")
