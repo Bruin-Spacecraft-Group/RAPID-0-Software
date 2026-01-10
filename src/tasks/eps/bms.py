@@ -4,9 +4,7 @@ Module to operate the battery management system.
 
 import asyncio
 
-
-from datastores.eps import Datastore
-
+from datastores import eps
 
 # TODO: Tune these thresholds based on testing and battery specs
 MEASURABLE_DIFF_V = None
@@ -18,7 +16,7 @@ DISCHARGING_TEMPERATURE_THRESHOLD_C = None
 CHARGING_VOLTAGE_THRESHOLD_V = None
 DISCHARGING_VOLTAGE_THRESHOLD_V = None
 
-async def battery_management_task(datastore: Datastore, string):
+async def battery_management_task(datastore: eps.Datastore):
     """
     Asynchronous control loop for battery balancing.
 
@@ -28,18 +26,14 @@ async def battery_management_task(datastore: Datastore, string):
     for string in [
         datastore.batteries.string_1,
         datastore.batteries.string_2,
-        datastore.batteries.string_3      
+        datastore.batteries.string_3
     ]:
         string.discharging_enabled = string_discharge_check(string)
         string.charging_enabled = string_charge_check(string)
         balance_single_string(string)
         await asyncio.sleep(1)  # run once per second
-    
-    
-        
-        
 
-def balance_all_strings(datastore: Datastore):
+def balance_all_strings(datastore: eps.Datastore):
     """
     Apply balancing logic to all battery strings in the pack.
     """
@@ -50,7 +44,7 @@ def balance_all_strings(datastore: Datastore):
     ]:
         balance_single_string(string)
 
-def string_charge_check(string):
+def string_charge_check(string: eps.DsBatteryString):
     """
     Check if a battery string is in a safe state for balancing during charging.
     """
@@ -63,9 +57,11 @@ def string_charge_check(string):
             return False
     return True
 
-def string_discharge_check(string):
+def string_discharge_check(string: eps.DsBatteryString):
     """
     Check if a battery string is in a safe state for balancing during discharging.
+
+    False to disable, True to enable discharge switch
     """
     if string.output_current > DISCHARGING_CURRENT_THRESHOLD_A:
         return False
@@ -76,11 +72,8 @@ def string_discharge_check(string):
             return False
     return True
 
-def balance_single_string(string):
+def balance_single_string(string: eps.DsBatteryString):
     """Apply balancing logic to one 2-cell battery string."""
-    if not string_charge_check(string) or not string_discharge_check(string):
-        disable_all_balancing(string)
-        return
     v_a, v_b = string.top_cell_voltage, string.bottom_cell_voltage
     if v_a is None or v_b is None:
         return
@@ -89,73 +82,59 @@ def balance_single_string(string):
     charging = True
     almost_full = max(v_a, v_b) > 4.15  # near-full threshold example
     if not (charging and almost_full):
-        disable_all_balancing(string)
+        disable_balance(string, "both")
         return
 
     a_on, b_on = string.top_balancing_shunt_enabled, string.bottom_balancing_shunt_enabled
 
+    diff = 0
     if a_on:
-        handle_top_on(string, v_a, v_b)
-    elif b_on:
-        handle_bottom_on(string, v_a, v_b)
+        diff = v_a - v_b
+    elif b_on: # noticing that b has opposite logic to a_on
+        diff = v_b - v_a
+    else: # if neither enabled, skipped logic
+        diff = v_a - v_b
+
+        if diff > SIGNIFICANT_DIFF_V:
+            disable_balance(string, "b")
+        elif diff < 0 - SIGNIFICANT_DIFF_V: # making sure it doesn't think I'm doing unary operator
+            disable_balance(string, "a")
+        else:
+            disable_balance(string, "both")
+        return
+
+    # comments with logic in terms of a_on
+    if diff > MEASURABLE_DIFF_V or diff > SIGNIFICANT_DIFF_V:
+        # diff greater than measurable or significant, a enable b disable
+        disable_balance(string, "b")
+        return
+
+    if diff < 0: # otherwise if diff is negative where b>a, a disable b enable
+        disable_balance(string, "a")
     else:
-        handle_both_off(string, v_a, v_b)
+        disable_balance(string, "both")
+        return
 
+def disable_balance(string: eps.DsBatteryString, disabled_cell: str):
+    """
+    Helper function to disable balancing shunts based on the cell to be disabled 
 
-def disable_all_balancing(string):
-    """
-    Helper function to disable both balancing shunts
-    """
-    string.top_balancing_shunt_enabled = False
-    string.bottom_balancing_shunt_enabled = False
+    if a disabled b enabled, disabled_cell is a. If both a and b disabled, disabled_cell = both
 
+    disabled_cell has options "a", "b", and "both"
+    """
 
-def handle_top_on(string, v_a, v_b):
-    """
-    Helper function to handle when the top shunt is enabled and p.d. states change
-    """
-    if v_a > v_b + MEASURABLE_DIFF_V:
-        string.bottom_balancing_shunt_enabled = True
-        string.top_balancing_shunt_enabled = False
-    elif v_a > v_b + SIGNIFICANT_DIFF_V:
-        string.bottom_balancing_shunt_enabled = True
-        string.top_balancing_shunt_enabled = False
-        
-    elif v_b > v_a + SIGNIFICANT_DIFF_V:
-        string.top_balancing_shunt_enabled = False
-        string.bottom_balancing_shunt_enabled = True
-    else:
+    if disabled_cell == "both":
         string.top_balancing_shunt_enabled = False
         string.bottom_balancing_shunt_enabled = False
+        return
 
+    # logic treats as defaults true and disables depending on disabled cell.
+    # 1 more call for better readability
+    string.top_balancing_shunt_enabled = True
+    string.bottom_balancing_shunt_enabled = True
 
-def handle_bottom_on(string, v_a, v_b):
-    """
-    Helper function to handle when the bottom shunt is enabled and p.d. states change
-    """
-    if v_b > v_a + MEASURABLE_DIFF_V:
+    if disabled_cell == "a":
         string.top_balancing_shunt_enabled = False
-        string.bottom_balancing_shunt_enabled = True
-    elif v_a > v_b + SIGNIFICANT_DIFF_V:
-        string.bottom_balancing_shunt_enabled = False
-        string.top_balancing_shunt_enabled = True
-    elif v_b > v_a + SIGNIFICANT_DIFF_V:
-        string.top_balancing_shunt_enabled = False
-        string.bottom_balancing_shunt_enabled = True
-    else:
-        string.top_balancing_shunt_enabled = False
-        string.bottom_balancing_shunt_enabled = False
-
-def handle_both_off(string, v_a, v_b):
-    """
-    Helper function to handle when both shunts are off and p.d. states change
-    """
-    if v_a > v_b + SIGNIFICANT_DIFF_V:
-        string.top_balancing_shunt_enabled = True
-        string.bottom_balancing_shunt_enabled = False
-    elif v_b > v_a + SIGNIFICANT_DIFF_V:
-        string.bottom_balancing_shunt_enabled = True
-        string.top_balancing_shunt_enabled = False
-    else:
-        string.top_balancing_shunt_enabled = False
+    elif disabled_cell == "b":
         string.bottom_balancing_shunt_enabled = False
