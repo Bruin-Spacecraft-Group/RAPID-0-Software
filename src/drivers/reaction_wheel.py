@@ -4,7 +4,7 @@ Driver module for the 1509T012B reaction wheel motor using the SC 1801 P speed c
 
 import pwmio
 import digitalio
-import frequencyio
+# import frequencyio
 
 class ReactionWheel:
     """
@@ -17,7 +17,7 @@ class ReactionWheel:
         self.diro = digitalio.DigitalInOut(diro)
         self.diro.direction = digitalio.Direction.OUTPUT
         # Digital Out - Frequency out
-        self.fg = frequencyio.FrequencyIn(fg)
+        # self.fg = frequencyio.FrequencyIn(fg)
 
     def get_speed(self):
         """
