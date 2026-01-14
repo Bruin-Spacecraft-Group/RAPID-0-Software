@@ -73,7 +73,7 @@ def string_discharge_check(string: eps.DsBatteryString):
             return False
     return True
 
-def balance_string(string: eps.DsBatteryString):
+def balance_string(string: eps.DsBatteryString): # noqa: C901
     """Apply balancing logic to one 2-cell battery string."""
     v_a, v_b = string.top_cell_voltage, string.bottom_cell_voltage
     if v_a is None or v_b is None:
@@ -95,7 +95,7 @@ def balance_string(string: eps.DsBatteryString):
     elif a_on and diff > MEASURABLE_DIFF_V:
         # diff greater than measurable, a enable b disable
         disable_balance(string, "b")
-    elif b_on and diff < -1*MEASURABLE_DIFF_V: 
+    elif b_on and diff < -1*MEASURABLE_DIFF_V:
         # otherwise if diff is negative where b>a, a disable b enable
         disable_balance(string, "a")
     else:
