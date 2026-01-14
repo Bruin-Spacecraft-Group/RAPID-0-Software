@@ -31,7 +31,7 @@ async def battery_management_task(datastore: eps.Datastore):
     ]:
         string.discharging_enabled = string_discharge_check(string)
         string.charging_enabled = string_charge_check(string)
-        balance_single_string(string)
+        balance_string(string)
         await asyncio.sleep(1)  # run once per second
 
 # def balance_all_strings(datastore: eps.Datastore):
@@ -43,7 +43,7 @@ async def battery_management_task(datastore: eps.Datastore):
 #         datastore.batteries.string_2,
 #         datastore.batteries.string_3
 #     ]:
-#         balance_single_string(string)
+#         balance_string(string)
 
 def string_charge_check(string: eps.DsBatteryString):
     """
@@ -73,14 +73,14 @@ def string_discharge_check(string: eps.DsBatteryString):
             return False
     return True
 
-def balance_single_string(string: eps.DsBatteryString):
+def balance_string(string: eps.DsBatteryString):
     """Apply balancing logic to one 2-cell battery string."""
     v_a, v_b = string.top_cell_voltage, string.bottom_cell_voltage
     if v_a is None or v_b is None:
         return
 
     # Check if charging and at least one of the cells are almost fully charged
-    if not string.charging_enabled or not (max(string.top_cell_voltage, string.top_cell_voltage) > BALANCING_VOLTAGE_THRESHOLD_V):
+    if not string.charging_enabled or not max(string.top_cell_voltage, string.top_cell_voltage) > BALANCING_VOLTAGE_THRESHOLD_V:
         disable_balance(string, "both")
         return
 
@@ -108,12 +108,10 @@ def balance_single_string(string: eps.DsBatteryString):
         disable_balance(string, "b")
         return
 
-    if diff < -MEASURABLE_DIFF_V: # otherwise if diff is negative where b>a, a disable b enable
+    if diff < -1*MEASURABLE_DIFF_V: # otherwise if diff is negative where b>a, a disable b enable
         disable_balance(string, "a")
     else:
         disable_balance(string, "both")
-    
-    return
 
 def disable_balance(string: eps.DsBatteryString, disabled_cell: str):
     """
