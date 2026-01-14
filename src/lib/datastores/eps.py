@@ -5,6 +5,7 @@ are set to `None` throughout this module.
 """
 
 
+# TODO: Ensure these are all initialized upon startup
 class Datastore:
     """
     A top-level datastore object. An object of this type contains all state data for an
