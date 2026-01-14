@@ -115,6 +115,7 @@ class DsCommands:
     """
 
     def __init__(self):
+        self.explicit_3v3_disable: bool = False
         self.explicit_5v_disable: bool = False
         self.explicit_12vlp_disable: bool = False
         self.explicit_12vhp_enable: bool = False

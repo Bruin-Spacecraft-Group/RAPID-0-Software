@@ -19,7 +19,6 @@ from pin_manager import PinManager
 import board
 
 
-
 async def intersubsystem_communication_task(datastore: Datastore):
     """
     Task to communicate with CDH.
@@ -66,9 +65,13 @@ async def output_bus_control_task(datastore: Datastore):
             await asyncio.sleep(0.1)
 
 
+TICK_RATE_HZ = 5  # TODO: Verify this value
+WINDOW_SECONDS = 20
+WINDOW_SIZE = TICK_RATE_HZ * WINDOW_SECONDS  # 100
+
 _control_tick_3v3_bus_data = {
     "tick_count": 0,
-    "output_currents": [0] * 200,
+    "output_currents": [0] * 2 * WINDOW_SIZE,
 }
 
 
@@ -85,6 +88,7 @@ def circ_recent(arr, count, stop):
 
 
 def _control_tick_3v3_bus(datastore: Datastore):
+    """Determines if the 3v3 bus should be disabled based on the battery charge and output current"""
     avg_output_current_20s = avg(_control_tick_3v3_bus_data["output_currents"])
     if avg_output_current_20s > 0.5 * 4 / 3:
         return False
@@ -95,9 +99,12 @@ def _control_tick_3v3_bus(datastore: Datastore):
         return False
     if battery_soc < 0.1 and avg_output_current_20s < 0.1 * 4 / 3:
         return False
-    if _control_tick_3v3_bus_data["tick_count"] % 50 == 0:
-        # TODO: See if we need to put something here?
-        pass
+    if _control_tick_3v3_bus_data["tick_count"] >= WINDOW_SIZE:
+        # Reduces size of buffer every 50 ticks
+        _control_tick_3v3_bus_data["output_currents"] = _control_tick_3v3_bus_data[
+            "output_currents"
+        ][-WINDOW_SIZE:]
+        _control_tick_3v3_bus_data["tick_count"] = -1
     _control_tick_3v3_bus_data["tick_count"] += 1
     return True
 
