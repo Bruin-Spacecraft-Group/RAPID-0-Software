@@ -15,6 +15,7 @@ CHARGING_TEMPERATURE_THRESHOLD_C = None
 DISCHARGING_TEMPERATURE_THRESHOLD_C = None
 CHARGING_VOLTAGE_THRESHOLD_V = None
 DISCHARGING_VOLTAGE_THRESHOLD_V = None
+BALANCING_VOLTAGE_THRESHOLD_V = None # for checking against each cell separately
 
 async def battery_management_task(datastore: eps.Datastore):
     """
@@ -33,16 +34,16 @@ async def battery_management_task(datastore: eps.Datastore):
         balance_single_string(string)
         await asyncio.sleep(1)  # run once per second
 
-def balance_all_strings(datastore: eps.Datastore):
-    """
-    Apply balancing logic to all battery strings in the pack.
-    """
-    for string in [
-        datastore.batteries.string_1,
-        datastore.batteries.string_2,
-        datastore.batteries.string_3
-    ]:
-        balance_single_string(string)
+# def balance_all_strings(datastore: eps.Datastore):
+#     """
+#     Apply balancing logic to all battery strings in the pack.
+#     """
+#     for string in [
+#         datastore.batteries.string_1,
+#         datastore.batteries.string_2,
+#         datastore.batteries.string_3
+#     ]:
+#         balance_single_string(string)
 
 def string_charge_check(string: eps.DsBatteryString):
     """
@@ -78,10 +79,8 @@ def balance_single_string(string: eps.DsBatteryString):
     if v_a is None or v_b is None:
         return
 
-    # Determine if charging and near full (placeholder logic)
-    charging = True
-    almost_full = max(v_a, v_b) > 4.15  # near-full threshold example
-    if not (charging and almost_full):
+    # Check if charging and at least one of the cells are almost fully charged
+    if not string.charging_enabled or not (max(string.top_cell_voltage, string.top_cell_voltage) > BALANCING_VOLTAGE_THRESHOLD_V):
         disable_balance(string, "both")
         return
 
@@ -104,16 +103,17 @@ def balance_single_string(string: eps.DsBatteryString):
         return
 
     # comments with logic in terms of a_on
-    if diff > MEASURABLE_DIFF_V or diff > SIGNIFICANT_DIFF_V:
-        # diff greater than measurable or significant, a enable b disable
+    if diff > MEASURABLE_DIFF_V:
+        # diff greater than measurable, a enable b disable
         disable_balance(string, "b")
         return
 
-    if diff < 0: # otherwise if diff is negative where b>a, a disable b enable
+    if diff < -MEASURABLE_DIFF_V: # otherwise if diff is negative where b>a, a disable b enable
         disable_balance(string, "a")
     else:
         disable_balance(string, "both")
-        return
+    
+    return
 
 def disable_balance(string: eps.DsBatteryString, disabled_cell: str):
     """
