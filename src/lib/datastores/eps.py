@@ -33,9 +33,9 @@ class DsBatteryPack:
         self.string_1: DsBatteryString = DsBatteryString()
         self.string_2: DsBatteryString = DsBatteryString()
         self.string_3: DsBatteryString = DsBatteryString()
-        self.temperatures: list[float] = [None] * 4
-        self.pack_capacity_mah: float = None
-        self.filled_capacity_mah: float = None
+        self.temperatures: list[int] = [None] * 4
+        self.pack_capacity_mah: int = None
+        self.filled_capacity_mah: int = None
 
 
 class DsOutputBus:
@@ -47,9 +47,9 @@ class DsOutputBus:
     """
 
     def __init__(self):
-        self.input_current: float = None
-        self.output_current: float = None
-        self.output_voltage: float = None
+        self.input_current: int = None
+        self.output_current: int = None
+        self.output_voltage: int = None
         self.enabled: bool = None
 
 
@@ -60,9 +60,9 @@ class DsMppt:
     """
 
     def __init__(self):
-        self.input_current: float = None
-        self.output_current: float = None
-        self.input_voltage: float = None
+        self.input_current: int = None
+        self.output_current: int = None
+        self.input_voltage: int = None
         self.enabled: bool = None
         self.low_power_mode: bool = None
         self.charging_stage: int = None
@@ -85,9 +85,9 @@ class DsBatteryString:
     """
 
     def __init__(self):
-        self.top_cell_voltage: float = None
-        self.bottom_cell_voltage: float = None
-        self.output_current: float = None
+        self.top_cell_voltage: int = None
+        self.bottom_cell_voltage: int = None
+        self.output_current: int = None
         self.discharging_enabled: bool = None
         self.charging_enabled: bool = None
         self.top_balancing_shunt_enabled: bool = None
@@ -101,10 +101,10 @@ class DsSolarPanel:
     """
 
     def __init__(self):
-        self.top_temperature: float = None
-        self.middle_temperature: float = None
-        self.bottom_temperature: float = None
-        self.output_current: float = None
+        self.top_temperature: int = None
+        self.middle_temperature: int = None
+        self.bottom_temperature: int = None
+        self.output_current: int = None
 
 
 class DsCommands:

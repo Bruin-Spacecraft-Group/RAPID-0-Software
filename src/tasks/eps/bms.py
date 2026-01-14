@@ -86,31 +86,20 @@ def balance_string(string: eps.DsBatteryString):
 
     a_on, b_on = string.top_balancing_shunt_enabled, string.bottom_balancing_shunt_enabled
 
-    diff = 0
-    if a_on:
-        diff = v_a - v_b
-    elif b_on: # noticing that b has opposite logic to a_on
-        diff = v_b - v_a
-    else: # if neither enabled, skipped logic
-        diff = v_a - v_b
+    diff = v_a - v_b
 
-        if diff > SIGNIFICANT_DIFF_V:
-            disable_balance(string, "b")
-        elif diff < 0 - SIGNIFICANT_DIFF_V: # making sure it doesn't think I'm doing unary operator
-            disable_balance(string, "a")
-        else:
-            disable_balance(string, "both")
-        return
-
-    # comments with logic in terms of a_on
-    if diff > MEASURABLE_DIFF_V:
+    if diff > SIGNIFICANT_DIFF_V:
+        disable_balance(string, "b")
+    elif diff < -1* SIGNIFICANT_DIFF_V: # making sure it doesn't think I'm doing unary operator
+        disable_balance(string, "a")
+    elif a_on and diff > MEASURABLE_DIFF_V:
         # diff greater than measurable, a enable b disable
         disable_balance(string, "b")
-        return
-
-    if diff < -1*MEASURABLE_DIFF_V: # otherwise if diff is negative where b>a, a disable b enable
+    elif b_on and diff < -1*MEASURABLE_DIFF_V: 
+        # otherwise if diff is negative where b>a, a disable b enable
         disable_balance(string, "a")
     else:
+        # disable balance if no conditions met
         disable_balance(string, "both")
 
 def disable_balance(string: eps.DsBatteryString, disabled_cell: str):
