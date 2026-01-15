@@ -10,7 +10,7 @@ import analogio as an
 # import sdcardio as sd
 # import storage
 
-import circuitpython_csv as csv
+# import circuitpython_csv as csv
 
 import ulab.numpy as np
 import microcontroller as mc
@@ -153,12 +153,14 @@ def write_to_csv(name: str, headers: list[str], values: list) -> None:
     :type values: list
     """
 
-    with open(f"/sd/${name}.csv", "w", encoding='utf-8') as wr:
-        csvwriter = csv.writer(wr)
-        csvwriter.writerow(headers)
+    return name, headers, values
 
-        for row in values:
-            csvwriter.writerow(row)
+    # with open(f"/sd/${name}.csv", "w", encoding='utf-8') as wr:
+    #     # csvwriter = csv.writer(wr)
+    #     # csvwriter.writerow(headers)
+
+    #     # for row in values:
+    #     #     csvwriter.writerow(row)
 
 if __name__ == "__main__":
     # write_to_csv("meas1-const", ["time", "accel", "position"], const_meas())
