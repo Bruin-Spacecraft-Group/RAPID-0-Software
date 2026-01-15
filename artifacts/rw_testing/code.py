@@ -2,19 +2,20 @@
 Testing module for the reaction wheel and speed controller driver on the CDH board
 """
 
-import microcontroller as mc
-import drivers.reaction_wheel as rw
+import time
 
 import analogio as an
 
-import board
-import sdcardio as sd
-import storage
+# import board
+# import sdcardio as sd
+# import storage
 
 import circuitpython_csv as csv
 
-import time
 import ulab.numpy as np
+import microcontroller as mc
+
+import drivers.reaction_wheel as rw
 
 print("code running")
 
@@ -51,10 +52,10 @@ a = an.AnalogIn(Pins.acc)
 optical = an.AnalogIn(Pins.opt)
 
 # initialise sd
-spi = board.SPI()
-sdcard = sd.SDCard(spi, Pins.sd)
-vfs = storage.VfsFat(sdcard)
-storage.mount(vfs, "/sd")
+# spi = board.SPI()
+# sdcard = sd.SDCard(spi, Pins.sd)
+# vfs = storage.VfsFat(sdcard)
+# storage.mount(vfs, "/sd")
 
 print("successful init")
 
@@ -74,7 +75,7 @@ def const_meas(length: int, sample_rate: int):
 
     while t <= length:
         sc.set_speed(2**12)
-        
+
         t = time.perf_counter()
 
         if (t*1000) % sample_rate == 0:
@@ -99,7 +100,7 @@ def var_speed_meas(length: int, sample_rate: int):
 
     steps = np.arange(5, 100, 5)
 
-    for s in steps:
+    for s in list(steps):
         s = s * 0.01
 
         # measurement lasts for TIME (10) seconds
@@ -126,16 +127,17 @@ def sin_meas(length: int, sample_rate: int) -> list:
     :return: Description
     :rtype: list
     """
-    speeds = []
-    times = []
+    # speeds = []
+    # times = []
     # TODO: Figure out what exactly needs to be exported/calculated here
 
     t=0
+    t = sample_rate
 
     while t <= length:
         # period of 2pi seconds
         sc.set_speed(np.sin(t))
-        
+
         t = time.perf_counter()
 
 
@@ -159,6 +161,7 @@ def write_to_csv(name: str, headers: list[str], values: list) -> None:
             csvwriter.writerow(row)
 
 if __name__ == "__main__":
-    write_to_csv("meas1-const", ["time", "accel", "position"], const_meas())
-    write_to_csv("meas2-var", ["speed", "time", "accel", "position"], var_speed_meas())
-    write_to_csv("meas3-sin", [], sin_meas())
+    # write_to_csv("meas1-const", ["time", "accel", "position"], const_meas())
+    # write_to_csv("meas2-var", ["speed", "time", "accel", "position"], var_speed_meas())
+    # write_to_csv("meas3-sin", [], sin_meas())
+    pass

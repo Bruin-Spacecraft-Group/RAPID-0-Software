@@ -17,6 +17,7 @@ class ReactionWheel:
         self.diro = digitalio.DigitalInOut(diro)
         self.diro.direction = digitalio.Direction.OUTPUT
         # Digital Out - Frequency out
+        self.fg = None
         # self.fg = frequencyio.FrequencyIn(fg)
 
     def get_speed(self):
@@ -60,7 +61,7 @@ class ReactionWheel:
         :param pc: from domain [-100 to 100]
         """
         maxs = 2**16-1
-        
+
         self.set_speed((pc/100) * maxs)
 
     def get_real_speed(self):
@@ -69,7 +70,7 @@ class ReactionWheel:
 
         Returns result in rpm
         """
-        
+
         # frequencyIn testing for now
 
         return self.fg.value
