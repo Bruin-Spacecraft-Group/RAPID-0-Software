@@ -22,6 +22,11 @@ sc = rw.ReactionWheel(mc.pin.PA00, mc.pin.PA01, mc.pin.PA04)
 # Digital input "USER" button (find pin name)
 ub = digitalio.DigitalInOut(mc.pin.PC13)
 
+# accelerometer is connected for SPI where:
+# SPI is connected to SCL(K), SDA/I, AD0/SDO
+# Fsync is gnd
+# INT is connected to PB00
+
 print("successful init")
 
 speed = 0
