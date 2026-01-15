@@ -12,7 +12,7 @@ import time
 
 print("code running")
 
-REBOUND = 100 # ms
+# REBOUND = 0.5 # s
 
 # PA0 unsoll, PA1 dir, PA4 fg
 sc = rw.ReactionWheel(mc.pin.PA00, mc.pin.PA01, mc.pin.PA04)
@@ -24,24 +24,9 @@ print("successful init")
 
 if __name__ == "__main__":
     t = 0.0
-    speed = 1.0 # full speed
+    speed = input("0-100: ") # full speed 100
+    print(speed, sc.get_speed())
+
     while True:
-        sc.set_speed(int((2**16 - 1) * speed))
-        
-        # temp for current time just in case of scripting language quirks
-        curr = time.perf_counter()
-
-        if ub.value and curr - t >= REBOUND:
-            t = curr
-
-            # cycle from full - half - quarter - rest
-            if speed == 1.0:
-                speed = 0.5
-            elif speed == 0.5:
-                speed = 0.25
-            elif speed == 0.25:
-                speed = 0.0
-            else:
-                speed = 1.0
-
+        sc.set_speed_pc(speed)    
  

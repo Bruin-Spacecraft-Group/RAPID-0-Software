@@ -40,17 +40,28 @@ class ReactionWheel:
 
     def set_speed(self, dc):
         """
-        Sets duty cycle and direction (much like velocity)
+        Sets speed by duty cycle and direction
         Positive dc values are clockwise and Negative values anticlockwise
         
-        Accepts inputs dc from domain [-2^16 to 2^16]
+        :param dc: from domain [-2^16 to 2^16]
         """
         if dc >= 0:
             self.diro.value = True # Clockwise
             self.unsoll.duty_cycle = dc
         elif dc < 0:
             self.diro.value = False # counterclockwise
-            self.unsoll.duty_cycle = -dc
+            self.unsoll.duty_cycle = dc
+
+    def set_speed_pc(self, pc):
+        """
+        Sets speed by percentage and direction. 
+        Positive values clockwise, Negative values anticlockwise
+
+        :param pc: from domain [-100 to 100]
+        """
+        maxs = 2**16-1
+        
+        self.set_speed((pc/100) * maxs)
 
     def get_real_speed(self):
         """
