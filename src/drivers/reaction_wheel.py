@@ -17,7 +17,7 @@ class ReactionWheel:
         self.diro = digitalio.DigitalInOut(diro)
         self.diro.direction = digitalio.Direction.OUTPUT
         # Digital Out - Frequency out
-        self.fg = None
+        self.fg = fg
         # self.fg = frequencyio.FrequencyIn(fg)
 
     def get_speed(self):
