@@ -171,7 +171,7 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
             os.remove(item_path)
 
     print("Programming included libraries to device...")
-    for src_item in includejson["src"].items():
+    for src_item in includejson["src"]:
         itemlist = src_item.split(":",1)
         src_item_path = os.path.join(".", "src", itemlist[0])
         dst_item_path = os.path.join(deploy_path, itemlist[1])
@@ -184,7 +184,7 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
             shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
     
     if include_tests:
-        for src_item in includejson["unit_tests"].items():
+        for src_item in includejson["unit_tests"]:
             itemlist = src_item.split(":",1)
             src_item_path = os.path.join(".", "unit_tests", itemlist[0])
             dst_item_path = os.path.join(deploy_path, itemlist[1])
