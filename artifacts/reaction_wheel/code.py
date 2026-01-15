@@ -7,6 +7,7 @@ This is a "dumb" test script for the nucleo h7 board
 import microcontroller as mc
 # import board
 import digitalio
+import asyncio
 import drivers.reaction_wheel as rw
 
 # import time
@@ -23,10 +24,25 @@ ub = digitalio.DigitalInOut(mc.pin.PC13)
 
 print("successful init")
 
-if __name__ == "__main__":
-    # t = 0.0
-    speed = input("0-100: ") # full speed 100
+speed = 0
+lock = asyncio.Lock() # see if this is needed?
+
+async def speed_input():
+    while True:
+        global speed
+        speed = input("0-100: ")
+
+async def run_motor():
+    while True:
+        global speed
+        sc.set_speed_pc(speed)
+
+async def main():
+    speed = asyncio.create_task(speed_input())
+    run = asyncio.create_task(run_motor())
+    await asyncio.gather(speed, run)
+
     print(speed, sc.get_speed())
 
-    while True:
-        sc.set_speed_pc(speed)
+if __name__ == "__main__":
+    main()

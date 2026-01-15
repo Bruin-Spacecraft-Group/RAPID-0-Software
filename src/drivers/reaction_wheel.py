@@ -62,7 +62,7 @@ class ReactionWheel:
         """
         maxs = 2**16-1
 
-        self.set_speed((pc/100) * maxs)
+        self.set_speed(int((pc/100) * maxs))
 
     def get_real_speed(self):
         """
