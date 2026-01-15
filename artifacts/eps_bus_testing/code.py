@@ -51,12 +51,21 @@ if __name__ == "__main__":
             )
 
 
+
+
 def set_3v3(eps_ds_commands: DsCommands, enable: bool):
-    pass
+    en_3v3_bus_pin = digitalio.DigitalInOut(board.EN_3V3_BUS)
+    en_3v3_bus_pin.direction = digitalio.Direction.OUTPUT
+    en_3v3_bus_pin.value = enable
+    eps_ds_commands.bus_3v3_enabled = enable
 
 
 def set_5v(eps_ds_commands: DsCommands, enable: bool):
-    pass
+    en_5v_bus_pin = digitalio.DigitalInOut(board.EN_5V_BUS)
+    en_5v_bus_pin.direction = digitalio.Direction.OUTPUT
+    en_5v_bus_pin.value = enable
+    eps_ds_commands.bus_5v_enabled = enable
+
 
 
 def set_12vlp(eps_ds_commands: DsCommands, enable: bool):
