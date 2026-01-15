@@ -46,14 +46,15 @@ class ReactionWheel:
         
         :param dc: from domain [-2^16 to 2^16]
         """
+
         if dc >= 0:
             self.diro.value = True # Clockwise
             self.unsoll.duty_cycle = dc
         elif dc < 0:
             self.diro.value = False # counterclockwise
-            self.unsoll.duty_cycle = dc
+            self.unsoll.duty_cycle = -dc
 
-    def set_speed_pc(self, pc):
+    def set_speed_pc(self, pc: float):
         """
         Sets speed by percentage and direction. 
         Positive values clockwise, Negative values anticlockwise

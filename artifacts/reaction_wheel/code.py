@@ -5,9 +5,10 @@ This is a "dumb" test script for the nucleo h7 board
 """
 
 import microcontroller as mc
-# import board
+import board
+import busio
+
 import digitalio
-import asyncio
 import drivers.reaction_wheel as rw
 
 # import time
@@ -22,32 +23,68 @@ sc = rw.ReactionWheel(mc.pin.PA00, mc.pin.PA01, mc.pin.PA04)
 # Digital input "USER" button (find pin name)
 ub = digitalio.DigitalInOut(mc.pin.PC13)
 
-# accelerometer is connected for SPI where:
-# SPI is connected to SCL(K), SDA/I, AD0/SDO
-# Fsync is gnd
-# INT is connected to PB00
+# accelerometer is connected for i2c where:
+# SCL(K), SDA/I is connected to respective SCL SDA
+# AD0, Fsync is gnd
+# INT is connected to PB00 (unnecessary for now)
+i2c = busio.I2C(board.SCL, board.SDA)
+
+while not i2c.try_lock():
+    pass
+
+# verify bus address 0x68
+print([hex(x) for x in i2c.scan()])
+
+def safe_convert(value, target_type):
+    try:
+        return target_type(value)
+    except (ValueError, TypeError):
+        return None
+    
+
+
+def read_accel():
+    # input is apparently 0x68,
+    # output registers are 59 to 64 (0x3B to 0x40)
+    result = bytearray(6)
+    registers = [0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40]
+    # xH, xL, yH, yL, zH, zL
+
+    for r in registers:
+        i2c.writeto_then_readfrom(0x68, bytes([r]), result)
+    
+    print(result[0] << 8)
+    # from result, combine into readable decimal array
+    combine: int = lambda h, l: int((result[h] << 8) + result[l], 16)
+    
+    # into decimal
+    ret = [combine(0,1), combine(2,3), combine(4,5)]
+
+    print(ret)
+
+    return result
 
 print("successful init")
 
-speed = 0
-lock = asyncio.Lock() # see if this is needed?
-
-async def speed_input():
+if __name__ == "__main__":
+    speed = 0
     while True:
-        global speed
-        speed = input("0-100: ")
-
-async def run_motor():
-    while True:
-        global speed
         sc.set_speed_pc(speed)
 
-async def main():
-    speed = asyncio.create_task(speed_input())
-    run = asyncio.create_task(run_motor())
-    await asyncio.gather(speed, run)
+        usr = input("cmd: ")
 
-    print(speed, sc.get_speed())
-
-if __name__ == "__main__":
-    main()
+        if safe_convert(usr, float) != None:
+            speed = float(usr)
+        else:
+            cmd = usr.strip() 
+            if cmd == "acc":
+                print("accel: ", str(read_accel()))
+            elif cmd == "help":
+                print(
+    """function list:
+accel - returns accelerometer data
+[-100, 100] - any numerical input spins motor at percentage speed
+help - prints this message
+    """)
+            
+i2c.unlock()
