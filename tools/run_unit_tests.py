@@ -59,7 +59,7 @@ for app in os.listdir(artifacts_dir):
         os.path.join(".", "config")
     )
     source_config = os.path.join(".", "config/conftest.py")
-    dest_config = os.path.join(test_app_dir, "config/conftest.py")
+    dest_config = os.path.join(test_app_dir, "conftest.py")
     shutil.copyfile(source_config, dest_config)
     result = subprocess.run(
         [sys.executable, "-m", "pytest"], cwd=test_app_dir, env=test_env
