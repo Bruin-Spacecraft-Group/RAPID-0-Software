@@ -14,10 +14,21 @@ to state remain isolated between tests).
 """
 import sys
 
-sys.modules["micropython"] = type(sys)("micropython")
-sys.modules["adafruit_ticks"] = type(sys)("adafruit_ticks")
+class MagicMock:
+    """
+    Minimal MagicMock implementation that supports:
+    - attribute access
+    - method calls
+    Returns a new MagicMock for any attribute or call.
+    """
+    def __init__(self, *args, **kwargs):
+        pass
 
-from unittest.mock import MagicMock
+    def __call__(self, *args, **kwargs):
+        return MagicMock()
+
+    def __getattr__(self, name):
+        return MagicMock()
 
 def get_unavailable_firmware_modules():
     import importlib
