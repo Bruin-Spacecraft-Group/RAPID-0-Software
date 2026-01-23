@@ -43,6 +43,7 @@
         "locale",
         "math",
         "microcontroller",
+        "micropython",
         "msgpack",
         "neopixel_write",
         "nvm",
