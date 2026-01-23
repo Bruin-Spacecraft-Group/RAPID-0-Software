@@ -14,21 +14,7 @@ to state remain isolated between tests).
 """
 import sys
 
-class MagicMock:
-    """
-    Minimal MagicMock implementation that supports:
-    - attribute access
-    - method calls
-    Returns a new MagicMock for any attribute or call.
-    """
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def __call__(self, *args, **kwargs):
-        return MagicMock()
-
-    def __getattr__(self, name):
-        return MagicMock()
+from unittest.mock import MagicMock
 
 def get_unavailable_firmware_modules():
     import importlib
