@@ -13,6 +13,10 @@ imported), and immediately before each test function is evaluated (so changes
 to state remain isolated between tests).
 """
 import sys
+
+sys.modules["micropython"] = type(sys)("micropython")
+sys.modules["adafruit_ticks"] = type(sys)("adafruit_ticks")
+
 from unittest.mock import MagicMock
 
 def get_unavailable_firmware_modules():
