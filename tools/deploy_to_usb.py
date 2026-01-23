@@ -177,6 +177,19 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
         dst_item_path = os.path.join(deploy_path, itemlist[1])
         if os.path.isdir(src_item_path):
             shutil.copytree(
+                src_item_path, dst_item_path, symlinks=True, dirs_exist_ok=True
+            )
+        else:
+            os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
+            shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
+    
+    print("Programming included submodules to device...")
+    for src_item in includejson["submodules"]:
+        itemlist = src_item.split(":",1)
+        src_item_path = os.path.join(".", "submodules", itemlist[0])
+        dst_item_path = os.path.join(deploy_path, itemlist[1])
+        if os.path.isdir(src_item_path):
+            shutil.copytree(
                 src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
             )
         else:
