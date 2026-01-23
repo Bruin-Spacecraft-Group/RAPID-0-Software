@@ -16,6 +16,7 @@ import sys
 from unittest.mock import MagicMock
 
 sys.modules['micropython'] = MagicMock()
+sys.modules['adafruit_ticks'] = MagicMock()
 
 
 def get_unavailable_firmware_modules():
