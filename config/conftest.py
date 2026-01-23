@@ -15,6 +15,9 @@ to state remain isolated between tests).
 import sys
 from unittest.mock import MagicMock
 
+micropython_mock = MagicMock()
+sys.modules['micropython'] = micropython_mock
+
 
 def get_unavailable_firmware_modules():
     import importlib
