@@ -18,12 +18,6 @@ from unittest.mock import MagicMock
 micropython_mock = MagicMock()
 sys.modules['micropython'] = micropython_mock
 
-adafruit_ticks_mock = MagicMock()
-adafruit_ticks_mock.ticks_ms.return_value = 0
-adafruit_ticks_mock.ticks_diff.side_effect = lambda a, b: a - b
-adafruit_ticks_mock.ticks_add.side_effect = lambda a, b: a + b
-sys.modules['adafruit_ticks'] = adafruit_ticks_mock
-
 
 def get_unavailable_firmware_modules():
     import importlib
@@ -72,4 +66,4 @@ def pytest_runtest_setup(item):
 
 
 # Initial pre-setup configuration needed to stop ImportError when importing modules
-pytest_runtest_setup(None)
+# pytest_runtest_setup(None)
