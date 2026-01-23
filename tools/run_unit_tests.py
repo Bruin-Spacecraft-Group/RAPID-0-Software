@@ -58,9 +58,6 @@ for app in os.listdir(artifacts_dir):
     test_env["RAPID-0-Software_test-config"] = os.path.abspath(
         os.path.join(".", "config")
     )
-    source_config = os.path.join(".", "config/conftest.py")
-    dest_config = os.path.join(test_app_dir, "conftest.py")
-    shutil.copyfile(source_config, dest_config)
     result = subprocess.run(
         [sys.executable, "-m", "pytest"], cwd=test_app_dir, env=test_env
     ).returncode

@@ -15,10 +15,6 @@ to state remain isolated between tests).
 import sys
 from unittest.mock import MagicMock
 
-micropython_mock = MagicMock()
-sys.modules['micropython'] = micropython_mock
-
-
 def get_unavailable_firmware_modules():
     import importlib
     import os
@@ -66,4 +62,4 @@ def pytest_runtest_setup(item):
 
 
 # Initial pre-setup configuration needed to stop ImportError when importing modules
-# pytest_runtest_setup(None)
+pytest_runtest_setup(None)
