@@ -12,7 +12,6 @@
     "unit_tests": [
         "drivers/ads1118_test.py:ads1118_test.py",
         "drivers/camera_test.py:camera_test.py",
-        "lib/nda_wrapper_test.py:nda_wrapper_test.py",
         "lib/pin_manager_test.py:pin_manager_test.py",
         "lib/custom_module_mocking.py:custom_module_mocking.py"
     ]

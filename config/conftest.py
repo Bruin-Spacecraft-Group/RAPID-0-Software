@@ -13,10 +13,6 @@ imported), and immediately before each test function is evaluated (so changes
 to state remain isolated between tests).
 """
 import sys
-import mock
-micropython_mock = mock.MagicMock()
-sys.modules['micropython'] = micropython_mock
-sys.modules['adafruit_ticks'] = mock.MagicMock()
 from unittest.mock import MagicMock
 
 
