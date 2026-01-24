@@ -76,7 +76,7 @@ if __name__ == "__main__":
             speed = float(usr)
         else:
             cmd = usr.strip() 
-            if cmd == "acc":
+            if cmd == "accel":
                 print("accel: ", str(read_accel()))
             elif cmd == "help":
                 print(
