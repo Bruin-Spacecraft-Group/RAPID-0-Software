@@ -40,14 +40,12 @@ def safe_convert(value, target_type):
         return target_type(value)
     except (ValueError, TypeError):
         return None
-    
-
 
 def read_accel():
     # input is apparently 0x68,
-    # output registers are 59 to 64 (0x3B to 0x40)
+    # output registers are 59 to 64 (0x3A to 0x3F)
     result = bytearray(6)
-    registers = [0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40]
+    registers = [0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F]
     # xH, xL, yH, yL, zH, zL
 
     for r in registers:
@@ -55,10 +53,11 @@ def read_accel():
     
     print(result[0] << 8)
     # from result, combine into readable decimal array
-    combine: int = lambda h, l: int((result[h] << 8) + result[l], 16)
+    def combine(h, l):
+        return (result[h] << 8) + result[l]
     
     # into decimal
-    ret = [combine(0,1), combine(2,3), combine(4,5)]
+    ret = [combine(0, 1), combine(2, 3), combine(4, 5)]
 
     print(ret)
 
