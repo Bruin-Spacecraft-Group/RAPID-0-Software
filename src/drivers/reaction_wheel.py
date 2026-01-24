@@ -71,6 +71,6 @@ class ReactionWheel:
         Returns result in rpm
         """
 
-        # frequencyIn testing for now
+        # TODO: Use frequencyio (waiting on it) and reference data sheet to calculate real speed
 
         return self.fg.value
