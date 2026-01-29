@@ -170,6 +170,23 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
         else:
             os.remove(item_path)
 
+    if include_tests:
+        shutil.copyfile(
+            os.path.join(".", "config", "conftest.py"),
+            os.path.join(deploy_path, "conftest.py"),
+            )
+        for src_item in includejson["unit_tests"]:
+            itemlist = src_item.split(":",1)
+            src_item_path = os.path.join(".", "unit_tests", itemlist[0])
+            dst_item_path = os.path.join(deploy_path, itemlist[1])
+            if os.path.isdir(src_item_path):
+                shutil.copytree(
+                    src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
+                )
+            else:
+                os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
+                shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
+
     print("Programming included libraries to device...")
     for src_item in includejson["src"]:
         itemlist = src_item.split(":",1)
@@ -195,23 +212,6 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
         else:
             os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
             shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
-    
-    if include_tests:
-        for src_item in includejson["unit_tests"]:
-            itemlist = src_item.split(":",1)
-            src_item_path = os.path.join(".", "unit_tests", itemlist[0])
-            dst_item_path = os.path.join(deploy_path, itemlist[1])
-            if os.path.isdir(src_item_path):
-                shutil.copytree(
-                    src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
-                )
-            else:
-                os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
-                shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
-        shutil.copyfile(
-            os.path.join(".", "config", "conftest.py"),
-            os.path.join(deploy_path, "conftest.py"),
-        )
 
     print("Programming target-specific software to device...")
     for item in os.listdir(os.path.join(".", "artifacts", deploy_type)):
