@@ -1,6 +1,5 @@
 {
     "STABLE" : [
-        "asyncio",
         "_bleio",
         "_pixelmap",
         "adafruit_bus_device",
@@ -78,7 +77,8 @@
         "vectorio",
         "warnings",
         "watchdog",
-        "zlib"
+        "zlib",
+        "asyncio"
     ],
     "PRERELEASE" : [
         "spitarget"
