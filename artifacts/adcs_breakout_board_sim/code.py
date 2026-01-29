@@ -9,13 +9,13 @@ import microcontroller
 GYRO_SCLK = microcontroller.pin.PA05
 GYRO_MOSI = microcontroller.pin.PA07
 GYRO_MISO = microcontroller.pin.PA06
-GYRO_CS1 = microcontroller.pin.PA10
-GYRO_CS2 = microcontroller.pin.PA11
-GYRO_CS3 = microcontroller.pin.PA12
+GYRO_CS1 = microcontroller.pin.PE10
+GYRO_CS2 = microcontroller.pin.PE11
+GYRO_CS3 = microcontroller.pin.PE12
 
 async def read_gyro():
     spi = busio.SPI(GYRO_SCLK, MOSI=GYRO_MOSI, MISO=GYRO_MISO)
-    gyro = bmi088.Bmi088Gyro(spi, cs_gyro_pin=GYRO_CS1)
+    gyro = bmi088.Bmi088Gyro(spi, cs_gyro_pin_or_dio=GYRO_CS3)
     await gyro.begin()
     await gyro.set_gyro_range(bmi088.GyroRange.RANGE_1000DPS)
     await gyro.set_gyro_odr(bmi088.GyroODR.ODR_400HZ)

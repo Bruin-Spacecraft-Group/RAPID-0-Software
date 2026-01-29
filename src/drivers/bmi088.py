@@ -17,7 +17,7 @@ import busio
 _SOFTRESET_CMD = 0xB6
 
 GYR_CHIP_ID_REG = 0x00
-GYR_CHIP_ID_VAL = 0x0F
+GYR_CHIP_ID_VAL = 0x62
 
 GYR_RANGE_REG = 0x0F
 GYR_BW_REG    = 0x10
@@ -72,15 +72,27 @@ class Bmi088Gyro:
         gx, gy, gz = await gyro.read_gyro()
     """
 
-    def __init__(self, spi: busio.SPI, cs_gyro_pin_or_dio, *, baudrate=1_000_000, polarity=0, phase=0):
+    def __init__(
+        self,
+        spi: busio.SPI,
+        cs_gyro_pin_or_dio,
+        *,
+        baudrate=1600,
+        polarity=0,
+        phase=0,
+        read_dummy_bytes=1,
+    ):
         self._spi = spi
         self._baudrate = baudrate
         self._polarity = polarity
         self._phase = phase
+        self._read_dummy_bytes = 1 if read_dummy_bytes < 1 else int(read_dummy_bytes)
 
         # Accept either a pin object or a pre-made DigitalInOut
         if isinstance(cs_gyro_pin_or_dio, digitalio.DigitalInOut):
             self._cs = cs_gyro_pin_or_dio
+            self._cs.direction = digitalio.Direction.OUTPUT
+            self._cs.value = True
             self._owns_cs = False
         else:
             self._cs = digitalio.DigitalInOut(cs_gyro_pin_or_dio)
@@ -95,7 +107,7 @@ class Bmi088Gyro:
         if getattr(self, "_owns_cs", False) and hasattr(self._cs, "deinit"):
             self._cs.deinit()
     # -------- Public API --------
-    async def begin(self) -> bool:
+    async def begin(self, *, verify_chip_id=True) -> bool:
         """
         Initialize ONLY the gyro die:
         - Soft-reset
@@ -105,9 +117,17 @@ class Bmi088Gyro:
         """
         self._write_reg_gyro(GYR_SOFTRESET, _SOFTRESET_CMD)
         await asyncio.sleep(0.05)
-
-        if self._read_reg_gyro(GYR_CHIP_ID_REG) != GYR_CHIP_ID_VAL:
-            raise RuntimeError("BMI088 gyro: invalid chip ID")
+        chip_id = self._read_reg_gyro(GYR_CHIP_ID_REG)
+        
+        self._write_reg_gyro(0x3C, 0x01)
+        print(self._read_reg_gyro(0x3C))
+        if verify_chip_id and chip_id != GYR_CHIP_ID_VAL:
+            await asyncio.sleep(0.01)
+            chip_id = self._probe_chip_id()
+            if chip_id != GYR_CHIP_ID_VAL:
+                chip_id = self._probe_spi_mode()
+            if chip_id != GYR_CHIP_ID_VAL:
+                raise RuntimeError(f"BMI088 gyro: invalid chip ID 0x{chip_id:02X}")
 
         # Normal mode
         self._write_reg_gyro(GYR_LPM1, 0x00)
@@ -164,6 +184,30 @@ class Bmi088Gyro:
     def _read_block_gyro(self, start_reg: int, length: int) -> bytes:
         return self._read_block(start_reg, length)
 
+    def _probe_chip_id(self) -> int:
+        original_dummy = self._read_dummy_bytes
+        chip_id = self._read_reg_gyro(GYR_CHIP_ID_REG)
+        if chip_id == GYR_CHIP_ID_VAL:
+            return chip_id
+        self._read_dummy_bytes = 2
+        chip_id = self._read_reg_gyro(GYR_CHIP_ID_REG)
+        if chip_id != GYR_CHIP_ID_VAL:
+            self._read_dummy_bytes = original_dummy
+        return chip_id
+
+    def _probe_spi_mode(self) -> int:
+        original = (self._polarity, self._phase)
+        chip_id = self._read_reg_gyro(GYR_CHIP_ID_REG)
+        if chip_id == GYR_CHIP_ID_VAL:
+            return chip_id
+        for pol, ph in ((0, 0), (1, 1)):
+            self._polarity, self._phase = pol, ph
+            chip_id = self._probe_chip_id()
+            if chip_id == GYR_CHIP_ID_VAL:
+                return chip_id
+        self._polarity, self._phase = original
+        return chip_id
+
     @staticmethod
     def _build_read_command(reg: int) -> int:
         # BMI088 SPI: MSB=1 for read
@@ -200,11 +244,11 @@ class Bmi088Gyro:
             self._spi.unlock()
 
     def _read_block(self, start_reg: int, length: int) -> bytes:
-        out_buf = bytearray(length + 1)
-        in_buf  = bytearray(length + 1)
+        out_buf = bytearray(length + self._read_dummy_bytes)
+        in_buf  = bytearray(length + self._read_dummy_bytes)
         out_buf[0] = self._build_read_command(start_reg)
         self._spi_txrx(out_buf, in_buf)
-        return in_buf[1:]  # strip command echo
+        return in_buf[self._read_dummy_bytes:]  # strip command echo (+ optional dummy bytes)
 
     def _write_block(self, reg: int, data: bytes):
         out_buf = bytearray(1 + len(data))

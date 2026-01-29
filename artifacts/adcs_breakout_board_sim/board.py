@@ -8,6 +8,6 @@ import microcontroller
 GYRO_SCLK = microcontroller.pin.PA05
 GYRO_MOSI = microcontroller.pin.PA07
 GYRO_MISO = microcontroller.pin.PA06
-GYRO_CS1 = microcontroller.pin.PA10
-GYRO_CS2 = microcontroller.pin.PA11
-GYRO_CS3 = microcontroller.pin.PA12
+GYRO_CS1 = microcontroller.pin.PE10
+GYRO_CS2 = microcontroller.pin.PE11
+GYRO_CS3 = microcontroller.pin.PE12
