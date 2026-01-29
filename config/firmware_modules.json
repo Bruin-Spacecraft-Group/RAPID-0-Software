@@ -1,6 +1,6 @@
 {
     "STABLE" : [
-        "_asyncio",
+        "asyncio",
         "_bleio",
         "_pixelmap",
         "adafruit_bus_device",
