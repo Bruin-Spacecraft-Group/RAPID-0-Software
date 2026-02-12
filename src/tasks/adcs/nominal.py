@@ -5,7 +5,7 @@ Module for ADCS to run nominal operations.
 import triad as t
 import mekf as kf
 
-from datastores.adcs import Datastore
+import datastore as ds
 
 def get_current_time():
     """
@@ -24,7 +24,7 @@ def get_sensor_data() -> tuple[float, ...]:
 
     return [0,0,0,0,0]
 
-def nominal_tasks(datastore: Datastore):
+def nominal_tasks(datastore: ds.Datastore):
     """
     Highest level nominal loop logic
     """
@@ -37,7 +37,7 @@ def nominal_tasks(datastore: Datastore):
 
         datastore.time.last_cdh_update = datastore.time.current_time
 
-def update_attitude(datastore: Datastore):
+def update_attitude(datastore: ds.Datastore):
     """
     Using data from sensors and TRIAD algorithm
     calculates and processes attitude to update datastore values
