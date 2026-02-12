@@ -90,6 +90,7 @@ def find_mount_points_with_names():
 
 
 def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=False):
+   
     if target_drive is None:
         target_drive = "CIRCUITPY"
 
@@ -170,13 +171,38 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
         else:
             os.remove(item_path)
 
-    if include_tests:
-        shutil.copyfile(
-            os.path.join(".", "config", "conftest.py"),
-            os.path.join(deploy_path, "conftest.py"),
+    print("Programming included libraries to device...")
+    for item in includejson["src"]:
+        itemlist = item.split(":")
+        src_item_path = os.path.join(".", "src", itemlist[0])
+        dst_item_path = os.path.join(deploy_path, itemlist[1])
+        if os.path.isdir(src_item_path):
+            shutil.copytree(
+                src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
             )
-        for src_item in includejson["unit_tests"]:
-            itemlist = src_item.split(":",1)
+        else:
+            os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
+            shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
+    
+    for item in includejson["submodules"]:
+        itemlist = item.split(":")
+        src_item_path = os.path.join(".", "submodules", itemlist[0])
+        dst_item_path = os.path.join(deploy_path, itemlist[1])
+        if (include_tests and (src_item_path == "./submodules/Adafruit_CircuitPython_asyncio/asyncio")):
+            continue
+        if os.path.isdir(src_item_path):
+            shutil.copytree(
+                src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
+            )
+        else:
+            os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
+            shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
+    
+    
+    if include_tests:
+        for item in includejson["unit_tests"]:
+            print(f"Including unit test item {item}...")
+            itemlist = item.split(":")
             src_item_path = os.path.join(".", "unit_tests", itemlist[0])
             dst_item_path = os.path.join(deploy_path, itemlist[1])
             if os.path.isdir(src_item_path):
@@ -186,32 +212,10 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
             else:
                 os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
                 shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
-
-    print("Programming included libraries to device...")
-    for src_item in includejson["src"]:
-        itemlist = src_item.split(":",1)
-        src_item_path = os.path.join(".", "src", itemlist[0])
-        dst_item_path = os.path.join(deploy_path, itemlist[1])
-        if os.path.isdir(src_item_path):
-            shutil.copytree(
-                src_item_path, dst_item_path, symlinks=True, dirs_exist_ok=True
-            )
-        else:
-            os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
-            shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
-    
-    print("Programming included submodules to device...")
-    for src_item in includejson["submodules"]:
-        itemlist = src_item.split(":",1)
-        src_item_path = os.path.join(".", "submodules", itemlist[0])
-        dst_item_path = os.path.join(deploy_path, itemlist[1])
-        if os.path.isdir(src_item_path):
-            shutil.copytree(
-                src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
-            )
-        else:
-            os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
-            shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
+        shutil.copyfile(
+            os.path.join(".", "config", "conftest.py"),
+            os.path.join(deploy_path, "conftest.py"),
+        )
 
     print("Programming target-specific software to device...")
     for item in os.listdir(os.path.join(".", "artifacts", deploy_type)):
