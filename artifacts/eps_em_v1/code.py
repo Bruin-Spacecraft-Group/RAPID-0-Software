@@ -4,10 +4,11 @@ Software entry point for the control application for the EPS flatsat PCB from Ju
 
 import asyncio
 
-import datastores.eps as ds
-from tasks.eps.bms import battery_management_task
-from tasks.eps.icd import intersubsystem_communication_task, output_bus_control_task
-from tasks.eps.monitoring import data_recording_task
+import bms
+import icd
+import monitoring
+
+import datastore as ds
 
 datastore = ds.Datastore()
 
@@ -20,10 +21,10 @@ async def gathered_task():
     and intersubsystem communication.
     """
     await asyncio.gather(
-        battery_management_task(datastore),
-        output_bus_control_task(datastore),
-        data_recording_task(datastore),
-        intersubsystem_communication_task(datastore),
+        bms.battery_management_task(datastore),
+        icd.output_bus_control_task(datastore),
+        monitoring.data_recording_task(datastore),
+        icd.intersubsystem_communication_task(datastore),
     )
 
 

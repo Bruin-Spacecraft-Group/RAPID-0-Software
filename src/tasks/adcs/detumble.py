@@ -2,10 +2,10 @@
 Module for handling the Detumble procedure for ADCS
 """
 
-from datastores.adcs import Datastore
+import datastore as ds
 
 
-def detumble(datastore: Datastore):
+def detumble(datastore: ds.Datastore):
     """
     Empty function declaration to be used by loop.py in larger ADCS loop
     """
