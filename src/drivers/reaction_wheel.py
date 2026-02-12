@@ -12,8 +12,15 @@ class ReactionWheel:
     """
 
     def __init__(self, unsoll, diro, fg):
+        """
+        Reaction wheel class instance
+        
+        :param unsoll: PWM input for speed control
+        :param diro: Digital input for direction control
+        :param fg: Frequency output for motor encoder data
+        """
         self.unsoll = pwmio.PWMOut(unsoll)
-        # Digital In - Directional
+        # Digital In - Directional Input
         self.diro = digitalio.DigitalInOut(diro)
         self.diro.direction = digitalio.Direction.OUTPUT
         # Digital Out - Frequency out
