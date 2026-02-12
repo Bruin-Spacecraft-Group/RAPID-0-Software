@@ -4,13 +4,8 @@ Reaction wheel PD controller loop.
 
 import time
 
-KP = 1
-KD = 1
-ERROR_MARGIN = 0
-DELAY = 0.5
 
-
-def reaction_wheel_pd_control(desired_speed, motor):
+def reaction_wheel_pd_control(desired_speed, motor, error_margin, kp, kd, delay):
     # Set the current speed to the initial speed of the motor
     current_speed = motor.get_speed()
 
@@ -21,15 +16,15 @@ def reaction_wheel_pd_control(desired_speed, motor):
     prev_time = time.monotonic_ns()
 
     # While there is a significant error between the current and desired speed
-    while abs(desired_speed - current_speed) > ERROR_MARGIN:
+    while abs(desired_speed - current_speed) > error_margin:
         # Calculate current error and get the current time
         error = desired_speed - current_speed
         current_time = time.monotonic_ns()
 
         # Calculate terms to sum for motor speed
-        p_term = KP * error
+        p_term = kp * error
         dt = (current_time - prev_time) / 1e9  # Convert to seconds
-        d_term = KD * (error - prev_error) / dt
+        d_term = kd * (error - prev_error) / dt
 
         # Update motor speed
         motor.set_speed(p_term + d_term)
@@ -38,7 +33,7 @@ def reaction_wheel_pd_control(desired_speed, motor):
         prev_error = error
 
         # Retrieve the new speed of the motor and implement loop delay
-        time.sleep(DELAY)
+        time.sleep(delay)
         current_speed = motor.get_speed()
 
         # Update prev_time to the time of finishing this iteration
