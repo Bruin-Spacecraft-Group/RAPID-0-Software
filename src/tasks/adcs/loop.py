@@ -2,12 +2,12 @@
 Module holding the main loop of the ADCS task structure
 """
 
-from datastores.adcs import Datastore
-
 import nominal as nm
 import detumble as dtmb
 import point_to_sun as pts
 import point_to_earth as pte
+
+from datastores.adcs import Datastore
 
 
 async def main_adcs_loop(ds: Datastore):

@@ -2,10 +2,10 @@
 Module for ADCS to run nominal operations.
 """
 
-from datastores.adcs import Datastore
-
 import triad as t
 import mekf as kf
+
+from datastores.adcs import Datastore
 
 def get_current_time():
     """

@@ -1,6 +1,5 @@
 {
     "STABLE" : [
-        "_asyncio",
         "_bleio",
         "_pixelmap",
         "adafruit_bus_device",
@@ -43,6 +42,7 @@
         "locale",
         "math",
         "microcontroller",
+        "micropython",
         "msgpack",
         "neopixel_write",
         "nvm",
@@ -77,7 +77,8 @@
         "vectorio",
         "warnings",
         "watchdog",
-        "zlib"
+        "zlib",
+        "asyncio"
     ],
     "PRERELEASE" : [
         "spitarget"
