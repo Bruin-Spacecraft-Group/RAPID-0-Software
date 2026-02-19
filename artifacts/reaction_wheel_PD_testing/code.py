@@ -2,18 +2,36 @@
 Testing code for reaction wheels using PD control loop.
 """
 
+import time
 import board
 from tasks.adcs.reaction_wheel_PD import reaction_wheel_pd_control as pd
 from drivers.reaction_wheel import ReactionWheel as motor
-
 
 KP = 1
 KD = 1
 ERROR_MARGIN = 0.1
 DELAY = 0.1
+DESIRED_VALUE = 50
 
 my_motor = motor(board.unsoll, board.diro, board.fg)
+prev_time = time.monotonic_ns()
+prev_error = 0
 
-pd(50, my_motor, ERROR_MARGIN, KP, KD, DELAY)
+# PD Control loop for motor speed
+while abs(current_error) > ERROR_MARGIN:
+
+    # Initialize motor speed and current error
+    current_speed = my_motor.get_speed()
+    current_error = DESIRED_VALUE - current_speed
+
+    # Update parameters from PD loop
+    p_term, d_term, prev_time, prev_error = pd(
+        DESIRED_VALUE, current_speed, prev_error, prev_time, KP, KD
+    )
+
+    # Update motor speed to achieve desired speed
+    my_motor.set_speed(p_term + d_term)
+    time.sleep(DELAY)
+
 
 motor.set_speed(0)
