@@ -25,6 +25,12 @@ GYR_BW_REG    = 0x10
 GYR_LPM1      = 0x11
 GYR_SOFTRESET = 0x14
 GYR_SELF_TEST = 0x3C
+GYR_FIFO_STATUS = 0x0E
+GYR_FIFO_CONFIG0 = 0x3D
+GYR_FIFO_CONFIG1 = 0x3E
+
+GYR_FIFO_MODE_MASK = 0xC0
+GYR_FIFO_FRAME_COUNT_MASK = 0x7F
 
 GYR_DATA_START = 0x02  # X_LSB, X_MSB, Y_LSB, Y_MSB, Z_LSB, Z_MSB
 
@@ -138,11 +144,31 @@ class Bmi088Gyro:
 
         # Normal mode
         self._write_reg_gyro(GYR_LPM1, 0x00)
+        await asyncio.sleep(0.002)
+
+        # Reset/flush FIFO at startup.
+        await self.reset_fifo()
 
         # Defaults: 400 Hz ODR, ±1000 dps
         await self.set_gyro_range(GyroRange.RANGE_1000DPS)
         await self.set_gyro_odr(GyroODR.ODR_400HZ)
         return True
+
+    async def reset_fifo(self):
+        """
+        Reset/flush gyro FIFO by forcing bypass mode at startup.
+        """
+        # Disable watermark/tag.
+        self._write_reg_gyro(GYR_FIFO_CONFIG0, 0x00)
+
+        # Force FIFO mode bits [7:6] to 00 (bypass).
+        cfg1 = self._read_reg_gyro(GYR_FIFO_CONFIG1)
+        self._write_reg_gyro(GYR_FIFO_CONFIG1, cfg1 & (~GYR_FIFO_MODE_MASK & 0xFF))
+        await asyncio.sleep(0.002)
+
+        # Return frame count after flush request.
+        status = self._read_reg_gyro(GYR_FIFO_STATUS)
+        return status & GYR_FIFO_FRAME_COUNT_MASK
 
     async def read_gyro_raw(self):
         """

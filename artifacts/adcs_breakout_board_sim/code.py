@@ -13,7 +13,7 @@ async def run_fixed_setting():
 
     gyro = bmi088.Bmi088Gyro(
         spi,
-        cs_gyro_pin_or_dio=microcontroller.pin.PE10,  # CS3
+        cs_gyro_pin_or_dio=microcontroller.pin.PE11,  # CS3
         baudrate=1600,
         polarity=1,
         phase=1,
@@ -22,7 +22,7 @@ async def run_fixed_setting():
     )
 
     await gyro.begin(verify_chip_id=False)
-    print("fixed setting: CS3 mode=(0,0) dummy=2 baud=1600 cs_active_low=True")
+    print("fixed setting: CS2 mode=(1,1) dummy=2 baud=1600 cs_active_low=True")
 
     # Repeat self-test a few times to check consistency.
     for i in range(2):
@@ -38,19 +38,17 @@ async def run_fixed_setting():
         )
         await asyncio.sleep(0.05)
 
-    # Stream gyro values.
+    # Stream gyro data bytes (0x02..0x07) with no conversion.
     for _ in range(1000):
-        gx_raw, gy_raw, gz_raw = await gyro.read_gyro_raw()
-        gx, gy, gz = await gyro.read_gyro()
+        data = gyro._read_block_gyro(bmi088.GYR_DATA_START, 6)
         print(
-            "gyro_raw:",
-            gx_raw,
-            gy_raw,
-            gz_raw,
-            "gyro_rad_s:",
-            "{:.3f}".format(gx),
-            "{:.3f}".format(gy),
-            "{:.3f}".format(gz),
+            "gyro_bytes:",
+            "b0=0x{:02X}".format(data[0]),
+            "b1=0x{:02X}".format(data[1]),
+            "b2=0x{:02X}".format(data[2]),
+            "b3=0x{:02X}".format(data[3]),
+            "b4=0x{:02X}".format(data[4]),
+            "b5=0x{:02X}".format(data[5]),
         )
         await asyncio.sleep(0.05)
 
