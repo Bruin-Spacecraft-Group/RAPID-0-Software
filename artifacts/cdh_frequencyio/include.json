@@ -1,0 +1,9 @@
+{
+    "src": [
+        "drivers/reaction_wheel.py",
+        "lib/adafruit_ticks.py"
+    ],
+    "unit_tests": [
+        "lib/custom_module_mocking.py"
+    ]
+}

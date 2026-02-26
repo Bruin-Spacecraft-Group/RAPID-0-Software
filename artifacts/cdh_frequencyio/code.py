@@ -8,7 +8,7 @@ import microcontroller as mc
 import frequencyio
 import asyncio
 
-fp = frequencyio.FrequencyIn(mc.pin.PA00)
+fp = frequencyio.FrequencyIn(mc.pin.PA01)
 
 print("code running")
 
@@ -17,7 +17,4 @@ if __name__ == "__main__":
     while True:
         print(fp.value)
 
-        fp.clear()
-
         asyncio.sleep(0.5)
-
