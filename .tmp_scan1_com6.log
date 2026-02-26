@@ -1,0 +1,82 @@
+﻿
+paste mode; Ctrl-C to cancel, Ctrl-D to finish
+=== import asyncio
+import busio
+import microcontroller
+from drivers import bmi088
+
+SCK = microcontroller.pin.PA05
+MOSI = microcontroller.pin.PA07
+MISO = microcontroller.pin.PA06
+CS = microcontroller.pin.PE10
+
+async def one(pol, ph, dummy, baud, cs_low):
+    spi = None
+    gyro = None
+    try:
+        spi = busio.SPI(SCK, MOSI=MOSI, MISO=MISO)
+        gyro = bmi088.Bmi088Gyro(
+            spi,
+            cs_gyro_pin_or_dio=CS,
+            baudrate=baud,
+            polarity=pol,
+            phase=ph,
+            read_dummy_bytes=dummy,
+            cs_active_low=cs_low,
+        )
+
+        await gyro.begin(verify_chip_id=False)
+
+        st = []
+        for _ in range(4):
+            r = await gyro.self_test_gyro(wait_s=0.03, timeout_s=0.3)
+            st.append(r['raw_0x3C'])
+            await asyncio.sleep(0.01)
+
+        chip = [gyro._read_reg_gyro(bmi088.GYR_CHIP_ID_REG) for _ in range(6)]
+
+        counts = {}
+        for _ in range(120):
+            b = tuple(gyro._read_block_gyro(bmi088.GYR_DATA_START, 6))
+            counts[b] = counts.get(b, 0) + 1
+
+        uniq = len(counts)
+        top_pat, top_n = max(counts.items(), key=lambda kv: kv[1]) if counts else ((0,0,0,0,0,0), 0)
+
+        print(
+            "RES pol={} ph={} dummy={} baud={} cs_low={} chip={} st={} uniq={} top_n={} top_pat={}".format(
+                pol, ph, dummy, baud, int(cs_low),
+                ["0x{:02X}".format(x) for x in chip],
+                ["0x{:02X}".format(x) for x in st],
+                uniq, top_n,
+                ["0x{:02X}".format(x) for x in top_pat],
+            )
+        )
+
+    except Exception as e:
+        print("ERR pol={} ph={} dummy={} baud={} cs_low={} {}".format(pol, ph, dummy, baud, int(cs_low), repr(e)))
+    finally:
+        try:
+            if gyro is not None:
+                gyro.deinit()
+        except Exception:
+            pass
+        try:
+            if spi is not None:
+                spi.deinit()
+        except Exception:
+            pass
+        await asyncio.sleep(0.03)
+
+
+async def main():
+    print("SCAN1_START")
+    for pol, ph in ((0,0), (1,1), (0,1), (1,0)):
+        for dummy in (0,1,2):
+            await one(pol, ph, dummy, 1600, True)
+    print("SCAN1_DONE")
+
+asyncio.run(main())
+SCAN1_START
+RES pol=0 ph=0 dummy=0 baud=1600 cs_low=1 chip=['0x00', '0x00', '0xFF', '0x00', '0xB1', '0x00'] st=['0x16', '0x7F', '0xFF', '0x0F'] uniq=28 top_n=10 top_pat=['0x18', '0x00', '0x00', '0x00', '0x18', '0x00']
+RES pol=0 ph=0 dummy=1 baud=1600 cs_low=1 chip=['0x00', '0x03', '0x00', '0x00', '0x16', '0x16'] st=['0x03', '0x06', '0x03', '0x03'] uniq=10 top_n=38 top_pat=['0x01', '0x62', '0xC0', '0x00', '0x01', '0x62']

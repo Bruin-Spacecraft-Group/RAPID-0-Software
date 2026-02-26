@@ -1,0 +1,14 @@
+﻿]0;????REPL | 9.2.8-2106-g6c50521ac2\
+Adafruit CircuitPython 9.2.8-2106-g6c50521ac2 on 2025-12-10; RAPID-0 with STM32H743
+>>> 
+]0;????Done | 9.2.8-2106-g6c50521ac2\soft reboot
+
+[2K[0GAuto-reload is on. Simply save files over USB to run them or enter REPL to disable.
+[2K[0Gcode.py output:
+]0;????code.py | 9.2.8-2106-g6c50521ac2\Traceback (most recent call last):
+  File "code.py", line 1
+SyntaxError: invalid syntax
+]0;????1@code.py SyntaxError | 9.2.8-2106-g6c50521ac2\
+Code done running.
+
+Press any key to enter the REPL. Use CTRL-D to reload.

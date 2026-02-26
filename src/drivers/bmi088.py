@@ -16,6 +16,7 @@ import busio
 # BMI088 GYROSCOPE REGISTERS
 # ----------------------------
 _SOFTRESET_CMD = 0xB6
+_WRITE_DELAY_S = 0.0002
 
 GYR_CHIP_ID_REG = 0x00
 GYR_CHIP_ID_VAL = 0x0F
@@ -115,7 +116,7 @@ class Bmi088Gyro:
             self._cs.value = not self._cs_active_low
             self._owns_cs = True
 
-        self.gyro_range = GyroRange.RANGE_1000DPS
+        self.gyro_range = GyroRange.RANGE_125DPS
 
     def deinit(self):
         # Free the CS pin if we created it
@@ -150,7 +151,7 @@ class Bmi088Gyro:
         await self.reset_fifo()
 
         # Defaults: 400 Hz ODR, ±1000 dps
-        await self.set_gyro_range(GyroRange.RANGE_1000DPS)
+        await self.set_gyro_range(GyroRange.RANGE_125DPS)
         await self.set_gyro_odr(GyroODR.ODR_400HZ)
         return True
 
@@ -226,7 +227,7 @@ class Bmi088Gyro:
         t_end = time.monotonic() + timeout_s
         result = self._read_reg_gyro(GYR_SELF_TEST)
         while (result & GYR_SELF_TEST_BIT1) == 0 and time.monotonic() < t_end:
-            await asyncio.sleep(0.01)
+            #await asyncio.sleep(0.01)
             result = self._read_reg_gyro(GYR_SELF_TEST)
 
         return {
@@ -252,7 +253,7 @@ class Bmi088Gyro:
         chip_id = self._read_reg_gyro(GYR_CHIP_ID_REG)
         if chip_id == GYR_CHIP_ID_VAL:
             return chip_id
-        self._read_dummy_bytes = 2
+        self._read_dummy_bytes = 0
         chip_id = self._read_reg_gyro(GYR_CHIP_ID_REG)
         if chip_id != GYR_CHIP_ID_VAL:
             self._read_dummy_bytes = original_dummy
@@ -299,6 +300,8 @@ class Bmi088Gyro:
         finally:
             self._cs_deselect()
             self._spi.unlock()
+        # Give the gyro a short settle time after register writes.
+        time.sleep(_WRITE_DELAY_S)
 
     def _spi_txrx(self, tx: bytearray, rx: bytearray):
         # Full-duplex transaction

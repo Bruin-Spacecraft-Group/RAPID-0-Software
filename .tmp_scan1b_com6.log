@@ -1,0 +1,91 @@
+﻿
+paste mode; Ctrl-C to cancel, Ctrl-D to finish
+=== import asyncio
+import busio
+import microcontroller
+from drivers import bmi088
+
+SCK = microcontroller.pin.PA05
+MOSI = microcontroller.pin.PA07
+MISO = microcontroller.pin.PA06
+CS = microcontroller.pin.PE10
+
+async def one(pol, ph, dummy, baud, cs_low):
+    spi = None
+    gyro = None
+    try:
+        spi = busio.SPI(SCK, MOSI=MOSI, MISO=MISO)
+        gyro = bmi088.Bmi088Gyro(
+            spi,
+            cs_gyro_pin_or_dio=CS,
+            baudrate=baud,
+            polarity=pol,
+            phase=ph,
+            read_dummy_bytes=dummy,
+            cs_active_low=cs_low,
+        )
+        await gyro.begin(verify_chip_id=False)
+
+        st = []
+        for _ in range(3):
+            r = await gyro.self_test_gyro(wait_s=0.03, timeout_s=0.25)
+            st.append(r['raw_0x3C'])
+            await asyncio.sleep(0.01)
+
+        chip = [gyro._read_reg_gyro(bmi088.GYR_CHIP_ID_REG) for _ in range(5)]
+
+        counts = {}
+        for _ in range(80):
+            b = tuple(gyro._read_block_gyro(bmi088.GYR_DATA_START, 6))
+            counts[b] = counts.get(b, 0) + 1
+
+        uniq = len(counts)
+        top_pat, top_n = max(counts.items(), key=lambda kv: kv[1]) if counts else ((0,0,0,0,0,0), 0)
+
+        print(
+            "RES pol={} ph={} dummy={} baud={} cs_low={} chip={} st={} uniq={} top_n={} top_pat={}".format(
+                pol, ph, dummy, baud, int(cs_low),
+                ["0x{:02X}".format(x) for x in chip],
+                ["0x{:02X}".format(x) for x in st],
+                uniq, top_n,
+                ["0x{:02X}".format(x) for x in top_pat],
+            )
+        )
+    except Exception as e:
+        print("ERR pol={} ph={} dummy={} baud={} cs_low={} {}".format(pol, ph, dummy, baud, int(cs_low), repr(e)))
+    finally:
+        try:
+            if gyro is not None:
+                gyro.deinit()
+        except Exception:
+            pass
+        try:
+            if spi is not None:
+                spi.deinit()
+        except Exception:
+            pass
+        await asyncio.sleep(0.04)
+
+async def main():
+    print("SCAN1_START")
+    for pol, ph in ((0,0), (1,1), (0,1), (1,0)):
+        for dummy in (0,1,2):
+            await one(pol, ph, dummy, 1600, True)
+    print("SCAN1_DONE")
+
+asyncio.run(main())
+SCAN1_START
+RES pol=0 ph=0 dummy=0 baud=1600 cs_low=1 chip=['0x00', '0x00', '0xFF', '0x00', '0x62'] st=['0xFF', '0x16', '0x16'] uniq=21 top_n=7 top_pat=['0x00', '0x01', '0x62', '0xC0', '0x00', '0x01']
+RES pol=0 ph=0 dummy=1 baud=1600 cs_low=1 chip=['0x00', '0x01', '0x00', '0x00', '0x8B'] st=['0x16', '0x03', '0xFF'] uniq=1 top_n=80 top_pat=['0x05', '0x8B', '0x00', '0x00', '0x05', '0x8B']
+RES pol=0 ph=0 dummy=2 baud=1600 cs_low=1 chip=['0x00', '0xF8', '0x58', '0x58', '0xB0'] st=['0x03', '0x03', '0x03'] uniq=4 top_n=20 top_pat=['0xB1', '0x60', '0x00', '0x00', '0xB1', '0x60']
+RES pol=1 ph=1 dummy=0 baud=1600 cs_low=1 chip=['0x00', '0x7F', '0x00', '0xC5', '0x00'] st=['0x0B', '0x0B', '0x0B'] uniq=42 top_n=3 top_pat=['0x00', '0x06', '0x00', '0x00', '0x00', '0x06']
+RES pol=1 ph=1 dummy=1 baud=1600 cs_low=1 chip=['0x00', '0x00', '0x16', '0x0B', '0x00'] st=['0x06', '0x06', '0x06'] uniq=38 top_n=3 top_pat=['0x00', '0x06', '0x00', '0x00', '0x00', '0x06']
+RES pol=1 ph=1 dummy=2 baud=1600 cs_low=1 chip=['0x00', '0x0B', '0x0B', '0x16', '0x2C'] st=['0x03', '0x62', '0x62'] uniq=39 top_n=3 top_pat=['0x00', '0x00', '0x0C', '0x00', '0x00', '0x00']
+RES pol=0 ph=1 dummy=0 baud=1600 cs_low=1 chip=['0x00', '0x00', '0xFE', '0x00', '0x8B'] st=['0x03', '0x03', '0x03'] uniq=7 top_n=20 top_pat=['0x00', '0x00', '0x00', '0x83', '0x00', '0x00']
+RES pol=0 ph=1 dummy=1 baud=1600 cs_low=1 chip=['0x00', '0x0F', '0x00', '0x00', '0xB0'] st=['0x62', '0x62', '0x62'] uniq=1 top_n=80 top_pat=['0x58', '0xB0', '0x00', '0x00', '0x58', '0xB0']
+RES pol=0 ph=1 dummy=2 baud=1600 cs_low=1 chip=['0x00', '0x00', '0x00', '0x00', '0x00'] st=['0x00', '0x02', '0x02'] uniq=11 top_n=14 top_pat=['0x00', '0x00', '0x00', '0x83', '0x00', '0x00']
+RES pol=1 ph=0 dummy=0 baud=1600 cs_low=1 chip=['0x00', '0x07', '0x00', '0xC5', '0x00'] st=['0x0B', '0x0B', '0x0B'] uniq=42 top_n=5 top_pat=['0x00', '0x00', '0x00', '0x83', '0x00', '0x00']
+RES pol=1 ph=0 dummy=1 baud=1600 cs_low=1 chip=['0x00', '0x80', '0xC5', '0x02', '0x00'] st=['0x03', '0x16', '0x02'] uniq=41 top_n=5 top_pat=['0x00', '0x00', '0x00', '0x03', '0x00', '0x00']
+RES pol=1 ph=0 dummy=2 baud=1600 cs_low=1 chip=['0x00', '0x00', '0x00', '0x00', '0x00'] st=['0x03', '0x03', '0x03'] uniq=41 top_n=3 top_pat=['0x00', '0xC0', '0x00', '0x00', '0x00', '0xC0']
+SCAN1_DONE
+>>> 

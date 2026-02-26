@@ -1,0 +1,70 @@
+﻿
+paste mode; Ctrl-C to cancel, Ctrl-D to finish
+=== import asyncio
+import busio
+import microcontroller
+from drivers import bmi088
+
+SCK = microcontroller.pin.PA05
+MOSI = microcontroller.pin.PA07
+MISO = microcontroller.pin.PA06
+CS_CAND = [
+    ("CS1", microcontroller.pin.PE10),
+    ("CS2", microcontroller.pin.PE11),
+    ("CS3", microcontroller.pin.PE12),
+]
+
+async def test(name, cs):
+    spi = None
+    gyro = None
+    try:
+        spi = busio.SPI(SCK, MOSI=MOSI, MISO=MISO)
+        gyro = bmi088.Bmi088Gyro(
+            spi,
+            cs_gyro_pin_or_dio=cs,
+            baudrate=1600,
+            polarity=1,
+            phase=1,
+            read_dummy_bytes=0,
+            cs_active_low=True,
+        )
+        await gyro.begin(verify_chip_id=False)
+        chip = [gyro._read_reg_gyro(bmi088.GYR_CHIP_ID_REG) for _ in range(10)]
+        st = []
+        for _ in range(5):
+            r = await gyro.self_test_gyro(wait_s=0.03, timeout_s=0.25)
+            st.append(r['raw_0x3C'])
+            await asyncio.sleep(0.01)
+        print("CSRES {} chip={} st={}".format(
+            name,
+            ["0x{:02X}".format(x) for x in chip],
+            ["0x{:02X}".format(x) for x in st],
+        ))
+    except Exception as e:
+        print("CSERR {} {}".format(name, repr(e)))
+    finally:
+        try:
+            if gyro is not None:
+                gyro.deinit()
+        except Exception:
+            pass
+        try:
+            if spi is not None:
+                spi.deinit()
+        except Exception:
+            pass
+        await asyncio.sleep(0.04)
+
+async def main():
+    print("CSSCAN_START")
+    for name, cs in CS_CAND:
+        await test(name, cs)
+    print("CSSCAN_DONE")
+
+asyncio.run(main())
+CSSCAN_START
+CSRES CS1 chip=['0xB1', '0x00', '0x01', '0x00', '0x06', '0x00', '0x18', '0x00', '0x60', '0x00'] st=['0x0B', '0x0B', '0x0B', '0x0B', '0x0B']
+CSRES CS2 chip=['0x00', '0x60', '0x01', '0x80', '0x07', '0x00', '0x1E', '0x00', '0x78', '0x00'] st=['0x0B', '0x0B', '0x0B', '0x0B', '0x0B']
+CSRES CS3 chip=['0x00', '0x60', '0x01', '0x80', '0x07', '0x00', '0x1E', '0x00', '0x78', '0x00'] st=['0x0B', '0x0B', '0x0B', '0x0B', '0x0B']
+CSSCAN_DONE
+>>> 
