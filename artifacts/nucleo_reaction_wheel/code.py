@@ -7,7 +7,7 @@ This is a "dumb" test script for the nucleo h7 board
 import microcontroller as mc
 import digitalio
 
-import reaction_wheel as rw
+import drivers.reaction_wheel as rw
 
 print("code running")
 
