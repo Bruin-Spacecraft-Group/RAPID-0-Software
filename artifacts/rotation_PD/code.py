@@ -7,8 +7,6 @@ import board
 from tasks.adcs.reaction_wheel_pd import reaction_wheel_pd_control as pd
 from drivers.reaction_wheel import ReactionWheel as motor
 
-KP = 1
-KD = 1
 ERROR_MARGIN = 0.1
 DELAY = 0.1
 SPEED = 50
@@ -35,7 +33,7 @@ while abs(current_error) > ERROR_MARGIN:
 
     # Update parameters from PD loop
     p_term, d_term, prev_time, prev_error = pd(
-        DESIRED_ANGLE, est_angle, prev_error, prev_time, KP, KD
+        DESIRED_ANGLE, est_angle, prev_error, prev_time
     )
 
     # Update motor speed to achieve desired angle
