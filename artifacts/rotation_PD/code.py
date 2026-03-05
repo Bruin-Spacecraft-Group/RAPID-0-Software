@@ -2,9 +2,9 @@
 Program to rotate satellite by a certain value (degrees).
 """
 
-import board
 import time
-from tasks.adcs.reaction_wheel_PD import reaction_wheel_pd_control as pd
+import board
+from tasks.adcs.reaction_wheel_pd import reaction_wheel_pd_control as pd
 from drivers.reaction_wheel import ReactionWheel as motor
 
 KP = 1
@@ -18,6 +18,7 @@ est_angle = 0.0
 my_motor = motor(board.unsoll, board.diro, board.fg)
 prev_time = time.monotonic_ns()
 prev_error = 0
+current_error = DESIRED_ANGLE - est_angle
 
 # PD Control loop for rotation
 while abs(current_error) > ERROR_MARGIN:
