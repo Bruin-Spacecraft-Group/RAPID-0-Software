@@ -20,7 +20,7 @@ current_speed = my_motor.get_speed()
 current_error = DESIRED_VALUE - current_speed
 
 # PD Control loop for motor speed
-while abs(int(current_error)) > ERROR_MARGIN:
+while abs(float(current_error)) > ERROR_MARGIN:
 
     # Initialize motor speed and current error
     current_speed = my_motor.get_speed()
@@ -32,7 +32,7 @@ while abs(int(current_error)) > ERROR_MARGIN:
     )
 
     # Update motor speed to achieve desired speed
-    my_motor.set_speed(int(p_term + d_term))
+    my_motor.set_speed(float(p_term + d_term))
     time.sleep(DELAY)
 
 
