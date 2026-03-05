@@ -22,7 +22,7 @@ class ReactionWheel:
         self.fg = fg
         # self.fg = frequencyio.FrequencyIn(fg)
 
-    def get_speed(self):
+    def get_speed(self) -> float:
         """
         Returns the duty cycle value of the motor (-2^16 to 2^16)
 
@@ -66,7 +66,7 @@ class ReactionWheel:
 
         self.set_speed((pc / 100) * maxs)
 
-    def get_real_speed(self):
+    def get_real_speed(self) -> float:
         """
         Reads hall sensors to gauge the real speed the motor is spinning at in rpm
 

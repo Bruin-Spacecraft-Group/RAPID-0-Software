@@ -19,7 +19,7 @@ prev_error = 0
 current_error = DESIRED_ANGLE - est_angle
 
 # PD Control loop for rotation
-while abs(float(current_error)) > ERROR_MARGIN:
+while abs(current_error) > ERROR_MARGIN:
     current_time = (
         time.monotonic_ns()
     )  # Initialize time for calculating motor spin time
@@ -37,7 +37,7 @@ while abs(float(current_error)) > ERROR_MARGIN:
     )
 
     # Update motor speed to achieve desired angle
-    my_motor.set_speed(float(p_term + d_term))
+    my_motor.set_speed(p_term + d_term)
     current_time = prev_time
     time.sleep(DELAY)
 
