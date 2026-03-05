@@ -1,6 +1,6 @@
 {
     "src": [
-        "tasks/adcs/reaction_wheel_PD.py",
+        "tasks/adcs/reaction_wheel_pd.py",
         "drivers/reaction_wheel.py"
     ],
     "unit_tests": [
