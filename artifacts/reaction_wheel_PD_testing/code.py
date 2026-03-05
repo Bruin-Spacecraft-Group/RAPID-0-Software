@@ -28,7 +28,7 @@ while abs(current_error) > ERROR_MARGIN:
 
     # Update parameters from PD loop
     p_term, d_term, prev_time, prev_error = pd(
-        DESIRED_VALUE, current_speed, prev_error, prev_time, KP, KD
+        DESIRED_VALUE, current_speed, prev_error, prev_time
     )
 
     # Update motor speed to achieve desired speed
@@ -36,4 +36,4 @@ while abs(current_error) > ERROR_MARGIN:
     time.sleep(DELAY)
 
 
-motor.set_speed(0)
+my_motor.set_speed(0)

@@ -8,8 +8,9 @@ KP = 1
 KD = 1
 
 
-# Calculations to perform to find p_term and d_term for one iteration of the pd control loop.
 def reaction_wheel_pd_control(desired_value, current_value, prev_error, prev_time):
+    """Calculations to perform to find p_term and d_term for one iteration of the pd control loop."""
+
     # Initialize time and error for current PD Loop iteration
     current_time = time.monotonic_ns()
     error = desired_value - current_value

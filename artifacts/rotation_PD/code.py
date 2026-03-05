@@ -41,4 +41,4 @@ while abs(current_error) > ERROR_MARGIN:
     current_time = prev_time
     time.sleep(DELAY)
 
-motor.set_speed(0)
+my_motor.set_speed(0)
