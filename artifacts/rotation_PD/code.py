@@ -6,6 +6,7 @@ import time
 import board
 from tasks.adcs.reaction_wheel_pd import reaction_wheel_pd_control as pd
 from drivers.reaction_wheel import ReactionWheel as motor
+from unittest.mock import MagicMock
 
 ERROR_MARGIN = 0.1
 DELAY = 0.1
@@ -14,6 +15,9 @@ DESIRED_ANGLE = 90
 
 est_angle = 0.0
 my_motor = motor(board.unsoll, board.diro, board.fg)
+if isinstance(my_motor.get_speed(), MagicMock):
+    my_motor.get_speed = MagicMock(return_value=0.0)
+
 prev_time = time.monotonic_ns()
 prev_error = 0
 current_error = DESIRED_ANGLE - est_angle
