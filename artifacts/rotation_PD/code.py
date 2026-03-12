@@ -12,10 +12,10 @@ from drivers.reaction_wheel import ReactionWheel as motor
 ERROR_MARGIN = 0.1
 DELAY = 0.1
 SPEED = 50
-DESIRED_ANGLE = 90
+DESIRED_ANGLE = 0
 
 with patch("drivers.reaction_wheel.ReactionWheel.get_real_speed") as mocked_speed:
-    mocked_speed.return_value = 1.5
+    mocked_speed.return_value = 0
     est_angle = 0.0
     my_motor = motor(board.unsoll, board.diro, board.fg)
     prev_time = time.monotonic_ns()
