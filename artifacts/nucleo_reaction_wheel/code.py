@@ -7,7 +7,7 @@ This is a "dumb" test script for the nucleo h7 board
 import microcontroller as mc
 import digitalio
 
-import drivers.reaction_wheel as rw
+import reaction_wheel as rw
 
 print("code running")
 
@@ -20,8 +20,8 @@ ub = digitalio.DigitalInOut(mc.pin.PC13)
 print("successful init")
 
 if __name__ == "__main__":
-    speed = input("0-100: ") # full speed 100
+    speed = float(input("0-100: ")) # full speed 100
     print(speed, sc.get_speed())
 
     while True:
-        sc.set_speed_pc(speed)
+        sc.set_speed(int((speed/100)*2**16))
