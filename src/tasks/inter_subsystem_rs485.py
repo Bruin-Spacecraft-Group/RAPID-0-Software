@@ -16,9 +16,9 @@ async def nucleo_rs485_sender_task():
     with led_gpio as led:
         led.direction = digitalio.Direction.OUTPUT
 
-    uart_bus = pm.create_uart(microcontroller.pin.PB13, microcontroller.pin.PB12, baudrate=50000)
+    uart_bus = pm.create_uart(microcontroller.pin.PD05, microcontroller.pin.PD06, baudrate=50000)
 
-    te_rs485 = pm.create_digital_in_out(microcontroller.pin.PA15)
+    te_rs485 = pm.create_digital_in_out(microcontroller.pin.PD07)
     with te_rs485 as te:
         te.direction = digitalio.Direction.OUTPUT
     
@@ -53,7 +53,7 @@ async def nucleo_rs485_sender_task():
             print("Error sending data")
 
 
-async def nucleo_rs485_reciever_task():
+async def nucleo_rs485_receiver_task():
     """
     Task that receives any RS485 message and lights up the LED for 1 second if successfully received data.
     """
@@ -63,9 +63,9 @@ async def nucleo_rs485_reciever_task():
     with led_gpio as led:
         led.direction = digitalio.Direction.OUTPUT
 
-    uart_bus = pm.create_uart(microcontroller.pin.PB13, microcontroller.pin.PB12, baudrate=50000)
+    uart_bus = pm.create_uart(microcontroller.pin.PD05, microcontroller.pin.PD06, baudrate=50000)
 
-    te_rs485 = pm.create_digital_in_out(microcontroller.pin.PA15)
+    te_rs485 = pm.create_digital_in_out(microcontroller.pin.PD07)
     with te_rs485 as te:
         te.direction = digitalio.Direction.OUTPUT
         te.value = False
@@ -129,7 +129,7 @@ async def cdh_em_board_rs485_send_task():
             print("Error sending data")
 
 
-async def cdh_em_board_rs485_reciever_task():
+async def cdh_em_board_rs485_receiver_task():
     """
     Task that receives any RS485 message.
     """
@@ -156,7 +156,7 @@ async def cdh_em_board_rs485_reciever_task():
             print("Error receiving data")
 
 
-async def samd51_breakout_reciever_task():
+async def samd51_breakout_receiver_task():
     """
     Task that receives any RS485 message and lights up the LED for 1 second if successfully received data.
     """
