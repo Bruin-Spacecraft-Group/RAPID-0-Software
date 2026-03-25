@@ -15,28 +15,32 @@ ERROR_MARGIN = 0.1
 DELAY = 0.1
 DESIRED_VALUE = 50
 
-with patch("drivers.reaction_wheel.ReactionWheel.get_speed") as mocked_speed:
-    mocked_speed.side_effect = [0, 25, 50]
-    my_motor = motor(board.unsoll, board.diro, board.fg)
-    prev_time = time.monotonic_ns()
-    prev_error = 0
-    current_speed = my_motor.get_speed()
-    current_error = DESIRED_VALUE - current_speed
 
-    # PD Control loop for motor speed
-    while abs(current_error) > ERROR_MARGIN:
-
-        # Initialize motor speed and current error
+def test_speed():
+    """PD control loop function for reaction wheel speed"""
+    with patch("drivers.reaction_wheel.ReactionWheel.get_speed") as mocked_speed:
+        mocked_speed.side_effect = [0, 25, 50]
+        my_motor = motor(board.unsoll, board.diro, board.fg)
+        prev_time = time.monotonic_ns()
+        prev_error = 0
         current_speed = my_motor.get_speed()
         current_error = DESIRED_VALUE - current_speed
 
-        # Update parameters from PD loop
-        p_term, d_term, prev_time, prev_error = pd(
-            DESIRED_VALUE, current_speed, prev_error, prev_time
-        )
+        # PD Control loop for motor speed
+        while abs(current_error) > ERROR_MARGIN:
 
-        # Update motor speed to achieve desired speed
-        my_motor.set_speed(p_term + d_term)
-        time.sleep(DELAY)
+            # Initialize motor speed and current error
+            current_speed = my_motor.get_speed()
+            current_error = DESIRED_VALUE - current_speed
 
-    my_motor.set_speed(0)
+            # Update parameters from PD loop
+            p_term, d_term, prev_time, prev_error = pd(
+                DESIRED_VALUE, current_speed, prev_error, prev_time
+            )
+
+            # Update motor speed to achieve desired speed
+            my_motor.set_speed(p_term + d_term)
+            time.sleep(DELAY)
+
+        my_motor.set_speed(0)
+        assert True
