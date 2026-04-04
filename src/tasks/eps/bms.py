@@ -4,7 +4,7 @@ Module to operate the battery management system.
 
 import asyncio
 
-from datastores import eps
+import datastore as ds
 
 # TODO: Tune these thresholds based on testing and battery specs
 MEASURABLE_DIFF_V = None
@@ -17,7 +17,7 @@ CHARGING_VOLTAGE_THRESHOLD_V = None
 DISCHARGING_VOLTAGE_THRESHOLD_V = None
 BALANCING_VOLTAGE_THRESHOLD_V = None # for checking against each cell separately
 
-async def battery_management_task(datastore: eps.Datastore):
+async def battery_management_task(datastore: ds.Datastore):
     """
     Asynchronous control loop for battery balancing.
 
@@ -34,18 +34,18 @@ async def battery_management_task(datastore: eps.Datastore):
         balance_string(string)
         await asyncio.sleep(1)  # run once per second
 
-# def balance_all_strings(datastore: eps.Datastore):
+# def balance_all_strings(datastore: ds.Datastore):
 #     """
 #     Apply balancing logic to all battery strings in the pack.
 #     """
 #     for string in [
-#         datastore.batteries.string_1,
-#         datastore.batteries.string_2,
-#         datastore.batteries.string_3
+#         ds.batteries.string_1,
+#         ds.batteries.string_2,
+#         ds.batteries.string_3
 #     ]:
 #         balance_string(string)
 
-def string_charge_check(string: eps.DsBatteryString):
+def string_charge_check(string: ds.DsBatteryString):
     """
     Check if a battery string is in a safe state for balancing during charging.
     """
@@ -58,7 +58,7 @@ def string_charge_check(string: eps.DsBatteryString):
             return False
     return True
 
-def string_discharge_check(string: eps.DsBatteryString):
+def string_discharge_check(string: ds.DsBatteryString):
     """
     Check if a battery string is in a safe state for balancing during discharging.
 
@@ -73,7 +73,7 @@ def string_discharge_check(string: eps.DsBatteryString):
             return False
     return True
 
-def balance_string(string: eps.DsBatteryString): # noqa: C901
+def balance_string(string: ds.DsBatteryString): # noqa: C901
     """Apply balancing logic to one 2-cell battery string."""
     v_a, v_b = string.top_cell_voltage, string.bottom_cell_voltage
     if v_a is None or v_b is None:
@@ -102,7 +102,7 @@ def balance_string(string: eps.DsBatteryString): # noqa: C901
         # disable balance if no conditions met
         disable_balance(string, "both")
 
-def disable_balance(string: eps.DsBatteryString, disabled_cell: str):
+def disable_balance(string: ds.DsBatteryString, disabled_cell: str):
     """
     Helper function to disable balancing shunts based on the cell to be disabled 
 

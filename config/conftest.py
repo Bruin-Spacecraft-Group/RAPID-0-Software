@@ -13,8 +13,8 @@ imported), and immediately before each test function is evaluated (so changes
 to state remain isolated between tests).
 """
 import sys
-from unittest.mock import MagicMock
 
+from unittest.mock import MagicMock
 
 def get_unavailable_firmware_modules():
     import importlib
