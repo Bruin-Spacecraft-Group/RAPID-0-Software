@@ -11,7 +11,7 @@ class HBridge:
     Class for the H-Bridge Motor Driver
     """
 
-    def __init__(self, en, nsleep, ph):
+    def __init__(self, en, ph, nsleep):
         # in en/ph operation
         self.en = digitalio.DigitalInOut(en)
         self.en.direction = digitalio.Direction.OUTPUT
@@ -81,12 +81,11 @@ class HBridge:
         else:
             return
 
-        match d:
-            case 1:
-                self.en.value = True
-                self.ph.value = True
-            case 0:
-                self.en.value = False
-            case -1:
-                self.en.value = True
-                self.ph.value = False
+        if d == 1:
+            self.en.value = True
+            self.ph.value = True
+        elif d == 0:
+            self.en.value = False
+        elif d == -1:
+            self.en.value = True
+            self.ph.value = False
