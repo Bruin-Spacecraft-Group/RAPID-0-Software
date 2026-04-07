@@ -26,14 +26,18 @@ class HBridge:
         self.manual_wake : bool = False
 
     def wake(self):
+        """
+        Both internal and manual wake function.
+        """
+
         self.nsleep.value = True
         self.manual_wake = False
 
     def sleep(self, until_manual_wake = False):
         """
-        Sleep function to set the h-bridge into low power mode, to wake up use any movement function
+        Sleep function to set the h-bridge into low power mode, in light sleep, wake up using any movement function
 
-        :param until_manual_wake: optional, sleep until the wake function is called explicitly if True
+        :param until_manual_wake: deep sleep (until the wake function is directly called) if True, light sleep if false
         """
         self.nsleep.value = False
         self.manual_wake = until_manual_wake
