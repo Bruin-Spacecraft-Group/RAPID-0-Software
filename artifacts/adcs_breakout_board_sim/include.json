@@ -16,7 +16,7 @@
         "lib/custom_module_mocking.py:custom_module_mocking.py",
         "lib/quaternion_test.py:quaternion_test.py"
     ],
-    "submodules":[
+    "submodules": [
         "Adafruit_CircuitPython_Ticks/adafruit_ticks.py:adafruit_ticks.py",
         "Adafruit_CircuitPython_asyncio/asyncio:asyncio"
     ]
