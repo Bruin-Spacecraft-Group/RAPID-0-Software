@@ -5,8 +5,8 @@ Program to rotate satellite by a certain value (degrees).
 from unittest.mock import patch
 import time
 import board
-from tasks.adcs.reaction_wheel_pd import reaction_wheel_pd_control as pd
-from drivers.reaction_wheel import ReactionWheel as motor
+from reaction_wheel_pd import reaction_wheel_pd_control as pd
+from reaction_wheel import ReactionWheel as motor
 
 
 ERROR_MARGIN = 0.1
@@ -14,7 +14,7 @@ DELAY = 0.1
 SPEED = 50
 DESIRED_ANGLE = 0
 
-with patch("drivers.reaction_wheel.ReactionWheel.get_real_speed") as mocked_speed:
+with patch("reaction_wheel.ReactionWheel.get_real_speed") as mocked_speed:
     mocked_speed.return_value = 0
     est_angle = 0.0
     my_motor = motor(board.unsoll, board.diro, board.fg)
