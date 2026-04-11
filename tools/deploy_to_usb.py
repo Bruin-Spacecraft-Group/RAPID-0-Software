@@ -90,6 +90,7 @@ def find_mount_points_with_names():
 
 
 def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=False):
+   
     if target_drive is None:
         target_drive = "CIRCUITPY"
 
@@ -172,8 +173,9 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
 
     print("Programming included libraries to device...")
     for item in includejson["src"]:
-        src_item_path = os.path.join(".", "src", item)
-        dst_item_path = os.path.join(deploy_path, item)
+        itemlist = item.split(":")
+        src_item_path = os.path.join(".", "src", itemlist[0])
+        dst_item_path = os.path.join(deploy_path, itemlist[1])
         if os.path.isdir(src_item_path):
             shutil.copytree(
                 src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
@@ -181,11 +183,28 @@ def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=Fa
         else:
             os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
             shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
-
+    
+    for item in includejson["submodules"]:
+        itemlist = item.split(":")
+        src_item_path = os.path.join(".", "submodules", itemlist[0])
+        dst_item_path = os.path.join(deploy_path, itemlist[1])
+        if (include_tests and (src_item_path == "./submodules/Adafruit_CircuitPython_asyncio/asyncio")):
+            continue
+        if os.path.isdir(src_item_path):
+            shutil.copytree(
+                src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
+            )
+        else:
+            os.makedirs(os.path.dirname(dst_item_path), exist_ok=True)
+            shutil.copyfile(src_item_path, dst_item_path, follow_symlinks=True)
+    
+    
     if include_tests:
         for item in includejson["unit_tests"]:
-            src_item_path = os.path.join(".", "unit_tests", item)
-            dst_item_path = os.path.join(deploy_path, item)
+            print(f"Including unit test item {item}...")
+            itemlist = item.split(":")
+            src_item_path = os.path.join(".", "unit_tests", itemlist[0])
+            dst_item_path = os.path.join(deploy_path, itemlist[1])
             if os.path.isdir(src_item_path):
                 shutil.copytree(
                     src_item_path, dst_item_path, symlinks=False, dirs_exist_ok=True
