@@ -2,7 +2,7 @@
 Allows for enabling/disabling each of the buses on the EPS board.
 """
 
-from datastores.eps import DsCommands
+from datastores import DsCommands
 import board
 import digitalio
 

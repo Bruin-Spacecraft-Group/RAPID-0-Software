@@ -1,4 +1,16 @@
 {
-    "src": [],
-    "unit_tests": []
+    "src": [
+        "drivers/ads1118.py:ads1118.py",
+        "tasks/eps/bms.py:bms.py",
+        "tasks/eps/icd.py:icd.py",
+        "tasks/eps/monitoring.py:monitoring.py",
+        "lib/datastores/eps.py:datastores.py"
+    ],
+    "unit_tests":[
+
+    ],
+    "submodules":[
+        "Adafruit_CircuitPython_Ticks/adafruit_ticks.py:adafruit_ticks.py",
+        "Adafruit_CircuitPython_asyncio/asyncio:asyncio"
+    ]
 }
