@@ -13,13 +13,13 @@ information about bus operation and mission state to enable and disable output b
 import asyncio
 import digitalio
 
-from datastores.eps import Datastore
+import datastore as ds
 from pin_manager import PinManager
 
 import board
 
 
-async def intersubsystem_communication_task(datastore: Datastore):
+async def intersubsystem_communication_task(datastore: ds.Datastore):
     """
     Task to communicate with CDH.
 
@@ -33,7 +33,7 @@ async def intersubsystem_communication_task(datastore: Datastore):
         await asyncio.sleep(0)
 
 
-async def output_bus_control_task(datastore: Datastore):
+async def output_bus_control_task(datastore: ds.Datastore):
     """
     Task which controls output buses to the rest of the satellite.
 
@@ -87,7 +87,7 @@ def circ_recent(arr, count, stop):
     return arr[stop - count : stop]
 
 
-def _control_tick_3v3_bus(datastore: Datastore):
+def _control_tick_3v3_bus(datastore: ds.Datastore):
     """Determines if the 3v3 bus should be disabled based on the battery charge and output current"""
     avg_output_current_20s = avg(_control_tick_3v3_bus_data["output_currents"])
     if avg_output_current_20s > 0.5 * 4 / 3:
@@ -109,19 +109,19 @@ def _control_tick_3v3_bus(datastore: Datastore):
     return True
 
 
-def _control_tick_5v_bus(datastore: Datastore):
+def _control_tick_5v_bus(datastore: ds.Datastore):
     # TODO: implement this logic
     print(datastore.control_commands.explicit_5v_disable)
     return True
 
 
-def _control_tick_12vlp_bus(datastore: Datastore):
+def _control_tick_12vlp_bus(datastore: ds.Datastore):
     # TODO: implement this logic
     print(datastore.control_commands.explicit_12vlp_disable)
     return True
 
 
-def _control_tick_12vhp_bus(datastore: Datastore):
+def _control_tick_12vhp_bus(datastore: ds.Datastore):
     # TODO: implement this logic
     print(datastore.control_commands.explicit_12vhp_disable)
     return True
