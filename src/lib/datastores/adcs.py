@@ -4,6 +4,8 @@ ADCS system for all tasks to update and use. Readings that have not yet been ini
 are set to `None` throughout this module.
 """
 
+import tle
+
 class Datastore:
     """
     Datastore class for adcs processes. Holds time, sensor, and attitude data to be used system-wide
@@ -33,7 +35,7 @@ class Datastore:
             None  # Quaternion representing attitude from body frame to inertial frame
         )
         self.mode = self.DETUMBLE
-        self.tle: TLE = TLE()
+        self.tle: tle.TLE = tle.TLE()
 
 class AdcsTime:
     """
@@ -54,11 +56,35 @@ class SensorData:
         self.magnetometer = None
         self.gyroscope = None
 
-class TLE:
+class Satrec:
     """
-    Attitude helper class
+    Parameters, constants that are commonly used across the sgp4 logical flow
+
+    Usually built from TLE
     """
-    def __init__(self):
-        # reference vectors in inertial frame
-        self.ref_vec1 = 0.0 # more accurate vector
-        self.ref_vec2 = 0.0 # less accurate vector
+
+    """
+    t - time since
+    mo, mdot - mean anomaly
+    argpo, argpdot - argument of perigee
+    nodeo, nodedot, nodecf - RAAN value, drift, and correction respectively
+    bstar - atmospheric drag
+    cc1, cc4, cc5 - drag coefficient terms
+    ecco, inclo - eccentricity, inclination (no derivatives)
+    mm, nm - mean motion before and after corrections
+    error, error_message - might want to leave this up to cdh but implement
+    this here?
+    """
+
+    def __init__(self, t, mo, # mean anomaly
+                 argpo, # argument of perigee
+                 nodeo, # RAAN
+                 ):
+        pass
+    
+    @classmethod
+    def from_tle_array(cls):
+
+        obj = cls()
+
+        return obj

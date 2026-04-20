@@ -4,6 +4,8 @@ Functions and Variables used by ADCS to update and use TLE (two-line element dat
 Adapted from the TLE-tools library by @FedericoStra on GitHub for ulab, 
 """
 
+from datastores.adcs import Satrec
+
 def _conv_year(s):
     """Interpret a two-digit year string."""
     if isinstance(s, int):
@@ -78,9 +80,9 @@ class TLE:
         Revolution number.
     """
 
-    def __init__(self, 
+    def __init__(self, name:str,
                  # ID parameters, Line 1
-                 name:str, norad:str, classification:str, int_desig:str, 
+                 norad:str, classification:str, int_desig:str, 
                  # time (derivative) parameters, line 1
                  epoch_year:int, epoch_day:float, dn_o2:float, ddn_o6:float, bstar:float, set_num:int, 
                  # keplerian parameters, line 2
@@ -88,6 +90,7 @@ class TLE:
         # Oh my lord prepare for absolute misery on earth
         
         self.name = str.strip(name)
+
         self.norad = str.strip(norad)
         self.classification = classification
         self.int_desig = str.strip(int_desig)
@@ -145,4 +148,32 @@ class TLE:
         """Load TLE from a string."""
         return [cls.from_lines(*string.split('\n')[:2])]
 
+    def to_array(self):
+        """
+        Return 2D array of TLE values
+        
+        Indexed as 
+        [line, col]
 
+        n is mean motion, d suggests time derivative
+
+        name: [0,0] 
+
+        norad: [1,0] classification: [1,1] int_desig: [1,2] epoch_year: [1,3] day: [1,4] 
+        dn/2: [1,5] ddn/6: [1,6] bstar: [1,7] set_num: [1,8]
+
+        inclination: [2,0] RAAN: [2,1] eccentricity: [2,2] arg_perigee: [2,3] Mean Anomaly: [2,4] n: [2,5] rev_num: [2,6]
+        """
+        TLE()
+        return [
+            [self.name], # Line 0
+            [self.norad, self.classification, self.int_desig, # line 1 ID
+             self.epoch_year, self.epoch_day, self.dn_o2, self.ddn_o6, self.bstar, self.set_num], # line 1 time-derivative
+            [self.inc, self.raan, self.ecc, self.argp, self.M, self.n, self.rev_num] # line 2 orbital params
+        ]
+    
+    def to_sgp4_params(self):
+        """Return a formatted Satrec object that can immediately used in SGP4"""
+
+        return Satrec.from_tle_array(self.to_array())
+    
