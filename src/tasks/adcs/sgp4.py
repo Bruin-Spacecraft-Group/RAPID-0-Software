@@ -4,7 +4,7 @@ Simplified General Perturbations Model 4 Implementation for Orbit Propagation
 As outlined in https://celestrak.org/publications/AIAA/2008-6770/AIAA-2008-6770.pdf
 """
 
-from tle import Satrec
+from datastores.adcs import Satrec
 
 # Error codes
 ECCENTRICITY = 1 # eccentricity is not within 0-1
@@ -26,7 +26,7 @@ def sgp4_update(satrec: Satrec, tsince):
     Possible alternative is numerical stepping (for lower accuracy) of associated partials
     """
     # -- Set mathematical constants
-    x2o3  = 2.0 / 3.0;
+    x2o3  = 2.0 / 3.0
     tau = 2.0 * np.pi
     vkmpersec = satrec.radiusearthkm * satrec.xke/60.0;
 
@@ -44,22 +44,6 @@ def sgp4_update(satrec: Satrec, tsince):
     tempe   = satrec.bstar * satrec.cc4 * satrec.t;
     templ   = satrec.t2cof * t2;
 
-    # -- Extra mean quantities
-
-    # -- Add lunar-solar periodics
-
-    # -- Long period periodics
-
-    # -- Solve Kepler's
-
-    #  -- Short period
-    # Preliminary quantities
-
-        # - Update for short period periodics
-
-        # - Orientation vectors
-
-        # - Compute r and v
     if satrec.isimp != 1:
 
         delomg = satrec.omgcof * satrec.t;
@@ -85,28 +69,18 @@ def sgp4_update(satrec: Satrec, tsince):
     inclm = satrec.inclo;
 
     if nm <= 0.0:
-
-        satrec.error_message = ('mean motion {0:f} is less than zero'
-                                .format(nm))
-        satrec.error = MOTION
-        #  sgp4fix add return
+        satrec.error = satrec.MOTION
         return False, False;
 
     am = pow((satrec.xke / nm),x2o3) * tempa * tempa;
     nm = satrec.xke / pow(am, 1.5);
     em = em - tempe;
 
-    #  fix tolerance for error recognition
-    #  sgp4fix am is fixed from the previous nm check
-    if em >= 1.0 or em < -0.001:  # || (am < 0.95)
-
-        satrec.error_message = ('mean eccentricity {0:f} not within'
-                                ' range 0.0 <= e < 1.0'.format(em))
-        satrec.error = ECCENTRICITY
-        #  sgp4fix to return if there is an error in eccentricity
+    if em >= 1.0 or em < -0.001: 
+        satrec.error = satrec.ECCENTRICITY
+        
         return False, False;
 
-    #  sgp4fix fix tolerance to avoid a divide by zero
     if em < 1.0e-6:
         em  = 1.0e-6;
     mm     = mm + satrec.no_unkozai * templ;
@@ -119,7 +93,6 @@ def sgp4_update(satrec: Satrec, tsince):
     xlm    = xlm % tau
     mm     = (xlm - argpm - nodem) % tau
 
-    # sgp4fix recover singly averaged mean elements
     satrec.am = am;
     satrec.em = em;
     satrec.im = inclm;
@@ -129,8 +102,8 @@ def sgp4_update(satrec: Satrec, tsince):
     satrec.nm = nm;
 
     #  ----------------- compute extra mean quantities -------------
-    sinim = np.sin(inclm);
-    cosim = np.cos(inclm);
+    sinim = np.sin(inclm)
+    cosim = np.cos(inclm)
 
     #  -------------------- add lunar-solar periodics --------------
     ep     = em;
@@ -152,8 +125,7 @@ def sgp4_update(satrec: Satrec, tsince):
     eo1  = u;
     tem5 = 9999.9;
     ktr = 1;
-    #    sgp4fix for kepler iteration
-    #    the following iteration needs better limits on corrections
+
     while np.fabs(tem5) >= 1.0e-12 and ktr <= 10:
 
         sineo1 = np.sin(eo1);
@@ -171,28 +143,25 @@ def sgp4_update(satrec: Satrec, tsince):
     el2   = axnl*axnl + aynl*aynl;
     pl    = am*(1.0-el2);
     if pl < 0.0:
-
-        satrec.error_message = ('semilatus rectum {0:f} is less than zero'
-                                .format(pl))
-        satrec.error = SEMIRECT
-        #  sgp4fix add return
+        satrec.error = satrec.SEMIRECT
+        
         return False, False;
 
     else:
 
-        rl     = am * (1.0 - ecose);
-        rdotl  = np.sqrt(am) * esine/rl;
-        rvdotl = np.sqrt(pl) / rl;
-        betal  = np.sqrt(1.0 - el2);
-        temp   = esine / (1.0 + betal);
-        sinu   = am / rl * (sineo1 - aynl - axnl * temp);
-        cosu   = am / rl * (coseo1 - axnl + aynl * temp);
-        su     = np.atan2(sinu, cosu);
-        sin2u  = (cosu + cosu) * sinu;
-        cos2u  = 1.0 - 2.0 * sinu * sinu;
-        temp   = 1.0 / pl;
-        temp1  = 0.5 * satrec.j2 * temp;
-        temp2  = temp1 * temp;
+        rl     = am * (1.0 - ecose)
+        rdotl  = np.sqrt(am) * esine/rl
+        rvdotl = np.sqrt(pl) / rl
+        betal  = np.sqrt(1.0 - el2)
+        temp   = esine / (1.0 + betal)
+        sinu   = am / rl * (sineo1 - aynl - axnl * temp)
+        cosu   = am / rl * (coseo1 - axnl + aynl * temp)
+        su     = np.atan2(sinu, cosu)
+        sin2u  = (cosu + cosu) * sinu
+        cos2u  = 1.0 - 2.0 * sinu * sinu
+        temp   = 1.0 / pl
+        temp1  = 0.5 * satrec.j2 * temp
+        temp2  = temp1 * temp
 
         #  -------------- update for short period periodics ------------
         mrt   = rl * (1.0 - 1.5 * temp2 * betal * satrec.con41) + \
@@ -227,12 +196,8 @@ def sgp4_update(satrec: Satrec, tsince):
             (mvt * uy + rvdot * vy) * vkmpersec,
             (mvt * uz + rvdot * vz) * vkmpersec)
 
-    #  sgp4fix for decaying satellites
     if mrt < 1.0:
-
-        satrec.error_message = ('mrt {0:f} is less than 1.0 indicating'
-                                ' the satellite has decayed'.format(mrt))
-        satrec.error = DECAY
+        satrec.error = satrec.DECAY
 
     return r, v
     

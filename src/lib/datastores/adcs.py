@@ -55,36 +55,3 @@ class SensorData:
         self.sun = None
         self.magnetometer = None
         self.gyroscope = None
-
-class Satrec:
-    """
-    Parameters, constants that are commonly used across the sgp4 logical flow
-
-    Usually built from TLE
-    """
-
-    """
-    t - time since
-    mo, mdot - mean anomaly
-    argpo, argpdot - argument of perigee
-    nodeo, nodedot, nodecf - RAAN value, drift, and correction respectively
-    bstar - atmospheric drag
-    cc1, cc4, cc5 - drag coefficient terms
-    ecco, inclo - eccentricity, inclination (no derivatives)
-    mm, nm - mean motion before and after corrections
-    error, error_message - might want to leave this up to cdh but implement
-    this here?
-    """
-
-    def __init__(self, t, mo, # mean anomaly
-                 argpo, # argument of perigee
-                 nodeo, # RAAN
-                 ):
-        pass
-    
-    @classmethod
-    def from_tle_array(cls):
-
-        obj = cls()
-
-        return obj
