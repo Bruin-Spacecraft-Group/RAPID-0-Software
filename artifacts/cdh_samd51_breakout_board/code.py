@@ -1,9 +1,9 @@
 import asyncio
-from tasks import inter_subsystem_rs485
+import inter_subsystem_rs485
 
 async def gathered_task():
     await asyncio.gather(
-        inter_subsystem_rs485.cdh_em_board_rs485_receiver_task()
+        inter_subsystem_rs485.samd51_breakout_receiver_task()
     )
 
 

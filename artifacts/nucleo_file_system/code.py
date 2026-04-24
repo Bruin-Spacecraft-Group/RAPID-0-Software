@@ -1,5 +1,5 @@
 import asyncio
-from tasks import inter_subsystem_rs485
+import inter_subsystem_rs485
 
 async def gathered_task():
     """Runs all tasks in parallel."""

@@ -10,7 +10,7 @@ async def gathered_task():
     """
     Task to run all other tasks concurrently.
     """
-    await asyncio.gather(inter_subsystem_rs485.inter_subsystem_rs485_sender_task())
+    await asyncio.gather(inter_subsystem_rs485.cdh_em_board_rs485_receiver_task())
 
 if __name__ == "__main__":
     asyncio.run(gathered_task())
