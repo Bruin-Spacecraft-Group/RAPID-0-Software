@@ -23,6 +23,7 @@ class GPS:
         self.fix_mode = 0
         self.satellites = 0
         self.raw_payload = bytearray()
+        self.working = False
 
     def connect(self):
         """
@@ -59,7 +60,10 @@ class GPS:
                 calculated_cs ^= byte
 
             if calculated_cs == checksum_byte:
+                self.working = True
                 self.parse_payload(payload)
+            else:
+                self.working = False
 
             self.buffer = self.buffer[total_msg_len:]
 
