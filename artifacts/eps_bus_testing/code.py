@@ -30,7 +30,6 @@ def set_5v(eps_ds_commands: DsCommands, enable: bool):
     eps_ds_commands.bus_5v_enabled = enable
 
 
-
 def set_12vlp(eps_ds_commands: DsCommands, enable: bool):
     en_12vlp_bus_pin.value = enable
     eps_ds_commands.bus_12vlp_enabled = enable

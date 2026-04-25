@@ -7,7 +7,7 @@
         "lib/datastores/eps.py:datastores.py"
     ],
     "unit_tests":[
-
+        "lib/eps_bus_testing.py:eps_bus_testing.py"
     ],
     "submodules":[
         "Adafruit_CircuitPython_Ticks/adafruit_ticks.py:adafruit_ticks.py",
