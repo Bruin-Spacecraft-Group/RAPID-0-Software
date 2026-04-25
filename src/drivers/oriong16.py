@@ -22,6 +22,7 @@ class GPS:
 
         self.fix_mode = 0
         self.satellites = 0
+        self.raw_payload = bytearray()
 
     def connect(self):
         """
@@ -50,6 +51,7 @@ class GPS:
                 break
 
             payload = self.buffer[4 : 4 + payload_length]
+            self.raw_payload = payload
             checksum_byte = self.buffer[4 + payload_length]
 
             calculated_cs = 0
@@ -67,8 +69,10 @@ class GPS:
         """
         val = (b0 << 24) | (b1 << 16) | (b2 << 8) | b3
 
-        if val > 0x80000000:
-            val -= 0x10000000
+        if val >= 0x80000000:
+            val -= 0x100000000
+
+        return val
 
     def parse_payload(self, payload):
         """
@@ -76,7 +80,7 @@ class GPS:
         """
         msg_id = payload[0]
 
-        if msg_id == 0xA8 and len(payload) >= 17:
+        if msg_id == 0xA8 and len(payload) >= 25:
             self.fix_mode = payload[1]
             self.satellites = payload[2]
 
