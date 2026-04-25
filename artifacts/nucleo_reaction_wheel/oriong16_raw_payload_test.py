@@ -62,11 +62,11 @@ def main():
         now = time.monotonic()
         if payload and payload != last_payload:
             print(
-                gps.latitude,
-                gps.longitude,
-                gps.altitude,
-                gps.fix_mode,
-                gps.satellites
+                "raw_payload len={} msg_id=0x{:02X} data={}".format(
+                    len(payload),
+                    payload[0],
+                    _hex_bytes(payload),
+                )
             )
             last_payload = payload
             last_status_time = now
