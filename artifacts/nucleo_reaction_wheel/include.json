@@ -1,5 +1,6 @@
 {
     "src": [
+        "drivers/oriong16.py:oriong16.py",
         "drivers/reaction_wheel.py:reaction_wheel.py",
         "lib/pin_manager.py:pin_manager.py"
     ],
