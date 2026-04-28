@@ -7,7 +7,7 @@
         "lib/datastores/eps.py:datastores.py"
     ],
     "unit_tests":[
-        "lib/eps_bus_testing.py:eps_bus_testing.py",
+        "lib/eps_bus_test.py:eps_bus_test.py",
         "lib/custom_module_mocking.py:custom_module_mocking.py"
     ],
     "submodules":[
