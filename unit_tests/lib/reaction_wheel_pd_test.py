@@ -70,7 +70,7 @@ class TestReactionWheelControl(unittest.TestCase):
             )
 
             prev_error = error
-            current_value = p_term * reaction_wheel_pd.KP + d_term * reaction_wheel_pd.KD
+            current_value = current_value + (p_term * reaction_wheel_pd.KP + d_term * reaction_wheel_pd.KD)
             prev_time = current_time
             mock_time.return_value += 1_000_000_000
         
