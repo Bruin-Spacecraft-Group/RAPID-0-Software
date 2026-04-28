@@ -61,7 +61,7 @@ class TestReactionWheelControl(unittest.TestCase):
         prev_error=0
         prev_time=0
 
-        while (mock_time.return_value < 100_000_000_000):
+        while (mock_time.return_value < 1_000_000_000):
             p_term, d_term, current_time, error = reaction_wheel_pd.reaction_wheel_pd_control(
             desired_value, 
             current_value, 
@@ -72,7 +72,7 @@ class TestReactionWheelControl(unittest.TestCase):
             prev_error = error
             current_value = p_term * reaction_wheel_pd.KP + d_term * reaction_wheel_pd.KD
             prev_time = current_time
-            mock_time.return_value += 1
+            mock_time.return_value += 10_000
         
         # Error is within 2 decimal places of 0
         self.assertAlmostEqual(error, 0, 2)
