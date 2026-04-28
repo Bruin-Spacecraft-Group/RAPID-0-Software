@@ -43,8 +43,7 @@ def set_12vhp(eps_ds_commands: DsCommands, enable: bool):
     en_12vhp_bus_pin.value = enable
     eps_ds_commands.bus_12vhp_enabled = enable
 
-
-if __name__ == "__main__":
+def test_buses():
     print("=" * 100)
     print(f'{"=" * 40}  EPS Bus Testing  {"=" * 41}')
     print("=" * 100)
@@ -87,3 +86,6 @@ if __name__ == "__main__":
             print(
                 f'Invalid syntax. The argument "{split[1]}" must be either "3v3", "5v", "12vlp", or "12vhp".'
             )
+
+if __name__ == "__main__":
+    test_buses()

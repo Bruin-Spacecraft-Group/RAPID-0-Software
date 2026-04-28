@@ -2,8 +2,8 @@
 Software entry point for the control application for the EPS flatsat PCB from June 2024.
 """
 
-import digitalio
 import asyncio
+import digitalio
 import board
 
 import bms
