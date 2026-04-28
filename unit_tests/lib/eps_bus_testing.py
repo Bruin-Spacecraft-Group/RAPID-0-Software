@@ -1,11 +1,11 @@
 import unittest
 import sys
+import custom_module_mocking
 from datastores import DsCommands
 from unittest.mock import MagicMock
 
 # 1. Mock the hardware-specific CircuitPython modules before import
 sys.modules['board'] = MagicMock()
-sys.modules['digitalio'] = MagicMock()
 
 # Now it is safe to import your hardware-dependent module
 import eps_bus_testing
