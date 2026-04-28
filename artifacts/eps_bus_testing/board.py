@@ -1,3 +1,7 @@
+"""
+Pin definitions for the nucleo board which runs the eps_bus_testing artifact.
+"""
+
 import microcontroller
 
 EN_3V3_BUS = microcontroller.pin.PA14

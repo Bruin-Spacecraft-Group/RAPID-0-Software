@@ -1,10 +1,10 @@
 """
 Allows for enabling/disabling each of the buses on the EPS board.
 """
-
-from datastores import DsCommands
 import board
 import digitalio
+
+from datastores import DsCommands
 
 # Initialize pins
 
@@ -21,21 +21,25 @@ en_12vhp_bus_pin = digitalio.DigitalInOut(board.EN_12VHP_BUS)
 en_12vhp_bus_pin.direction = digitalio.Direction.OUTPUT
 
 def set_3v3(eps_ds_commands: DsCommands, enable: bool):
+    """Enables or disables 3v3 bus and sets corresponding value in DsCommands"""
     en_3v3_bus_pin.value = enable
     eps_ds_commands.bus_3v3_enabled = enable
 
 
 def set_5v(eps_ds_commands: DsCommands, enable: bool):
+    """Enables or disables 5v bus and sets corresponding value in DsCommands"""
     en_5v_bus_pin.value = enable
     eps_ds_commands.bus_5v_enabled = enable
 
 
 def set_12vlp(eps_ds_commands: DsCommands, enable: bool):
+    """Enables or disables 12vlp bus and sets corresponding value in DsCommands"""
     en_12vlp_bus_pin.value = enable
     eps_ds_commands.bus_12vlp_enabled = enable
 
 
 def set_12vhp(eps_ds_commands: DsCommands, enable: bool):
+    """Enables or disables 12vhp bus and sets corresponding value in DsCommands"""
     en_12vhp_bus_pin.value = enable
     eps_ds_commands.bus_12vhp_enabled = enable
 
