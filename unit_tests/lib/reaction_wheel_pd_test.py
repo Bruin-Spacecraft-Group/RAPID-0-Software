@@ -58,7 +58,7 @@ class TestReactionWheelControl(unittest.TestCase):
 
         desired_value=10
         current_value=8
-        prev_error=0
+        prev_error=2
         prev_time=0
 
         while (mock_time.return_value < 1_000_000_000):
