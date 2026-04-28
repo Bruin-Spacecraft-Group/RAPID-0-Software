@@ -111,17 +111,17 @@ def _control_tick_3v3_bus(datastore: ds.Datastore):
 
 def _control_tick_5v_bus(datastore: ds.Datastore):
     # TODO: implement this logic
-    print(datastore.control_commands.explicit_5v_disable)
+    print(datastore.control_commands.bus_5v_enabled)
     return True
 
 
 def _control_tick_12vlp_bus(datastore: ds.Datastore):
     # TODO: implement this logic
-    print(datastore.control_commands.explicit_12vlp_disable)
+    print(datastore.control_commands.bus_12vlp_enabled)
     return True
 
 
 def _control_tick_12vhp_bus(datastore: ds.Datastore):
     # TODO: implement this logic
-    print(datastore.control_commands.explicit_12vhp_disable)
+    print(datastore.control_commands.bus_12vhp_enabled)
     return True

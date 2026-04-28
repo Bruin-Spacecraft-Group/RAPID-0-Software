@@ -1,0 +1,18 @@
+{
+    "src": [
+        "drivers/ads1118.py:ads1118.py",
+        "tasks/eps/bms.py:bms.py",
+        "tasks/eps/icd.py:icd.py",
+        "tasks/eps/monitoring.py:monitoring.py",
+        "lib/datastores/eps.py:datastores.py",
+        "lib/pin_manager.py:pin_manager.py"
+    ],
+    "unit_tests":[
+        "lib/pin_manager_test.py:pin_manager_test.py",
+        "lib/custom_module_mocking.py:custom_module_mocking.py"
+    ],
+    "submodules":[
+        "Adafruit_CircuitPython_Ticks/adafruit_ticks.py:adafruit_ticks.py",
+        "Adafruit_CircuitPython_asyncio/asyncio:asyncio"
+    ]
+}
