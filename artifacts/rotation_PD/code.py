@@ -14,7 +14,6 @@ SPEED = 50
 DESIRED_ANGLE = 0
 
 if __name__ == "__main__":
-    #mocked_speed.return_value = 0
     est_angle = 0.0
     my_motor = motor(board.unsoll, board.diro, board.fg)
     prev_time = time.monotonic_ns()

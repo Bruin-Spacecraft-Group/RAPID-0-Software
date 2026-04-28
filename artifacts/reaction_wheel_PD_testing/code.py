@@ -15,7 +15,6 @@ DELAY = 0.1
 DESIRED_VALUE = 50
 
 if __name__ == "__main__":
-    #mocked_speed.side_effect = [0, 25, 50]
     my_motor = motor(board.unsoll, board.diro, board.fg)
     prev_time = time.monotonic_ns()
     prev_error = 0
