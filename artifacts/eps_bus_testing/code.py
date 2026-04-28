@@ -44,6 +44,7 @@ def set_12vhp(eps_ds_commands: DsCommands, enable: bool):
     eps_ds_commands.bus_12vhp_enabled = enable
 
 def test_buses():
+    """Reads commands from the user to enable and disable buses"""
     print("=" * 100)
     print(f'{"=" * 40}  EPS Bus Testing  {"=" * 41}')
     print("=" * 100)
