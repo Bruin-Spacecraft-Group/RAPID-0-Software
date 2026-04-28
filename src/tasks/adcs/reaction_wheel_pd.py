@@ -4,8 +4,8 @@ Reaction wheel PD control iteration.
 
 import time
 
-KP = 1
-KD = 1
+KP = 0.01
+KD = 0.01
 
 
 def reaction_wheel_pd_control(desired_value, current_value, prev_error, prev_time):
