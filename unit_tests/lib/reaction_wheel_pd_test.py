@@ -51,5 +51,32 @@ class TestReactionWheelControl(unittest.TestCase):
         self.assertEqual(p_term, 0)
         self.assertEqual(d_term, 0)
 
+    @patch('time.monotonic_ns')
+    def test_reach_zero_error(self, mock_time):
+        """Test that the system reaches zero error in a reasonable time"""
+        mock_time.return_value = 1
+
+        desired_value=10
+        current_value=8
+        prev_error=0
+        prev_time=0
+
+        while (mock_time.return_value < 100_000_000_000):
+            p_term, d_term, current_time, error = reaction_wheel_pd.reaction_wheel_pd_control(
+            desired_value, 
+            current_value, 
+            prev_error, 
+            prev_time
+            )
+
+            prev_error = error
+            current_value = p_term * reaction_wheel_pd.KP + d_term * reaction_wheel_pd.KD
+            prev_time = current_time
+            mock_time.return_value += 1
+        
+        # Error is within 2 decimal places of 0
+        self.assertAlmostEqual(error, 0, 2)
+
+
 if __name__ == '__main__':
     unittest.main()
