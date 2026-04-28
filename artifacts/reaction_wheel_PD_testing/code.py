@@ -2,7 +2,6 @@
 Testing code for reaction wheels using PD control loop.
 """
 
-from unittest.mock import patch
 import time
 import board
 from reaction_wheel_pd import reaction_wheel_pd_control as pd
@@ -15,8 +14,8 @@ ERROR_MARGIN = 0.1
 DELAY = 0.1
 DESIRED_VALUE = 50
 
-with patch("reaction_wheel.ReactionWheel.get_speed") as mocked_speed:
-    mocked_speed.side_effect = [0, 25, 50]
+if __name__ == "__main__":
+    #mocked_speed.side_effect = [0, 25, 50]
     my_motor = motor(board.unsoll, board.diro, board.fg)
     prev_time = time.monotonic_ns()
     prev_error = 0

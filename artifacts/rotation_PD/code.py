@@ -2,7 +2,6 @@
 Program to rotate satellite by a certain value (degrees).
 """
 
-from unittest.mock import patch
 import time
 import board
 from reaction_wheel_pd import reaction_wheel_pd_control as pd
@@ -14,8 +13,8 @@ DELAY = 0.1
 SPEED = 50
 DESIRED_ANGLE = 0
 
-with patch("reaction_wheel.ReactionWheel.get_real_speed") as mocked_speed:
-    mocked_speed.return_value = 0
+if __name__ == "__main__":
+    #mocked_speed.return_value = 0
     est_angle = 0.0
     my_motor = motor(board.unsoll, board.diro, board.fg)
     prev_time = time.monotonic_ns()
