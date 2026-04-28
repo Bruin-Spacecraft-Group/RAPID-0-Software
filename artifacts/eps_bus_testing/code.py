@@ -1,8 +1,8 @@
 """
 Allows for enabling/disabling each of the buses on the EPS board.
 """
-import board
 import digitalio
+import board
 
 from datastores import DsCommands
 
@@ -66,9 +66,9 @@ if __name__ == "__main__":
             continue
 
         if split[0] == "enable":
-            enable = True
+            enable_val = True
         elif split[0] == "disable":
-            enable = False
+            enable_val = False
         else:
             print(
                 f'Invalid syntax. The argument "{split[0]}" must be either "enable" or "disable".'
@@ -76,13 +76,13 @@ if __name__ == "__main__":
             continue
 
         if split[1] == "3v3":
-            set_3v3(ds_commands, enable)
+            set_3v3(ds_commands, enable_val)
         elif split[1] == "5v":
-            set_5v(ds_commands, enable)
+            set_5v(ds_commands, enable_val)
         elif split[1] == "12vlp":
-            set_12vlp(ds_commands, enable)
+            set_12vlp(ds_commands, enable_val)
         elif split[1] == "12vhp":
-            set_12vhp(ds_commands, enable)
+            set_12vhp(ds_commands, enable_val)
         else:
             print(
                 f'Invalid syntax. The argument "{split[1]}" must be either "3v3", "5v", "12vlp", or "12vhp".'
