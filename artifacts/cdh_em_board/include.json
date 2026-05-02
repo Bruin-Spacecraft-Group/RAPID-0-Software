@@ -1,6 +1,6 @@
 {
     "src": [
-        "drivers/camera.py:camera.py",
+        "drivers/ov5642.py:ov5642.py",
         "lib/pin_manager.py:pin_manager.py",
         "tasks/camera_tasks.py:camera_tasks.py",
         "tasks/inter_subsystem_rs485.py:inter_subsystem_rs485.py"

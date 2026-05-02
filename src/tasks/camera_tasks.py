@@ -2,7 +2,7 @@
 Module for utilizing the Arducam OV5642 Camera
 """
 
-from drivers import ov5642
+import ov5642
 import usb_cdc
 
 
