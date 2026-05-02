@@ -2,6 +2,7 @@
 Driver module for the ArduCam 5MP Mini SPI breakout board.
 """
 
+# pylint: skip-file
 import busio
 import bitbangio
 import time as utime
