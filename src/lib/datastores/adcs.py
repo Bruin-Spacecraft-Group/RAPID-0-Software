@@ -4,7 +4,7 @@ ADCS system for all tasks to update and use. Readings that have not yet been ini
 are set to `None` throughout this module.
 """
 
-import tle
+import tle as tle
 
 class Datastore:
     """

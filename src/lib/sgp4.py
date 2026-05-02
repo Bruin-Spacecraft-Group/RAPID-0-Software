@@ -255,7 +255,7 @@ def sgp4_update(satrec, tsince):
     
 def sgp4_init(satrec, satn,   epoch,
                  bstar, ndot, nddot, ecco, argpo,
-                 inclo, mo, no_kozai,
+                 inclo, mo,
                  nodeo
                  ):
         
@@ -303,7 +303,6 @@ def sgp4_init(satrec, satn,   epoch,
         satrec.inclo   = inclo
         satrec.mo	     = mo
         satrec.nodeo   = nodeo
-        satrec.no_kozai = no_kozai
 
         # single averaged mean elements
         satrec.am = 0.0
@@ -322,7 +321,7 @@ def sgp4_init(satrec, satn,   epoch,
         cosio2, omeosq, posq,
         rp,    rteosq,sinio , satrec.gsto,
         ) = _initl(
-            satrec.xke, satrec.j2, satrec.ecco, epoch, satrec.inclo, satrec.no_kozai
+            satrec.xke, satrec.j2, satrec.ecco, epoch, satrec.inclo
             )
         satrec.a    = pow( satrec.no_unkozai*satrec.tumin , (-2.0/3.0) );
         satrec.alta = satrec.a*(1.0 + satrec.ecco) - 1.0;
