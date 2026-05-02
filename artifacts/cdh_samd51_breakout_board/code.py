@@ -1,7 +1,15 @@
+"""
+Entry point for a testing artifact that simulates the CDH microcontroller on
+a custom SamD51 breakout board.
+"""
+
 import asyncio
 import inter_subsystem_rs485
 
 async def gathered_task():
+    """
+    Task to run all other tasks concurrently.
+    """
     await asyncio.gather(
         inter_subsystem_rs485.samd51_breakout_receiver_task()
     )

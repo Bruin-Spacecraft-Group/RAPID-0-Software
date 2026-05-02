@@ -1,3 +1,7 @@
+"""
+Module for intersubsystem communication using UART over RS485
+"""
+
 import asyncio
 import board
 import microcontroller
