@@ -2,7 +2,7 @@
 Module for utilizing the Arducam OV5642 Camera
 """
 
-from drivers.camera import *
+from drivers import ov5642
 import usb_cdc
 
 
@@ -15,7 +15,7 @@ def capture_single_image(return_bursts):
     once_number = 128
     buffer = bytearray(once_number)
 
-    camera = Camera()
+    camera = ov5642.Camera()
     camera.Camera_Detection()
     camera.Spi_Test()
     camera.Camera_Init()
@@ -23,7 +23,7 @@ def capture_single_image(return_bursts):
     utime.sleep(1)
     camera.clear_fifo_flag()
     camera.Spi_write(ARDUCHIP_FRAMES,0x00)
-    camera.wrSensorRegs16_8(ov5642_640x480)
+    camera.wrSensorRegs16_8(ov5642.ov5642_640x480)
 
     camera.flush_fifo()  # Clear FIFO
     camera.clear_fifo_flag()

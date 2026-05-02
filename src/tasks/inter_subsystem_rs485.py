@@ -3,10 +3,9 @@ Module for intersubsystem communication using UART over RS485
 """
 
 import asyncio
-import board
 import microcontroller
-import busio
 import digitalio
+import board
 import pin_manager
 
 async def nucleo_rs485_sender_task():
@@ -15,7 +14,7 @@ async def nucleo_rs485_sender_task():
     """
 
     # pins defined for the STM32H743 Nucleo
-    pm = pin_manager.PinManager.get_instance() 
+    pm = pin_manager.PinManager.get_instance()
     led_gpio = pm.create_digital_in_out(board.LED1)
     with led_gpio as led:
         led.direction = digitalio.Direction.OUTPUT
@@ -25,11 +24,11 @@ async def nucleo_rs485_sender_task():
     te_rs485 = pm.create_digital_in_out(microcontroller.pin.PD07)
     with te_rs485 as te:
         te.direction = digitalio.Direction.OUTPUT
-    
+
 
     while True:
         with te_rs485 as te:
-           te.value = True
+            te.value = True
 
         data = bytearray([0] * 4)
         data[0] = 0xFF
@@ -43,7 +42,7 @@ async def nucleo_rs485_sender_task():
             write = uart.write(data)
 
         with te_rs485 as te:
-           te.value = False
+            te.value = False
 
         if write:
             with led_gpio as led:
@@ -62,7 +61,7 @@ async def nucleo_rs485_receiver_task():
     Task that receives any RS485 message and lights up the LED for 1 second if successfully received data.
     """
     # pins defined for the STM32H743 Nucleo
-    pm = pin_manager.PinManager.get_instance() 
+    pm = pin_manager.PinManager.get_instance()
     led_gpio = pm.create_digital_in_out(board.LED1)
     with led_gpio as led:
         led.direction = digitalio.Direction.OUTPUT
@@ -98,18 +97,18 @@ async def cdh_em_board_rs485_send_task():
     """
 
     # pins defined for the CDH_EM_Board
-    pm = pin_manager.PinManager.get_instance() 
+    pm = pin_manager.PinManager.get_instance()
 
     uart_bus = pm.create_uart(board.RS485_1_TX, board.RS485_1_RX, baudrate=50000)
 
     te_rs485 = pm.create_digital_in_out(board.RS485_1_DE)
     with te_rs485 as te:
         te.direction = digitalio.Direction.OUTPUT
-    
+
 
     while True:
         with te_rs485 as te:
-           te.value = True
+            te.value = True
 
         data = bytearray([0] * 4)
         data[0] = 0xFF
@@ -123,7 +122,7 @@ async def cdh_em_board_rs485_send_task():
             write = uart.write(data)
 
         with te_rs485 as te:
-           te.value = False
+            te.value = False
 
         if write:
             print("Data sent, number of bytes sent: ", write)
@@ -138,7 +137,7 @@ async def cdh_em_board_rs485_receiver_task():
     Task that receives any RS485 message.
     """
     # pins defined for the STM32H743 Nucleo
-    pm = pin_manager.PinManager.get_instance() 
+    pm = pin_manager.PinManager.get_instance()
 
     uart_bus = pm.create_uart(board.RS485_1_TX, board.RS485_1_RX, baudrate=50000)
 
@@ -165,7 +164,7 @@ async def samd51_breakout_receiver_task():
     Task that receives any RS485 message and lights up the LED for 1 second if successfully received data.
     """
     # pins defined for the CDH SAMD51 Breakout
-    pm = pin_manager.PinManager.get_instance() 
+    pm = pin_manager.PinManager.get_instance()
 
     uart_bus = pm.create_uart(microcontroller.pin.PA00, microcontroller.pin.PA01, baudrate=50000)
 
