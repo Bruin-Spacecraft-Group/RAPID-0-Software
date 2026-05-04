@@ -11,8 +11,8 @@ try:
 except ImportError:
     import numpy as np  # For GitHub Actions / PC testing
 
-minutes_per_day = 1440
-epoch0 = 2433281.5 # jan 0 1950
+MIN_PER_DAY = 1440
+EPOCH0 = 2433281.5 # jan 0 1950
 
 def _day_of_year_to_month_day(day_of_year, is_leap):
     """Core logic for turning days into months, for easy testing."""
@@ -23,30 +23,6 @@ def _day_of_year_to_month_day(day_of_year, is_leap):
     day //= 2
     day += 1
     return month, day
-
-def _jday(year, mon, day, hr, minute, sec):
-    """Return two floats (jd, fr) that, when added, produce the specified Julian date
-    jd (Julian Date) and fr (Fractional) components
-
-    >>> jd, fr = jday(2020, 2, 11, 13, 57, 0)
-    >>> jd
-    2458890.5
-    >>> fr
-    0.58125
-
-    Note the first float, which gives the moment of midnight that
-    commences the given calendar date, always ends in
-    ``.5`` because Julian dates begin and end at noon.  This made
-    Julian dates more convenient for astronomers in Europe, by making
-    the whole night belong to a single Julian date.
-    """
-    jd = (367.0 * year
-         - 7 * (year + ((mon + 9) // 12.0)) * 0.25 // 1.0
-	   + 275 * mon / 9.0 // 1.0
-	   + day
-         + 1721013.5)
-    fr = (sec + minute * 60.0 + hr * 3600.0) / 86400.0;
-    return jd, fr
 
 def _days2mdhms(year, days, round_to_microsecond=6):
     """Convert a float point number of days into the year into date and time.
@@ -106,6 +82,32 @@ def _parse_float(s):
     """
     return float(s[0] + '.' + s[1:6] + 'e' + s[6:8])
 
+def _sgp4_jday(year, mon, day, hr, minute, sec):
+    """
+    Converts jdsatepoch into a compatible number for sgp4
+    """
+
+    return (367.0 * year -
+            7.0 * (year + ((mon + 9.0) // 12.0)) * 0.25 // 1.0 +
+            275.0 * mon // 9.0 +
+            day + 1721013.5 +
+            ((sec / 60.0 + minute) / 60.0 + hr) / 24.0
+            )
+
+def jday(year, mon, day, hr, minute, sec):
+    """
+    From a date, return a Julian date in its date + fractional form
+
+    Used to build the jd, fr parameters in the function call of sgp4_update
+    """
+    jd = (367.0 * year
+         - 7 * (year + ((mon + 9) // 12.0)) * 0.25 // 1.0
+	   + 275 * mon / 9.0 // 1.0
+	   + day
+         + 1721013.5)
+    fr = (sec + minute * 60.0 + hr * 3600.0) / 86400.0
+    return jd, fr
+
 class Satrec:
     """
     Satellite record object
@@ -147,7 +149,7 @@ class Satrec:
         Eccentricity.
     :float argp:
         Argument of perigee.
-    :float M:
+    :float mo:
         Mean anomaly.
     :float n:
         Mean motion.
@@ -163,15 +165,16 @@ class Satrec:
 
     def __init__(self, name:str,
                  # ID parameters, Line 1
-                 norad:str, classification:str, int_desig:str, 
+                 norad:str, classification:str, int_desig:str,
                  # time (derivative) parameters, line 1
-                 epoch_year:int, epoch_day:float, dn:float, ddn:float, bstar:float, ephtype: str, set_num:int, 
+                 epoch_year:int, epoch_day:float, dn:float, ddn:float, bstar:float,
+                 ephtype: str, set_num:int,
                  # keplerian parameters, line 2
-                 inc:float, raan:float, ecc:float, argp:float, M:float, n:float, rev_num:int,
+                 inc:float, raan:float, ecc:float, argp:float, mo:float, n:float, rev_num:int,
                  # for the purposes of keeping the tle around as future-proofing
                  tle_str:str ):
-        
-        self.name = str.strip(name) 
+
+        self.name = str.strip(name)
 
         self.norad = str.strip(norad)
         self.classification = classification
@@ -189,12 +192,16 @@ class Satrec:
         self.raan = raan
         self.ecc = ecc
         self.argp = argp
-        self.M = M 
+        self.mo = mo
         self.n = n # mean motion
         self.rev_num = int(rev_num)
 
         self.tle_str = tle_str
-    
+
+        # for sgp
+        self.jdsatepoch = 0
+        self.jdsatepoch_f = 0
+
     @classmethod
     def from_tle_lines(cls, name, line1, line2):
         """Parse a TLE from its constituent lines.
@@ -218,21 +225,22 @@ class Satrec:
             raan=float(line2[17:25]),
             ecc=_parse_decimal(line2[26:33]),
             argp=float(line2[34:42]),
-            M=float(line2[43:51]),
+            mo=float(line2[43:51]),
             n=float(line2[52:63]),
-            rev_num=line2[63:68])
+            rev_num=line2[63:68],
+            tle_str=name+line1+line2)
 
     @classmethod
     def from_tle_file(cls, filename):
         """Load TLE from a file."""
         if isinstance(filename, str):
             with open(filename) as fp:
-                return [cls.from_lines(*fp.readlines[:2])]
+                return cls.from_tle_lines(*fp.readlines[:2])
 
     @classmethod
     def from_tle_str(cls, string):
         """Load TLE from a string."""
-        return [cls.from_lines(*string.split('\n')[:2])]
+        return cls.from_tle_lines(*string.split('\n')[:3])
 
     @classmethod
     def sgp4_init(cls, tle: Satrec):
@@ -245,8 +253,8 @@ class Satrec:
         self = tle
 
         # constants for unit change
-        deg2rad  =  np.pi / 180.0;         #    0.0174532925199433
-        xpdotp   =  1440.0 / (2.0 *np.pi);  #  229.1831180523293
+        deg2rad  =  np.pi / 180.0         #    0.0174532925199433
+        xpdotp   =  1440.0 / (2.0 *np.pi)  #  229.1831180523293
 
         #  ---- convert to sgp4 units ----
         self.n = self.n / xpdotp
@@ -257,9 +265,11 @@ class Satrec:
         self.inc = self.inc  * deg2rad
         self.raan = self.raan  * deg2rad
         self.argp = self.argp  * deg2rad
-        self.M    = self.M     * deg2rad
+        self.mo    = self.mo     * deg2rad
 
         yr = self.epoch_year
+        _, fraction = divmod(self.epoch_day, 1.0)
+        self.jdsatepoch_f = round(fraction, 8)  # exact number of digits in TLE
 
         # Build Julian Date
         if yr < 57:
@@ -268,13 +278,12 @@ class Satrec:
             year = yr + 1900
 
         mon,day,hr,minute,sec = _days2mdhms(year, self.epoch_day)
-        self.jdsatepoch = _jday(year,mon,day,hr,minute,sec);
-        epoch0 = 2433281.5
+        self.jdsatepoch = _sgp4_jday(year,mon,day,hr,minute,sec)
 
-        sgp4_init(self, self.set_num, self.jdsatepoch - epoch0, self.bstar,
-                  self.dn, self.ddn, self.ecc, self.argp, self.inc, self.n, 
+        sgp4_init(self, self.set_num, self.jdsatepoch-EPOCH0, self.bstar,
+                  self.dn, self.ddn, self.ecc, self.argp, self.inc, self.n,
                   self.raan)
-        
+
         return self
 
     def to_array(self):
@@ -291,30 +300,34 @@ class Satrec:
         norad: [1,0] classification: [1,1] int_desig: [1,2] epoch_year: [1,3] day: [1,4] 
         dn: [1,5] ddn: [1,6] bstar: [1,7] set_num: [1,8]
 
-        inclination: [2,0] RAAN: [2,1] eccentricity: [2,2] arg_perigee: [2,3] Mean Anomaly: [2,4] n: [2,5] rev_num: [2,6]
+        inclination: [2,0] RAAN: [2,1] eccentricity: [2,2] arg_perigee: [2,3] Mean Anomaly: [2,4] 
+        n: [2,5] rev_num: [2,6]
         """
-    
+
         return [
             [self.name], # Line 0
             [self.norad, self.classification, self.int_desig, # line 1 ID
-             self.epoch_year, self.epoch_day, self.dn, self.ddn, self.bstar, self.set_num], # line 1 time-derivative
-            [self.inc, self.raan, self.ecc, self.argp, self.M, self.n, self.rev_num] # line 2 orbital params
+              # line 1 time-derivative
+             self.epoch_year, self.epoch_day, self.dn, self.ddn, self.bstar, self.set_num],
+              # line 2 orbital params
+            [self.inc, self.raan, self.ecc, self.argp, self.mo, self.n, self.rev_num]
         ]
-    
-    
+
     def sgp4_update(self, jd, fr):
         """
         For a julian date (jd) and its fractional representation (fr), 
         propagate Satrec using sgp4
         """
 
-        tsince = ((jd - self.sat_epoch) * minutes_per_day +
-                  (fr - self.sat_epochF) * minutes_per_day)
+        tsince = ((jd - self.jdsatepoch) * MIN_PER_DAY +
+                  (fr - self.jdsatepoch_f) * MIN_PER_DAY)
         r, v = sgp4_update(self, tsince)
 
         return self.error, r, v
 
     def error_message(self):
+        """
+        Return error message from current self.error (when polled)
+        """
         if self.error == self.MOTION:
-            return ('mean motion {0:f} is less than zero'
-                                .format(self.n))
+            return (f'mean motion {0:f} is less than zero').format(self.n)
