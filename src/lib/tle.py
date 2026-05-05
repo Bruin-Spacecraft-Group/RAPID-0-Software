@@ -243,7 +243,7 @@ class Satrec:
         return cls.from_tle_lines(*string.split('\n')[:3])
 
     @classmethod
-    def sgp4_init(cls, tle: Satrec):
+    def sgp4_init(cls, tle):
         """
         Creates a satrec object specifically modified to be used in sgp4.
 
