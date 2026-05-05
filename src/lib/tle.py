@@ -331,3 +331,14 @@ class Satrec:
         """
         if self.error == self.MOTION:
             return (f'mean motion {0:f} is less than zero').format(self.n)
+
+ISS_TLE = "ISS (ZARYA)\n1 25544U 98067A   26121.81277072  .00006771  00000-0  13067-3 0  9997\n2 25544  51.6311 169.6452 0007227  12.7206 347.3964 15.49051775564564"
+
+if __name__ == "__main__":
+    sat: Satrec = Satrec.from_tle_str(
+        ISS_TLE
+    )
+
+    sgp4_obj = Satrec.sgp4_init(sat)
+    error, r, v = sgp4_obj.sgp4_update(*jday(2026, 5, 3, 0, 0, 0))
+    print(error, r, v)
