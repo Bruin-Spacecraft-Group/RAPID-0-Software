@@ -128,7 +128,7 @@ def sgp4_update(satrec, tsince):
     nm = satrec.xke / pow(am, 1.5)
     em = em - tempe
 
-    if em >= 1.0 or em < -0.001:
+    if em >= 1.0 or em < 0.0:
         satrec.error = satrec.ECCENTRICITY
 
         return False, False
@@ -140,7 +140,7 @@ def sgp4_update(satrec, tsince):
     emsq   = em * em
     temp   = 1.0 - emsq
 
-    nodem  = nodem % tau if nodem >= 0.0 else -(-nodem % tau)
+    nodem  = nodem % tau
     argpm  = argpm % tau
     xlm    = xlm % tau
     mm     = (xlm - argpm - nodem) % tau
@@ -188,6 +188,10 @@ def sgp4_update(satrec, tsince):
             tem5 = 0.95 if tem5 > 0.0 else -0.95
         eo1    = eo1 + tem5
         ktr = ktr + 1
+
+    if ktr > 10:
+        satrec.error = satrec.MOTION  # or a new error code
+        return False, False
 
     #  ------------- short period preliminary quantities -----------
     ecose = axnl*coseo1 + aynl*sineo1
@@ -248,10 +252,11 @@ def sgp4_update(satrec, tsince):
             (mvt * uy + rvdot * vy) * vkmpersec,
             (mvt * uz + rvdot * vz) * vkmpersec)
 
-    if mrt < 1.0:
-        satrec.error = satrec.DECAY
+        if mrt < 1.0:
+            satrec.error = satrec.DECAY
+            return False, False
 
-    return r, v
+        return r, v
 
 def sgp4_init(satrec, satn,   epoch,
                 bstar, dn, ddn, ecc, argp,

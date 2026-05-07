@@ -8,18 +8,16 @@ except ImportError:
 
 
 ISS_TLE = "ISS (ZARYA)\n1 25544U 98067A   26121.81277072  .00006771  00000-0  13067-3 0  9997\n2 25544  51.6311 169.6452 0007227  12.7206 347.3964 15.49051775564564"
-
-class PropagatorTest(unittest.TestCase):
-    
-    def propagate_to_may_3(self):
-        sat: Satrec = Satrec.from_tle_str(
+SAT: Satrec = Satrec.from_tle_str(
             ISS_TLE
         )
-    
-        sgp4_obj = Satrec.sgp4_init(sat)
+sgp4_obj = Satrec.sgp4_init(SAT)
+
+class PropagatorTest(unittest.TestCase):
+    def propagation_accuracy(self):
         error, r, v = sgp4_obj.sgp4_update(*jday(2026, 5, 3, 0, 0, 0))
 
-        self.assertEqual(error, 1) # if no error,
+        self.assertEqual(error, 0) # if no error,
 
         tol = 3 # to 3 decimal places
         self.assertAlmostEqual(r[0], 4698.782358, tol)
@@ -30,3 +28,11 @@ class PropagatorTest(unittest.TestCase):
         self.assertAlmostEqual(v[0], 5.281325344, tol)
         self.assertAlmostEqual(v[1], 2.530170911, tol)
         self.assertAlmostEqual(v[2], -4.936649541, tol)
+
+    def decay_orbit(self):
+        error, _, _ = sgp4_obj.sgp4_update(*jday(2060, 5, 3, 0, 0, 0))
+
+        self.assertEqual(error, 6)
+
+if __name__ == "__main__":
+    unittest.main()

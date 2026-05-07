@@ -4,7 +4,9 @@ Functions and Variables used by ADCS to update and use TLE (two-line element dat
 Adapted from the TLE-tools library by @FedericoStra on GitHub for ulab, 
 """
 
-from sgp4 import sgp4_init, sgp4_update
+from sgp4s import sgp4_init, sgp4_update
+
+from sgp4.api import Satrec
 
 try:
     import ulab.numpy as np  # For CircuitPython
@@ -35,7 +37,9 @@ def _days2mdhms(year, days, round_to_microsecond=6):
     The floating point seconds are rounded to an even number of
     microseconds if ``round_to_microsecond`` is true.
     """
-    second = days * 86400.0
+    day_of_year, day_fraction = divmod(days, 1.0)
+    
+    second = day_fraction * 86400.0
     if round_to_microsecond:
         second = round(second, round_to_microsecond)
 
@@ -45,15 +49,15 @@ def _days2mdhms(year, days, round_to_microsecond=6):
 
     minute = int(minute)
     hour, minute = divmod(minute, 60)
-    day_of_year, hour = divmod(hour, 24)
+    hour = int(hour)
 
     is_leap = year % 400 == 0 or (year % 4 == 0 and year % 100 != 0)
-    month, day = _day_of_year_to_month_day(day_of_year, is_leap)
+    month, day = _day_of_year_to_month_day(int(day_of_year), is_leap)
     if month == 13:  # behave like the original in case of overflow
         month = 12
         day += 31
 
-    return month, day, int(hour), int(minute), second
+    return month, day, hour, minute, second
 
 def _conv_year(s):
     """Interpret a two-digit year string."""
@@ -108,7 +112,7 @@ def jday(year, mon, day, hr, minute, sec):
     fr = (sec + minute * 60.0 + hr * 3600.0) / 86400.0
     return jd, fr
 
-class Satrec:
+class Satrecs:
     """
     Satellite record object
     Includes parameters, constants that are commonly used across the sgp4 logical flow
@@ -267,18 +271,16 @@ class Satrec:
         self.argp = self.argp  * deg2rad
         self.mo    = self.mo     * deg2rad
 
-        yr = self.epoch_year
-        _, fraction = divmod(self.epoch_day, 1.0)
-        self.jdsatepoch_f = round(fraction, 8)  # exact number of digits in TLE
+        year = self.epoch_year
 
-        # Build Julian Date
-        if yr < 57:
-            year = yr + 2000
-        else:
-            year = yr + 1900
+        mon, day, hr, minute, sec = _days2mdhms(year, self.epoch_day)
+        jd_full = _sgp4_jday(year, mon, day, hr, minute, sec)
 
-        mon,day,hr,minute,sec = _days2mdhms(year, self.epoch_day)
-        self.jdsatepoch = _sgp4_jday(year,mon,day,hr,minute,sec)
+        # Split into two-part representation
+        self.jdsatepoch   = np.floor(jd_full-0.5) + 0.5   # noon-to-noon JD boundary
+        self.jdsatepoch_f = jd_full - self.jdsatepoch
+
+        print(self.jdsatepoch, self.jdsatepoch_f)
 
         sgp4_init(self, self.set_num, self.jdsatepoch-EPOCH0, self.bstar,
                   self.dn, self.ddn, self.ecc, self.argp, self.inc, self.n,
@@ -321,7 +323,11 @@ class Satrec:
 
         tsince = ((jd - self.jdsatepoch) * MIN_PER_DAY +
                   (fr - self.jdsatepoch_f) * MIN_PER_DAY)
+        print(tsince)
+
         r, v = sgp4_update(self, tsince)
+
+        print(tsince, _sgp4_jday(2026, 5, 3, 0, 0, 0))
 
         return self.error, r, v
 
@@ -333,12 +339,20 @@ class Satrec:
             return (f'mean motion {0:f} is less than zero').format(self.n)
 
 ISS_TLE = "ISS (ZARYA)\n1 25544U 98067A   26121.81277072  .00006771  00000-0  13067-3 0  9997\n2 25544  51.6311 169.6452 0007227  12.7206 347.3964 15.49051775564564"
+s = "1 25544U 98067A   26121.81277072  .00006771  00000-0  13067-3 0  9997"
+t = "2 25544  51.6311 169.6452 0007227  12.7206 347.3964 15.49051775564564"
+
 
 if __name__ == "__main__":
-    sat: Satrec = Satrec.from_tle_str(
+    sat: Satrecs = Satrecs.from_tle_str(
         ISS_TLE
     )
 
-    sgp4_obj = Satrec.sgp4_init(sat)
+    satel = Satrec.twoline2rv(s, t)
+
+    e, r_o, v_o = satel.sgp4(*jday(2026, 5, 3, 0, 0, 0))
+
+    sgp4_obj = Satrecs.sgp4_init(sat)
     error, r, v = sgp4_obj.sgp4_update(*jday(2026, 5, 3, 0, 0, 0))
+    print(e, r_o, v_o)
     print(error, r, v)
