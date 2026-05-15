@@ -249,7 +249,7 @@ class Satrecs:
     @classmethod
     def sgp4_init(cls, tle):
         """
-        Creates a satrec object specifically modified to be used in sgp4.
+        Creates a satrec object specifically modified from TLE to be used in sgp4.
 
         Changes units, activates certain new parameters, etc. 
         """
@@ -282,9 +282,11 @@ class Satrecs:
 
         print(self.jdsatepoch, self.jdsatepoch_f)
 
-        sgp4_init(self, self.set_num, self.jdsatepoch-EPOCH0, self.bstar,
+        sgp4_init(self, self.set_num, jd_full-EPOCH0, self.bstar,
                   self.dn, self.ddn, self.ecc, self.argp, self.inc, self.n,
                   self.raan)
+        
+        print(self.jdsatepoch, self.jdsatepoch_f)
 
         return self
 
@@ -352,7 +354,7 @@ if __name__ == "__main__":
 
     e, r_o, v_o = satel.sgp4(*jday(2026, 5, 3, 0, 0, 0))
 
-    sgp4_obj = Satrecs.sgp4_init(sat)
+    sgp4_obj : Satrecs= Satrecs.sgp4_init(sat)
     error, r, v = sgp4_obj.sgp4_update(*jday(2026, 5, 3, 0, 0, 0))
     print(e, r_o, v_o)
     print(error, r, v)

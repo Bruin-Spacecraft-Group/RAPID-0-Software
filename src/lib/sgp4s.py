@@ -36,6 +36,7 @@ def _initl(xke, j2,
     #  only xke and j2 are used here so pass them in directly
     #  tumin, mu, radiusearthkm, xke, j2, j3, j4, j3oj2 = whichconst
     x2o3   = 2.0 / 3.0;
+    tau = np.pi*2
 
     #  ------------- calculate auxillary epoch quantities ----------
     eccsq  = ecc * ecc;
@@ -61,7 +62,18 @@ def _initl(xke, j2,
     posq  = po * po
     rp    = ao * (1.0 - ecc)
 
-    gsto = _gstime(epoch + 2433281.5)
+    ts70  = epoch - 7305.0;
+    ds70 = (ts70 + 1.0e-8) // 1.0;
+    tfrac = ts70 - ds70;
+    #  find greenwich location at epoch
+    c1    = 1.72027916940703639e-2;
+    thgr70= 1.7321343856509374;
+    fk5r  = 5.07551419432269442e-15;
+    c1p2p = c1 + tau;
+    gsto  = (thgr70 + c1*ds70 + c1p2p*tfrac + ts70*ts70*fk5r) % tau
+    if gsto < 0.0:
+        gsto = gsto + tau
+    # gsto = _gstime(epoch + 2433281.5)
 
     return (no,
        ao,    con41,  con42, cosio,
@@ -189,10 +201,6 @@ def sgp4_update(satrec, tsince):
         eo1    = eo1 + tem5
         ktr = ktr + 1
 
-    if ktr > 10:
-        satrec.error = satrec.MOTION  # or a new error code
-        return False, False
-
     #  ------------- short period preliminary quantities -----------
     ecose = axnl*coseo1 + aynl*sineo1
     esine = axnl*sineo1 - aynl*coseo1
@@ -252,11 +260,11 @@ def sgp4_update(satrec, tsince):
             (mvt * uy + rvdot * vy) * vkmpersec,
             (mvt * uz + rvdot * vz) * vkmpersec)
 
-        if mrt < 1.0:
+    if mrt < 1.0:
             satrec.error = satrec.DECAY
             return False, False
 
-        return r, v
+    return r, v
 
 def sgp4_init(satrec, satn,   epoch,
                 bstar, dn, ddn, ecc, argp,
@@ -342,6 +350,20 @@ def sgp4_init(satrec, satn,   epoch,
             satrec.isimp = 1
         sfour  = ss
         qzms24 = qzms2t
+        perige = (rp - 1.0) * satrec.radiusearthkm;
+
+        #  - for perigees below 156 km, s and qoms2t are altered -
+        if perige < 156.0:
+
+            sfour = perige - 78.0;
+            if perige < 98.0:
+                sfour = 20.0;
+            #  sgp4fix use multiply for speed instead of pow
+            qzms24temp =  (120.0 - sfour) / satrec.radiusearthkm;
+            qzms24 = qzms24temp * qzms24temp * qzms24temp * qzms24temp;
+            sfour  = sfour / satrec.radiusearthkm + 1.0;
+            print(perige)
+    
     pinvsq = 1.0 / posq
 
     tsi  = 1.0 / (ao - sfour)
