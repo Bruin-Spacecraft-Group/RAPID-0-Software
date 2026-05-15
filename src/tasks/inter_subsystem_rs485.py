@@ -3,25 +3,23 @@ Module for intersubsystem communication using UART over RS485
 """
 
 import asyncio
-import microcontroller
 import digitalio
-import board
 import pin_manager
 
-async def nucleo_rs485_sender_task(TX, RX, DE, LED):
+async def nucleo_rs485_sender_task(rs485_TX, rs485_RX, rs485_DE, rs485_LED):
     """
     Task that sends 0xFFEEDDCC and lights up the LED for 1 second if write is successful.
     """
 
     # pins defined for the STM32H743 Nucleo
     pm = pin_manager.PinManager.get_instance()
-    led_gpio = pm.create_digital_in_out(LED)
+    led_gpio = pm.create_digital_in_out(rs485_LED)
     with led_gpio as led:
         led.direction = digitalio.Direction.OUTPUT
 
-    uart_bus = pm.create_uart(TX, RX, baudrate=50000)
+    uart_bus = pm.create_uart(rs485_TX, rs485_RX, baudrate=50000)
 
-    te_rs485 = pm.create_digital_in_out(DE)
+    te_rs485 = pm.create_digital_in_out(rs485_DE)
     with te_rs485 as te:
         te.direction = digitalio.Direction.OUTPUT
 
@@ -56,19 +54,19 @@ async def nucleo_rs485_sender_task(TX, RX, DE, LED):
             print("Error sending data")
 
 
-async def nucleo_rs485_receiver_task(TX, RX, DE, LED):
+async def nucleo_rs485_receiver_task(rs485_TX, rs485_RX, rs485_DE, rs485_LED):
     """
     Task that receives any RS485 message and lights up the LED for 1 second if successfully received data.
     """
     # pins defined for the STM32H743 Nucleo
     pm = pin_manager.PinManager.get_instance()
-    led_gpio = pm.create_digital_in_out(LED)
+    led_gpio = pm.create_digital_in_out(rs485_LED)
     with led_gpio as led:
         led.direction = digitalio.Direction.OUTPUT
 
-    uart_bus = pm.create_uart(TX, RX, baudrate=50000)
+    uart_bus = pm.create_uart(rs485_TX, rs485_RX, baudrate=50000)
 
-    te_rs485 = pm.create_digital_in_out(DE)
+    te_rs485 = pm.create_digital_in_out(rs485_DE)
     with te_rs485 as te:
         te.direction = digitalio.Direction.OUTPUT
         te.value = False
@@ -91,7 +89,7 @@ async def nucleo_rs485_receiver_task(TX, RX, DE, LED):
             print("Error receiving data")
 
 
-async def cdh_em_board_rs485_send_task(TX, RX, DE):
+async def cdh_em_board_rs485_send_task(rs485_TX, rs485_RX, DE):
     """
     Task that sends 0xFFEEDDCC.
     """
@@ -99,9 +97,9 @@ async def cdh_em_board_rs485_send_task(TX, RX, DE):
     # pins defined for the CDH_EM_Board
     pm = pin_manager.PinManager.get_instance()
 
-    uart_bus = pm.create_uart(TX, RX, baudrate=50000)
+    uart_bus = pm.create_uart(rs485_TX, rs485_RX, baudrate=50000)
 
-    te_rs485 = pm.create_digital_in_out(DE)
+    te_rs485 = pm.create_digital_in_out(rs485_DE)
     with te_rs485 as te:
         te.direction = digitalio.Direction.OUTPUT
 
@@ -132,16 +130,16 @@ async def cdh_em_board_rs485_send_task(TX, RX, DE):
             print("Error sending data")
 
 
-async def cdh_em_board_rs485_receiver_task(TX, RX, DE):
+async def cdh_em_board_rs485_receiver_task(rs485_TX, rs485_RX, DE):
     """
     Task that receives any RS485 message and prints the received data.
     """
     # pins defined for the STM32H743 Nucleo
     pm = pin_manager.PinManager.get_instance()
 
-    uart_bus = pm.create_uart(TX, RX, baudrate=50000)
+    uart_bus = pm.create_uart(rs485_TX, rs485_RX, baudrate=50000)
 
-    te_rs485 = pm.create_digital_in_out(DE)
+    te_rs485 = pm.create_digital_in_out(rs485_DE)
     with te_rs485 as te:
         te.direction = digitalio.Direction.OUTPUT
         te.value = False
