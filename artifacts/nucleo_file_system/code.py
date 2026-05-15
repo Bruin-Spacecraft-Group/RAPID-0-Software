@@ -3,12 +3,14 @@ Code to open a file and do UART communication on a nucleo board.
 """
 
 import asyncio
+import board
+import microcontroller
 from inter_subsystem_rs485 import nucleo_rs485_sender_task
 
 async def gathered_task():
     """Runs all tasks in parallel."""
     await asyncio.gather(
-        nucleo_rs485_sender_task()
+        nucleo_rs485_sender_task(microcontroller.pin.PD05, microcontroller.pin.PD06, microcontroller.pin.PD07, board.LED1)
     )
 
 if __name__ == "__main__":

@@ -2,8 +2,8 @@
 Module for utilizing the Arducam OV5642 Camera
 """
 
-import usb_cdc
 import time as utime
+import usb_cdc
 import ov5642
 
 

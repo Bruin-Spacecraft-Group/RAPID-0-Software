@@ -4,14 +4,15 @@ a custom SamD51 breakout board.
 """
 
 import asyncio
-from inter_subsystem_rs485 import samd51_breakout_receiver_task
+import microcontroller
+from inter_subsystem_rs485 import cdh_em_board_rs485_receiver_task
 
 async def gathered_task():
     """
     Task to run all other tasks concurrently.
     """
     await asyncio.gather(
-        samd51_breakout_receiver_task()
+        cdh_em_board_rs485_receiver_task(microcontroller.pin.PA00, microcontroller.pin.PA01, microcontroller.pin.PA02)
     )
 
 
