@@ -3,7 +3,7 @@
         "lib/nda_wrapper.py:nda_wrapper.py",
         "lib/pin_manager.py:pin_manager.py",
         "drivers/ads1118.py:ads1118.py",
-        "drivers/camera.py:camera.py",
+        "drivers/ov5642.py:ov5642.py",
         "tasks/inter_subsystem_rs485.py:inter_subsystem_rs485.py"
     ],
     "unit_tests": [

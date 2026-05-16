@@ -1,5 +1,5 @@
 """
-Defines wiring that goes to the EPS microcontroller on the EPS flatsat PCB from June 2024.
+Defines wiring that goes to the EPS microcontroller on the EPS Engineering Model.
 
 Software should refer to the pins named here rather than any pin definitions in the `board`
 or `microcontroller` modules so that future PCB changes, as needed, don't necessitate
