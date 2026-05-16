@@ -1929,7 +1929,7 @@ class Camera(object):
             self.wrSensorReg16_8(0x5588 ,0x10)
             self.wrSensorReg16_8(0x558a ,0x00)
 
-    def OV5642_set_hue(self,degree):    # pylint: disable=R901
+    def OV5642_set_hue(self,degree):    # noqa: R901
         if degree== degree_180:
             self.wrSensorReg16_8(0x5001 ,0xff)
             self.wrSensorReg16_8(0x5580 ,0x01)
@@ -2036,7 +2036,7 @@ class Camera(object):
             self.wrSensorReg16_8(0x5001 ,0x7f)
             self.wrSensorReg16_8(0x5580 ,0x00)
 
-    def OV5642_set_Exposure_level(self,level):  # pylint: disable=R901
+    def OV5642_set_Exposure_level(self,level):  # noqa: R901
         if level== Exposure_17_EV:
             self.wrSensorReg16_8(0x3a0f ,0x10)
             self.wrSensorReg16_8(0x3a10 ,0x08)
