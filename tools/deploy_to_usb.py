@@ -89,7 +89,7 @@ def find_mount_points_with_names():
 # functions are implemented with the appropriate contracts.
 
 
-def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=True):
+def deploy_with_settings(deploy_type, target_drive, tmp_folder, include_tests=False):
    
     if target_drive is None:
         target_drive = "CIRCUITPY"
