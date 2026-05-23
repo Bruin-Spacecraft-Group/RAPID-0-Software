@@ -1,6 +1,7 @@
 from drivers import bmi088
 import asyncio
 import busio
+import time
 import microcontroller
 
 
@@ -27,40 +28,46 @@ async def run_fixed_read():
         read_dummy_bytes=0,
         cs_active_low=True,
     )
-
+    file = open("/gyro_data.txt", "w")
     await gyro.begin(verify_chip_id=False)
     print("fixed: CS1 mode=(0,0) dummy=0 baud=1600 cs_active_low=True")
 
-    for i in range(5):
-        st = await gyro.self_test_gyro(wait_s=0.05, timeout_s=0.8)
-        raw = st["raw_0x3C"]
-        print(
-            "self_test",
-            i,
-            "raw=0x{:02X}".format(raw),
-            "bits={:08b}".format(raw),
-            "b1={}".format(st["bit1"]),
-            "b2={}".format(st["bit2"]),
-            "b3={}".format(st["bit4"]),
-            "timeout={}".format(st["timed_out"]),
-        )
-        await asyncio.sleep(0.05)
+    st = await gyro.self_test_gyro(wait_s=0.05, timeout_s=0.8)
+    raw = st["raw_0x3C"]
+    file.write(
+        "self_test",
+        "raw=0x{:02X}".format(raw),
+        "bits={:08b}".format(raw),
+        "b1={}".format(st["bit1"]),
+        "b2={}".format(st["bit2"]),
+        "b3={}".format(st["bit4"]),
+        "timeout={}".format(st["timed_out"]),
+        "-----------------",
+    )
+    file.flush()
+    await asyncio.sleep(0.05)
 
-    while True:
+    time_diff = 0
+    start_time = time.monotonic_ns
+    while time_diff < 1000000:
         data = gyro._read_block_gyro(bmi088.GYR_DATA_START, 6)
         # Convert from the same byte sample printed above.
         gx = _to_int16(data[1], data[0])
         gy = _to_int16(data[3], data[2])
         gz = _to_int16(data[5], data[4])
-        print(
+        file.write(
             "sample",
-            i,
             "bytes=",
             " ".join("0x{:02X}".format(b) for b in data),
             "raw_xyz=({}, {}, {})".format(gx, gy, gz),
+            "----------------------",
         )
-        #await asyncio.sleep(0.05)
+        file.flush()
+        end_time = time.monotonic_ns
+        time_diff = abs(end_time - start_time)
+        # await asyncio.sleep(0.05)
 
+    file.close()
     print("DONE")
 
 
