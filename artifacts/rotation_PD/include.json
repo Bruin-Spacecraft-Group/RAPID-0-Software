@@ -1,0 +1,16 @@
+{
+    "src": [
+        "tasks/adcs/reaction_wheel_pd.py:reaction_wheel_pd.py",
+        "drivers/reaction_wheel.py:reaction_wheel.py",
+        "lib/pin_manager.py:pin_manager.py"
+    ],
+    "unit_tests": [
+        "lib/pin_manager_test.py:pin_manager_test.py",
+        "lib/custom_module_mocking.py:custom_module_mocking.py",
+        "lib/reaction_wheel_pd_test.py:reaction_wheel_pd_test.py"
+    ],
+    "submodules": [
+        "Adafruit_CircuitPython_Ticks/adafruit_ticks.py:adafruit_ticks.py",
+        "Adafruit_CircuitPython_asyncio/asyncio:asyncio"
+    ]
+}

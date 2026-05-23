@@ -1,5 +1,9 @@
 import sys
+from types import ModuleType
 
+class Direction:
+    INPUT = 0
+    OUTPUT = 1
 
 class HardwareIO_Test:
     def __init__(self):
@@ -122,3 +126,15 @@ class UART_Test(HardwareIO_Test):
         if not (self._is_alive):
             raise RuntimeError("device not available")
         return 0
+
+# Mapping custom modules
+
+digitalio = ModuleType('digitalio')
+digitalio.DigitalInOut = DigitalInOut_Test
+digitalio.Direction = Direction
+sys.modules['digitalio'] = digitalio
+
+busio = ModuleType('busio')
+busio.uart = UART_Test
+busio.spi = SPI_Test
+sys.modules['busio'] = busio
