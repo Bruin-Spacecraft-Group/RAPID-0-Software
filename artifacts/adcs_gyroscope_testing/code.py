@@ -34,7 +34,7 @@ def _to_int16(msb, lsb):
 
 
 async def run_fixed_read():
-    await gyro.begin(verify_chip_id=False)
+    await gyro.begin(verify_chip_id=True)
     print("fixed: CS1 mode=(0,0) dummy=0 baud=1600 cs_active_low=True")
 
     file = open("/gyro_data.txt", "w")
