@@ -1,0 +1,18 @@
+{
+    "src": [
+        "lib/quaternion.py:quaternion.py",
+        "lib/datastores/adcs.py:adcs.py",
+        "lib/pin_manager.py:pin_manager.py",
+        "drivers/bmi088.py:drivers/bmi088.py",
+        "drivers/reaction_wheel.py:drivers/reaction_wheel.py"
+    ],
+    "unit_tests": [
+        "lib/pin_manager_test.py:lib/pin_manager_test.py",
+        "lib/custom_module_mocking.py:lib/custom_module_mocking.py",
+        "lib/quaternion_test.py:lib/quaternion_test.py"
+    ],
+    "submodules": [
+        "Adafruit_CircuitPython_asyncio/asyncio:asyncio",
+        "Adafruit_CircuitPython_Ticks/adafruit_ticks.py:adafruit_ticks.py"
+    ]
+}

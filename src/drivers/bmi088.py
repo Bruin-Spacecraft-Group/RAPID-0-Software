@@ -310,7 +310,10 @@ class Bmi088Gyro:
         try:
             self._spi.configure(baudrate=self._baudrate, polarity=self._polarity, phase=self._phase)
             self._cs_select()
-            self._spi.write_readinto(tx, rx)
+            #self._spi.write_readinto)
+            
+            self._spi.write(tx)
+            self._spi.readinto(rx)
         finally:
             self._cs_deselect()
             self._spi.unlock()
@@ -331,7 +334,8 @@ class Bmi088Gyro:
                 baudrate=self._baudrate, polarity=self._polarity, phase=self._phase
             )
             self._cs_select()
-            self._spi.write_readinto(out_buf, in_buf)
+            self._spi.write(out_buf)
+            self._spi.readinto(in_buf)
         finally:
             self._cs_deselect()
             self._spi.unlock()

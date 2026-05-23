@@ -3,6 +3,27 @@ import asyncio
 import busio
 import time
 import microcontroller
+from drivers import reaction_wheel
+
+spi = busio.SPI(
+    microcontroller.pin.PA05,
+    MOSI=microcontroller.pin.PA07,
+    MISO=microcontroller.pin.PA06,
+)
+
+gyro = bmi088.Bmi088Gyro(
+    spi,
+    cs_gyro_pin_or_dio=microcontroller.pin.PE10,  # CS1
+    baudrate=1600,
+    polarity=0,
+    phase=0,
+    read_dummy_bytes=0,
+    cs_active_low=True,
+)
+
+rw = reaction_wheel.ReactionWheel(
+    microcontroller.pin.PA00, microcontroller.pin.PA01, microcontroller.pin.PA04
+)
 
 
 def _to_int16(msb, lsb):
@@ -13,22 +34,6 @@ def _to_int16(msb, lsb):
 
 
 async def run_fixed_read():
-    spi = busio.SPI(
-        microcontroller.pin.PA05,
-        MOSI=microcontroller.pin.PA07,
-        MISO=microcontroller.pin.PA06,
-    )
-
-    gyro = bmi088.Bmi088Gyro(
-        spi,
-        cs_gyro_pin_or_dio=microcontroller.pin.PE10,  # CS1
-        baudrate=1600,
-        polarity=0,
-        phase=0,
-        read_dummy_bytes=0,
-        cs_active_low=True,
-    )
-    file = open("/gyro_data.txt", "w")
     await gyro.begin(verify_chip_id=False)
     print("fixed: CS1 mode=(0,0) dummy=0 baud=1600 cs_active_low=True")
 
@@ -71,6 +76,15 @@ async def run_fixed_read():
     print("DONE")
 
 
+# reaction wheel code
+async def spin_input_speed():
+    while True:
+        pc = input("Speed 0-100: ")
+        dc = pc / 100 * (2**16 - 1)
+        rw.set_speed(dc)
+
+
 if __name__ == "__main__":
     print("is running...")
     asyncio.run(run_fixed_read())
+    asyncio.run(spin_input_speed())
