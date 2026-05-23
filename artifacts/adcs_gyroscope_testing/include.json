@@ -1,16 +1,10 @@
 {
     "src": [
         "lib/quaternion.py:quaternion.py",
-        "tasks/adcs/triad.py:triad.py",
-        "tasks/adcs/mekf.py:mekf.py",
-        "tasks/adcs/nominal.py:nominal.py",
-        "tasks/adcs/loop.py:loop.py",
-        "tasks/adcs/detumble.py:detumble.py",
-        "tasks/adcs/point_to_earth.py:point_to_earth.py",
-        "tasks/adcs/point_to_sun.py:point_to_sun.py",
         "lib/datastores/adcs.py:adcs.py",
         "lib/pin_manager.py:pin_manager.py",
-        "drivers/bmi088.py:drivers/bmi088.py"
+        "drivers/bmi088.py:drivers/bmi088.py",
+        "drivers/reaction_wheel.py:drivers/reaction_wheel.py"
     ],
     "unit_tests": [
         "lib/pin_manager_test.py:lib/pin_manager_test.py",
