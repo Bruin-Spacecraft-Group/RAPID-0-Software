@@ -134,7 +134,7 @@ class Bmi088Gyro:
         self._write_reg_gyro(GYR_SOFTRESET, _SOFTRESET_CMD)
         await asyncio.sleep(0.05)
         chip_id = self._read_reg_gyro(GYR_CHIP_ID_REG)
-
+        print(f"Chip ID: {self._read_block(GYR_CHIP_ID_REG, 10)[1]}")
         if verify_chip_id and chip_id != GYR_CHIP_ID_VAL:
             await asyncio.sleep(0.01)
             chip_id = self._probe_chip_id()
@@ -333,6 +333,7 @@ class Bmi088Gyro:
             self._spi.configure(
                 baudrate=self._baudrate, polarity=self._polarity, phase=self._phase
             )
+            print(f"SPI transfer: write {header_len} bytes, read {transfer_len} bytes")
             self._cs_select()
             self._spi.write(out_buf)
             self._spi.readinto(in_buf)

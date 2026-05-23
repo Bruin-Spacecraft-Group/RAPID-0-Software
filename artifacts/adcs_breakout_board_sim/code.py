@@ -28,7 +28,7 @@ async def run_fixed_read():
         cs_active_low=True,
     )
 
-    await gyro.begin(verify_chip_id=False)
+    await gyro.begin(verify_chip_id=True)
     print("fixed: CS1 mode=(0,0) dummy=0 baud=1600 cs_active_low=True")
 
     for i in range(5):
@@ -59,7 +59,7 @@ async def run_fixed_read():
             " ".join("0x{:02X}".format(b) for b in data),
             "raw_xyz=({}, {}, {})".format(gx, gy, gz),
         )
-        #await asyncio.sleep(0.05)
+        await asyncio.sleep(0.1)
 
     print("DONE")
 
