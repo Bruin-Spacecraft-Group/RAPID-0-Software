@@ -37,6 +37,7 @@ async def run_fixed_read():
     await gyro.begin(verify_chip_id=False)
     print("fixed: CS1 mode=(0,0) dummy=0 baud=1600 cs_active_low=True")
 
+    file = open("/gyro_data.txt", "w")
     st = await gyro.self_test_gyro(wait_s=0.05, timeout_s=0.8)
     raw = st["raw_0x3C"]
     file.write(
