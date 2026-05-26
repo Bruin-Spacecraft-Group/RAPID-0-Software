@@ -25,6 +25,7 @@ rw = reaction_wheel.ReactionWheel(
     microcontroller.pin.PA00, microcontroller.pin.PA01, microcontroller.pin.PA04
 )
 
+in_speed = 0
 
 def _to_int16(msb, lsb):
     value = (msb << 8) | lsb
@@ -37,6 +38,7 @@ async def run_fixed_read():
     await gyro.begin(verify_chip_id=False)
     print("fixed: CS1 mode=(0,0) dummy=0 baud=1600 cs_active_low=True")
 
+    file = open("/gyro_data.txt")
     st = await gyro.self_test_gyro(wait_s=0.05, timeout_s=0.8)
     raw = st["raw_0x3C"]
     file.write(
@@ -55,6 +57,7 @@ async def run_fixed_read():
     time_diff = 0
     start_time = time.monotonic_ns
     while time_diff < 1000000:
+        global in_speed
         data = gyro._read_block_gyro(bmi088.GYR_DATA_START, 6)
         # Convert from the same byte sample printed above.
         gx = _to_int16(data[1], data[0])
@@ -62,6 +65,7 @@ async def run_fixed_read():
         gz = _to_int16(data[5], data[4])
         file.write(
             "sample",
+            "input_speed={}".format(in_speed),
             "bytes=",
             " ".join("0x{:02X}".format(b) for b in data),
             "raw_xyz=({}, {}, {})".format(gx, gy, gz),
@@ -78,13 +82,15 @@ async def run_fixed_read():
 
 # reaction wheel code
 async def spin_input_speed():
+    global in_speed
     while True:
-        pc = input("Speed 0-100: ")
+        pc = int(input("Speed 0-100: "))
         dc = pc / 100 * (2**16 - 1)
+        in_speed = pc
         rw.set_speed(dc)
-
 
 if __name__ == "__main__":
     print("is running...")
-    asyncio.run(run_fixed_read())
     asyncio.run(spin_input_speed())
+    asyncio.run(run_fixed_read())
+   
