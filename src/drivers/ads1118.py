@@ -102,9 +102,8 @@ class Ads1118:
         self.spi_bus = pm.create_spi(sck, mosi, miso)
         self.drdy_gpio = pm.create_digital_in_out(miso)
         self.ss_gpio = pm.create_digital_in_out(ss)
-        with self.ss_gpio as ss_gpio:
-            ss_gpio.direction = digitalio.Direction.OUTPUT
-            ss_gpio.value = True
+        self.ss_gpio.direction = digitalio.Direction.OUTPUT
+        self.ss_gpio.value = True
 
     # Returns either the voltage in volts, or the temperature in degrees Celsius
     async def take_sample(
