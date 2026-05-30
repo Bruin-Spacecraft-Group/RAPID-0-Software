@@ -5,6 +5,7 @@
         "lib/pin_manager.py:pin_manager.py",
         "drivers/bmi088.py:drivers/bmi088.py",
         "drivers/bmi088_stripped.py:drivers/bmi088_stripped.py",
+        "drivers/bmi088.py:drivers/bmi088.py",
         "drivers/reaction_wheel.py:drivers/reaction_wheel.py"
     ],
     "unit_tests": [

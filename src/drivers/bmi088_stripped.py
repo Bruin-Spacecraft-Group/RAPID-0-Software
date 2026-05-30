@@ -6,6 +6,7 @@ Not async friendly implementation
 
 import digitalio
 import busio
+import time
 
 class Bmi088Gyroscope:
     """
@@ -27,22 +28,21 @@ class Bmi088Gyroscope:
         """
         Reads a singular register from the gyroscope on the device
         """
-
+        while not self.spi.try_lock():
+            print("fail")
+            pass
         self.cs.value = False # set low, opens/selects gyro
-        dummy = bytearray(2)
-        result = bytearray(1)
-        self.spi.write_readinto(bytes([reg | 0x80]), dummy) # read bit -> 1
-        self.spi.readinto(result)
+        time.sleep(0.01)
+
+        write = bytes([reg | 0x80, 0, 0,0,0,0,0,0,0,0])
+        dummy = bytearray(10)
+        self.spi.write_readinto(write, dummy) # read bit -> 1
         self.cs.value = True # deselect
-        return dummy, result
+
+        self.spi.unlock()
+        return dummy
 
     def test_chip_id(self):
         # spi config
-        while not self.spi.try_lock():
-            pass
-        self.spi.configure(baudrate=1_000_000, phase=0, polarity=0)
-
-        value = self._read_gyro_register(0x0F) # 0x0F is the chip id register
-        self.spi.unlock()
-
+        value = self._read_gyro_register(0x00) # 0x00 is the chip id register
         return value
