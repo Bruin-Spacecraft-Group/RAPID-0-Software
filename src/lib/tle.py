@@ -139,6 +139,8 @@ class Satrec:
             with open(filename, encoding="utf-8") as fp:
                 return cls.from_tle_lines(*fp.readlines[:2])
 
+        return None
+
     @classmethod
     def from_tle_str(cls, string):
         """Load TLE from a string."""
