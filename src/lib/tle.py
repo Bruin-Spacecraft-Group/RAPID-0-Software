@@ -79,40 +79,31 @@ class Satrec:
         Revolution number.
     """
 
-    def __init__(self, name:str,
-                 # ID parameters, Line 1
-                 norad:str, classification:str, int_desig:str,
-                 # time (derivative) parameters, line 1
-                 epoch_year:int, epoch_day:float, dn:float, ddn:float, bstar:float,
-                 ephtype: str, set_num:int,
-                 # keplerian parameters, line 2
-                 inc:float, raan:float, ecc:float, argp:float, mo:float, n:float, rev_num:int,
-                 # for the purposes of keeping the tle around as future-proofing
-                 tle_str:str ):
+    def __init__(self):
 
-        self.name = str.strip(name)
+        self.name = ""
 
-        self.norad = str.strip(norad)
-        self.classification = classification
-        self.int_desig = str.strip(int_desig)
+        self.norad = ""
+        self.classification = ""
+        self.int_desig = ""
 
-        self.epoch_year = _conv_year(epoch_year)
-        self.epoch_day = epoch_day
-        self.dn = dn
-        self.ddn = ddn
-        self.bstar = bstar
-        self.ephtype = ephtype
-        self.set_num = int(set_num)
+        self.epoch_year = 0
+        self.epoch_day = 0.0
+        self.dn = 0.0
+        self.ddn = 0.0
+        self.bstar = 0.0
+        self.ephtype = ""
+        self.set_num = 0
 
-        self.inc = inc
-        self.raan = raan
-        self.ecc = ecc
-        self.argp = argp
-        self.mo = mo
-        self.n = n # mean motion
-        self.rev_num = int(rev_num)
+        self.inc = 0.0
+        self.raan = 0.0
+        self.ecc = 0.0
+        self.argp = 0.0
+        self.mo = 0.0
+        self.n = 0.0 # mean motion
+        self.rev_num = 0
 
-        self.tle_str = tle_str
+        self.tle_str = ""
 
     @classmethod
     def from_tle_lines(cls, name, line1, line2):
@@ -121,26 +112,25 @@ class Satrec:
         All the attributes parsed from the TLE are expressed in the same units that
         are used in the TLE format.
         """
-        return cls(
-            name=name,
-            norad=line1[2:7],
-            classification=line1[7] or 'U',
-            int_desig=line1[9:17],
-            epoch_year=line1[18:20],
-            epoch_day=float(line1[20:32]),
-            dn=float(line1[33:43]),
-            ddn=_parse_float(line1[44:52]),
-            bstar=_parse_float(line1[53:61]),
-            ephtype = line1[62],
-            set_num=line1[64:68],
-            inc=float(line2[8:16]),
-            raan=float(line2[17:25]),
-            ecc=_parse_decimal(line2[26:33]),
-            argp=float(line2[34:42]),
-            mo=float(line2[43:51]),
-            n=float(line2[52:63]),
-            rev_num=line2[63:68],
-            tle_str=name+line1+line2)
+        cls.name=name
+        cls.norad=line1[2:7]
+        cls.classification=line1[7] or 'U'
+        cls.int_desig=line1[9:17]
+        cls.epoch_year=_conv_year(line1[18:20])
+        cls.epoch_day=float(line1[20:32])
+        cls.dn=float(line1[33:43])
+        cls.bstar=_parse_float(line1[53:61])
+        cls.ddn=_parse_float(line1[44:52])
+        cls.ephtype = line1[62]
+        cls.set_num=line1[64:68]
+        cls.inc=float(line2[8:16])
+        cls.raan=float(line2[17:25])
+        cls.ecc=_parse_decimal(line2[26:33])
+        cls.argp=float(line2[34:42])
+        cls.mo=float(line2[43:51])
+        cls.n=float(line2[52:63])
+        cls.rev_num=line2[63:68]
+        cls.tle_str=name+line1+line2
 
     @classmethod
     def from_tle_file(cls, filename):
