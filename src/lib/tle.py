@@ -112,6 +112,8 @@ class Satrec:
         All the attributes parsed from the TLE are expressed in the same units that
         are used in the TLE format.
         """
+
+        cls()
         cls.name=name
         cls.norad=line1[2:7]
         cls.classification=line1[7] or 'U'
